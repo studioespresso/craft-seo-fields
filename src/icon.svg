@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="163px" height="163px" viewBox="0 0 163 163" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
+    <title>icon</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="icon">
+            <path d="M0,81.5006436 C0,36.487025 36.4885998,0 81.498713,0 C126.5114,0 163,36.487025 163,81.5006436 C163,126.509114 126.5114,163 81.498713,163 C36.4885998,163 0,126.509114 0,81.5006436 Z" id="Shape" fill="#284A9F" fill-rule="nonzero"></path>
+            <g id="tag" transform="translate(25.000000, 34.000000)">
+                <path d="M138,50.2104492 C138,45.658024 98.4293762,2.77395876 97.7655363,2.12133466 L53.5644354,1 C38.7430877,16.5611645 27.7564648,28.2400727 20.6045667,36.0367248 C17.0016107,39.9644923 1.00448061,44.3978758 0.114072832,54.7628744 C-0.464196592,61.4943541 -0.0872999805,64.6879615 32.8906229,99.1431819 C65.8685457,133.598402 56.6424365,128.704368 67.2749023,128.040039 C77.6319459,127.392919 81.8847656,126.14502 99.5517578,116.130859 C103.404276,113.947141 111.585697,107.247206 114.914551,103.85791 C122.740234,95.8901367 127.027344,88.2348633 130.753906,79.9013672 C135.239763,69.8699046 138,54.7628744 138,50.2104492 Z" id="Shape" fill="#000000" fill-rule="nonzero" opacity="0.2"></path>
+                <path d="M94.9509982,49.3856813 L48.199637,96.0277136 C44.2359347,99.9907621 37.7313975,99.9907621 33.7676951,96.0277136 L2.97277677,65.1362587 C-0.99092559,61.1732102 -0.99092559,54.7713626 2.97277677,50.8083141 L50.2323049,3.15011547 C52.1633394,1.21939954 54.7041742,0 57.4482759,0 L87.6333938,0 C93.2232305,0 98,4.97921478 98,10.5681293 L98,42.1709007 C98,44.9145497 96.7803993,47.4549654 94.9509982,49.3856813 Z" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
+                <polyline id="open" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" points="49 63 35 63 35 49"></polyline>
+                <polyline id="close" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" points="70 43 70 29 56 29"></polyline>
+                <path d="M46,33 L60,60" id="slash" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
+                <circle id="Oval" fill="#FFFFFF" cx="84.5" cy="13.5" r="4.5"></circle>
+            </g>
+        </g>
+    </g>
+</svg>
