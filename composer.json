@@ -32,8 +32,8 @@
     "extra": {
         "name": "SEO Fields",
         "handle": "seo-fields",
-        "hasCpSettings": false,
-        "hasCpSection": true,
+        "hasCpSettings": true,
+        "hasCpSection": false,
         "changelogUrl": "https://raw.githubusercontent.com/studioespresso/craft3-seo-fields/master/CHANGELOG.md",
         "components": {
             "seoFieldsService": "studioespresso\\seofields\\services\\SeoFieldsService"
