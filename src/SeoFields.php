@@ -10,10 +10,12 @@
 
 namespace studioespresso\seofields;
 
+use Craft;
 use craft\base\Plugin;
 use craft\events\RegisterComponentTypesEvent;
 use craft\services\Fields;
 use studioespresso\seofields\fields\SeoField;
+use studioespresso\seofields\models\Settings;
 use studioespresso\seofields\services\SeoFieldsService as SeoFieldsServiceService;
 use yii\base\Event;
 
@@ -25,6 +27,7 @@ use yii\base\Event;
  * @since     1.0.0
  *
  * @property  SeoFieldsServiceService $seoFieldsService
+ * @method    Settings getSettings()
  */
 class SeoFields extends Plugin
 {
@@ -59,4 +62,25 @@ class SeoFields extends Plugin
             }
         );
     }
+
+    // Protected Methods
+    // =========================================================================
+    // Protected Methods
+    // =========================================================================
+    protected function createSettingsModel()
+    {
+        return new Settings();
+    }
+
+    protected function settingsHtml(): string
+    {
+        return Craft::$app->view->renderTemplate(
+            'seo-fields/_settings',
+            [
+                'settings' => $this->getSettings()
+            ]
+        );
+    }
+
+
 }
