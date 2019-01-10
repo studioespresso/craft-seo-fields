@@ -13,7 +13,9 @@ namespace studioespresso\seofields;
 use Craft;
 use craft\base\Plugin;
 use craft\events\RegisterComponentTypesEvent;
+use craft\events\RegisterUrlRulesEvent;
 use craft\services\Fields;
+use craft\web\UrlManager;
 use studioespresso\seofields\fields\SeoField;
 use studioespresso\seofields\models\Settings;
 use studioespresso\seofields\services\SeoFieldsService as SeoFieldsServiceService;
@@ -61,6 +63,33 @@ class SeoFields extends Plugin
                 $event->types[] = SeoField::class;
             }
         );
+
+        Event::on(
+            UrlManager::class,
+            UrlManager::EVENT_REGISTER_CP_URL_RULES,
+            function (RegisterUrlRulesEvent $event) {
+                // Register our Control Panel routes
+                $event->rules = array_merge($event->rules, [
+                    'seo-fields' => 'seo-fields/default/index',
+                    'seo-fields/defaults' => 'seo-fields/default/defaults',
+                ]);
+            }
+        );
+    }
+
+    public function getCpNavItem()
+    {
+        $subNavs = [];
+        $navItem = parent::getCpNavItem();
+        // Only show sub-navs the user has permission to view
+        $subNavs['defaults'] = [
+            'label' => 'Defaults',
+            'url' => 'seo-fields/defaults',
+        ];
+        $navItem = array_merge($navItem, [
+            'subnav' => $subNavs,
+        ]);
+        return $navItem;
     }
 
     // Protected Methods
