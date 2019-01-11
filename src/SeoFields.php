@@ -72,6 +72,7 @@ class SeoFields extends Plugin
                 $event->rules = array_merge($event->rules, [
                     'seo-fields' => 'seo-fields/default/index',
                     'seo-fields/defaults' => 'seo-fields/default/defaults',
+                    'seo-fields/defaults/<siteHandle:{handle}>' => 'seo-fields/default/defaults',
                 ]);
             }
         );

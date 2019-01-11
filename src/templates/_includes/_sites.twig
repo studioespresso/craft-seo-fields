@@ -1,0 +1,15 @@
+{% if craft.app.sites.getEditableSites()|length > 1 %}
+    <div id="revision-btn" class="btn menubtn" data-icon="world">{{ currentSite.name }}</div>
+    <div class="menu">
+        <ul class="padded">
+            {% for site in craft.app.sites.getAllSites() %}
+                <li>
+                    <a href="/admin/seo-fields/defaults/{{ site.handle }}"
+                       {% if site.handle == currentSite.handle %}class="sel"{% endif %}>
+                        {{ site.name }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}

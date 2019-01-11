@@ -19,6 +19,18 @@
 {# The title of this CP section #}
 {% set title = "SEO Fields" %}
 
+{% block header %}
+    {% block pageTitle %}
+        {% if title is defined and title|length %}
+            <h1>{{ title }}</h1>
+        {% endif %}
+    {% endblock %}
+    {% block contextMenu %}
+        {% include 'seo-fields/_includes/_sites' %}
+    {% endblock %}
+    <div class="flex-grow"></div>
+{% endblock %}
+
 {% block content %}
 
 {% endblock %}
