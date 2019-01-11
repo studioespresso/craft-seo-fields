@@ -85,7 +85,7 @@ class SeoFields extends Plugin
         // Only show sub-navs the user has permission to view
         $subNavs['defaults'] = [
             'label' => 'Defaults',
-            'url' => 'seo-fields/defaults',
+            'url' => 'seo-fields',
         ];
         $navItem = array_merge($navItem, [
             'subnav' => $subNavs,

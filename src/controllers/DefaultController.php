@@ -17,8 +17,8 @@ class DefaultController extends Controller
     {
         $sites = Craft::$app->sites->getEditableSites();
         $currentSite = Craft::$app->sites->getSiteByHandle($siteHandle);
+        Craft::$app->sites->setCurrentSite($currentSite);
         return $this->renderTemplate('seo-fields/_defaults', [
-            'currentSite' => $currentSite,
             'sites' => $sites
         ]);
 
