@@ -12,25 +12,26 @@
  * @since     0.0.1
  */
 #}
+{% extends 'seo-fields/_includes/_header' %}
 
-{% extends "_layouts/cp" %}
 {% import "_includes/forms" as forms %}
-
-{# The title of this CP section #}
-{% set title = "SEO Fields" %}
-
-{% block header %}
-    {% block pageTitle %}
-        {% if title is defined and title|length %}
-            <h1>{{ title }}</h1>
-        {% endif %}
-    {% endblock %}
-    {% block contextMenu %}
-        {% include 'seo-fields/_includes/_sites' %}
-    {% endblock %}
-    <div class="flex-grow"></div>
-{% endblock %}
-
 {% block content %}
+    <input type="hidden" name="action" value="seo-fields/default/save">
 
+    {{ forms.textField({
+        label: 'Default site title'|t('seofields'),
+        id: 'defaultSiteTitle',
+        name: 'defaultSiteTitle',
+        size: 80,
+        value: data['defaultSiteTitle']})
+    }}
+
+    {{ forms.textField({
+        label: 'Title seperator'|t('seofields'),
+        instructions: 'A character used to seperate your `<title>` from the site name'|t('seofields'),
+        id: 'titleSeperator',
+        name: 'titleSeperator',
+        size: 3,
+        value: data['titleSeperator']})
+    }}
 {% endblock %}

@@ -51,6 +51,7 @@ class Install extends Migration
                 [
                     'id' => $this->primaryKey(),
                     'siteId' => $this->integer(11)->notNull(),
+                    'defaultMeta' => $this->text(),
                     'dateCreated' => $this->dateTime()->notNull(),
                     'dateUpdated' => $this->dateTime()->notNull(),
                     'uid' => $this->uid(),

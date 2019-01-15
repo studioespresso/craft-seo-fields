@@ -1,0 +1,15 @@
+{% extends "_layouts/cp" %}
+
+{% set title = "SEO Fields" %}
+{% set fullPageForm = true %}
+
+{% block header %}
+    {{ block('pageTitle') }}
+    {{ block('contextMenu') }}
+    <div class="flex-grow"></div>
+    {{ block('actionButton') }}
+{% endblock %}
+
+{% block contextMenu %}
+    {% include 'seo-fields/_includes/_sites' %}
+{% endblock %}
