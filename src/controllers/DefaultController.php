@@ -4,6 +4,8 @@ namespace studioespresso\seofields\controllers;
 
 use Craft;
 use craft\web\Controller;
+use studioespresso\seofields\models\SeoDefaultsModel;
+use studioespresso\seofields\records\DefaultsRecord;
 use studioespresso\seofields\SeoFields;
 
 class DefaultController extends Controller
@@ -25,6 +27,20 @@ class DefaultController extends Controller
             'sites' => $sites,
             'data' => $data
         ]);
+
+    }
+
+    public function actionSave()
+    {
+        $data = [];
+        $data['titleSeperator'] = Craft::$app->getRequest()->getBodyParam('titleSeperator');
+        $data['defaultSiteTitle'] = Craft::$app->getRequest()->getBodyParam('defaultSiteTitle');
+        $data['siteId'] = Craft::$app->sites->currentSite->id;
+        $defaultsModel = new SeoDefaultsModel();
+        $defaultsModel->setAttributes($data);
+        SeoFields::$plugin->defaultsService->saveDefaults($defaultsModel, Craft::$app->sites->currentSite->id);
+
+
 
     }
 }

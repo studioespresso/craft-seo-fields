@@ -26,12 +26,35 @@ class DefaultsService extends Component
         return $result;
     }
 
-    public function getDefaultsBySite(Site $site) {
+    public function saveDefaults(SeoDefaultsModel $model, $siteId)
+    {
+        $record = DefaultsRecord::findOne([
+            'siteId' => $siteId
+        ]);
+        
+        if (!$record) {
+            $record = new DefaultsRecord();
+        }
+
+        $record->setAttribute('defaultMeta', $model->toArray());
+        $record->setAttribute('siteId', $model->siteId);
+
+        if ($record->validate()) {
+            $record->save();
+            return true;
+        }
+
+    }
+
+    public function getDefaultsBySite(Site $site)
+    {
         $record = DefaultsRecord::findOne(
             ['siteId' => $site->id]
         );
-        if($record) {
-            return new SeoDefaultsModel($record->getAttributes());
+        if ($record) {
+            $model = new SeoDefaultsModel();
+            $model->setAttributes(json_decode($record->getAttribute("defaultMeta"), true));
+            return $model;
         } else {
             return new SeoDefaultsModel();
         }
