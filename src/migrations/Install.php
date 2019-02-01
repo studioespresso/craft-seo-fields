@@ -52,7 +52,7 @@ class Install extends Migration
                     'id' => $this->primaryKey(),
                     'siteId' => $this->integer(11)->notNull(),
                     'defaultMeta' => $this->text(),
-                    'enableRotos' => $this->boolean(),
+                    'enableRobots' => $this->boolean()->defaultValue(1),
                     'robots' => $this->text(),
                     'dateCreated' => $this->dateTime()->notNull(),
                     'dateUpdated' => $this->dateTime()->notNull(),

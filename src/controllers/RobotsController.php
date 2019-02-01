@@ -31,11 +31,15 @@ class RobotsController extends Controller
     public function actionSave()
     {
         $data = [];
-        $data['titleSeperator'] = Craft::$app->getRequest()->getBodyParam('titleSeperator');
-        $data['defaultSiteTitle'] = Craft::$app->getRequest()->getBodyParam('defaultSiteTitle');
+        if(Craft::$app->getRequest()->getBodyParam('id')) {
+            $model = SeoFields::$plugin->defaultsService->getDataById(Craft::$app->getRequest()->getBodyParam('id'));
+        } else {
+            $model = new SeoDefaultsModel();
+        }
+        $data['enableRobots'] = Craft::$app->getRequest()->getBodyParam('enableRobots');
+        $data['robots'] = Craft::$app->getRequest()->getBodyParam('robots');
         $data['siteId'] = Craft::$app->sites->currentSite->id;
-        $defaultsModel = new SeoDefaultsModel();
-        $defaultsModel->setAttributes($data);
-        SeoFields::$plugin->defaultsService->saveDefaults($defaultsModel, Craft::$app->sites->currentSite->id);
+        $model->setAttributes($data);
+        SeoFields::$plugin->defaultsService->saveDefaults($model, Craft::$app->sites->currentSite->id);
     }
 }

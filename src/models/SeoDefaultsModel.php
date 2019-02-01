@@ -6,6 +6,8 @@ use craft\base\Model;
 
 class SeoDefaultsModel extends Model
 {
+    public $id;
+
     public $defaultSiteTitle;
 
     public $titleSeperator;
@@ -28,7 +30,8 @@ class SeoDefaultsModel extends Model
                     'titleSeperator',
                     'siteId',
                     'enableRobots',
-                    'robots'
+                    'robots',
+                    'id'
                 ],
                 'safe',
             ],

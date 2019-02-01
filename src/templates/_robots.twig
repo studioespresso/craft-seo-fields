@@ -1,9 +1,27 @@
 {# @var craft \craft\web\twig\variables\CraftVariable #}
 {% extends 'seo-fields/_includes/_header' %}
-
 {% import "_includes/forms" as forms %}
+
 {% set selectedSubnavItem = 'robots' %}
 {% set title = 'Robots.txt' %}
+
 {% block content %}
-    <input type="hidden" name="action" value="seo-fields/default/save">
+    {{ actionInput('seo-fields/robots/save') }}
+    {% if data.id is defined %}
+        {{ forms.hidden({
+            name: 'id',
+            value: data.id
+        }) }}
+    {% endif %}
+
+    {{ forms.lightswitchField({
+        label: 'Enable robots.txt'|t('seofields'),
+        instructions: 'Let the plugin handle your robots.txt'|t('seofields'),
+        id: 'enableRobots',
+        name: 'enableRobots',
+        value: 1,
+        on: data.enableRobots is not null ? data.enableRobots : 1 ,
+    }) }}
+    
+    <textarea name="robots" id="robots" cols="30" rows="10">{{ data.robots }}</textarea>
 {% endblock %}
