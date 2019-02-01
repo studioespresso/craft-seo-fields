@@ -12,6 +12,7 @@ namespace studioespresso\seofields;
 
 use Craft;
 use craft\base\Plugin;
+use craft\elements\Entry;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\services\Fields;
@@ -19,6 +20,7 @@ use craft\web\UrlManager;
 use studioespresso\seofields\fields\SeoField;
 use studioespresso\seofields\models\Settings;
 use studioespresso\seofields\services\SeoFieldsService as SeoFieldsServiceService;
+use studioespresso\seofields\variables\SeoFieldsVariable;
 use yii\base\Event;
 
 /**
@@ -71,8 +73,10 @@ class SeoFields extends Plugin
                 // Register our Control Panel routes
                 $event->rules = array_merge($event->rules, [
                     'seo-fields' => 'seo-fields/default/index',
-                    'seo-fields/defaults' => 'seo-fields/default/defaults',
+                    'seo-fields/defaults' => 'seo-fields/default/index',
                     'seo-fields/defaults/<siteHandle:{handle}>' => 'seo-fields/default/defaults',
+                    'seo-fields/robots' => 'seo-fields/robots/index',
+                    'seo-fields/robots/<siteHandle:{handle}>' => 'seo-fields/robots/robots',
                 ]);
             }
         );
@@ -85,7 +89,11 @@ class SeoFields extends Plugin
         // Only show sub-navs the user has permission to view
         $subNavs['defaults'] = [
             'label' => 'Defaults',
-            'url' => 'seo-fields',
+            'url' => 'seo-fields/defaults',
+        ];
+        $subNavs['robots'] = [
+            'label' => 'Robots.txt',
+            'url' => 'seo-fields/robots',
         ];
         $navItem = array_merge($navItem, [
             'subnav' => $subNavs,

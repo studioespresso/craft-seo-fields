@@ -12,6 +12,10 @@ class SeoDefaultsModel extends Model
 
     public $siteId;
 
+    public $enableRobots;
+
+    public $robots;
+
     /**
      * @inheritdoc
      */
@@ -22,7 +26,9 @@ class SeoDefaultsModel extends Model
                 [
                     'defaultSiteTitle',
                     'titleSeperator',
-                    'siteId'
+                    'siteId',
+                    'enableRobots',
+                    'robots'
                 ],
                 'safe',
             ],

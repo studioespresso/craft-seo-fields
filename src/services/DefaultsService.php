@@ -31,12 +31,11 @@ class DefaultsService extends Component
         $record = DefaultsRecord::findOne([
             'siteId' => $siteId
         ]);
-        
+
         if (!$record) {
             $record = new DefaultsRecord();
         }
-
-        $record->setAttribute('defaultMeta', $model->toArray());
+        $record->setAttribute('defaultMeta', $model->toArray(['defaultSiteTitle', 'titleSeperator']));
         $record->setAttribute('siteId', $model->siteId);
 
         if ($record->validate()) {
@@ -46,7 +45,7 @@ class DefaultsService extends Component
 
     }
 
-    public function getDefaultsBySite(Site $site)
+    public function getDataBySite(Site $site)
     {
         $record = DefaultsRecord::findOne(
             ['siteId' => $site->id]

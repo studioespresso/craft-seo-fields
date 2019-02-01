@@ -1,0 +1,9 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{% extends 'seo-fields/_includes/_header' %}
+
+{% import "_includes/forms" as forms %}
+{% set selectedSubnavItem = 'robots' %}
+{% set title = 'Robots.txt' %}
+{% block content %}
+    <input type="hidden" name="action" value="seo-fields/default/save">
+{% endblock %}

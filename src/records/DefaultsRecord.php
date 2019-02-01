@@ -15,6 +15,6 @@ class DefaultsRecord extends ActiveRecord
     // =========================================================================
     public static function tableName()
     {
-        return '{{%seofields_defaults}}';
+        return '{{%seofields_data}}';
     }
 }

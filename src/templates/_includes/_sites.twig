@@ -4,7 +4,7 @@
         <ul class="padded">
             {% for site in craft.app.sites.getAllSites() %}
                 <li>
-                    <a href="/admin/seo-fields/defaults/{{ site.handle }}"
+                    <a href="{{ url('seo-fields/defaults/' ~ site.handle) }}"
                        {% if site.handle == currentSite.handle %}class="sel"{% endif %}>
                         {{ site.name }}
                     </a>

@@ -1,23 +1,12 @@
 {# @var craft \craft\web\twig\variables\CraftVariable #}
-{#
-/**
- * Navigate plugin for Craft CMS 3.x
- *
- * Navigate index.twig
- *
- * @author    Studio Espresso
- * @copyright Copyright (c) 2018 Studio Espresso
- * @link      https://studioespresso.co
- * @package   Navigate
- * @since     0.0.1
- */
-#}
 {% extends 'seo-fields/_includes/_header' %}
+
+{% set title = "SEO Fields" %}
+{% set selectedSubnavItem = 'defaults' %}
 
 {% import "_includes/forms" as forms %}
 {% block content %}
-    <input type="hidden" name="action" value="seo-fields/default/save">
-
+    {{ actionInput('seo-fields/default/save') }}
     {{ forms.textField({
         label: 'Default site title'|t('seofields'),
         id: 'defaultSiteTitle',
