@@ -10,6 +10,7 @@ use studioespresso\seofields\SeoFields;
 
 class RobotsController extends Controller
 {
+    public $allowAnonymous = ['actionRender'];
 
     public function actionIndex()
     {
@@ -41,5 +42,10 @@ class RobotsController extends Controller
         $data['siteId'] = Craft::$app->sites->currentSite->id;
         $model->setAttributes($data);
         SeoFields::$plugin->defaultsService->saveDefaults($model, Craft::$app->sites->currentSite->id);
+    }
+
+    public function actionRender() {
+        $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getCurrentSite());
+        return Craft::$app->getView()->renderString($robots->robots);
     }
 }

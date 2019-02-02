@@ -23,10 +23,9 @@ class DefaultsService extends Component
     // =========================================================================
     public function saveDefaults(SeoDefaultsModel $model, $siteId)
     {
-        $record = DefaultsRecord::findOne([
-            'siteId' => $siteId
-        ]);
-
+        $record = DefaultsRecord::findOne(
+            ['siteId' => $siteId]
+        );
         if (!$record) {
             $record = new DefaultsRecord();
         }
@@ -56,9 +55,7 @@ class DefaultsService extends Component
 
     public function getDataBySite(Site $site)
     {
-        $record = DefaultsRecord::findOne(
-            ['siteId' => $site->id]
-        );
+        $record = $this->getRecordForSite($site);
         if ($record) {
             $model = new SeoDefaultsModel();
             $fields = array_merge(
@@ -73,5 +70,28 @@ class DefaultsService extends Component
         } else {
             return new SeoDefaultsModel();
         }
+    }
+
+    public function getRobotsForSite(Site $site)
+    {
+        $record = $this->getRecordForSite($site);
+        if ($record && !$record->enableRobots) {
+            return false;
+        } else {
+            $model = new SeoDefaultsModel();
+            $fields = [
+                'enableRobots' => $record->enableRobots,
+                'robots' => $record->robots
+            ];
+            $model->setAttributes($fields);
+            return $model;
+        }
+    }
+
+    public function getRecordForSite(Site $site) {
+        $record = DefaultsRecord::findOne(
+            ['siteId' => $site->id]
+        );
+        return $record;
     }
 }
