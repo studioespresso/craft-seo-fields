@@ -38,7 +38,7 @@ class RobotsController extends Controller
             $model = new SeoDefaultsModel();
         }
         $data['enableRobots'] = Craft::$app->getRequest()->getBodyParam('enableRobots');
-        $data['robots'] = Craft::$app->getRequest()->getBodyParam('robots');
+        $data['robots'] = nl2br(Craft::$app->getRequest()->getBodyParam('robots'));
         $data['siteId'] = Craft::$app->sites->currentSite->id;
         $model->setAttributes($data);
         SeoFields::$plugin->defaultsService->saveDefaults($model, Craft::$app->sites->currentSite->id);
