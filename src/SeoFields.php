@@ -68,6 +68,20 @@ class SeoFields extends Plugin
 
         Event::on(
             UrlManager::class,
+            UrlManager::EVENT_REGISTER_SITE_URL_RULES,
+            function (RegisterUrlRulesEvent $event) {
+                $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getCurrentSite());
+
+                if ($robots->enableRobots) {
+                    $event->rules = array_merge($event->rules, [
+                        'robots.txt' => 'seo-fields/robots/render',
+                    ]);
+                }
+            }
+        );
+
+        Event::on(
+            UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
             function (RegisterUrlRulesEvent $event) {
                 // Register our Control Panel routes
