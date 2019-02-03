@@ -3,10 +3,12 @@
 namespace studioespresso\seofields\controllers;
 
 use Craft;
+use craft\helpers\Template;
 use craft\web\Controller;
 use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\records\DefaultsRecord;
 use studioespresso\seofields\SeoFields;
+use yii\helpers\StringHelper;
 
 class RobotsController extends Controller
 {
@@ -46,6 +48,11 @@ class RobotsController extends Controller
 
     public function actionRender() {
         $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getCurrentSite());
-        return Craft::$app->getView()->renderString($robots->robots);
+        $string = Craft::$app->getView()->renderString(Template::raw($robots->robots));
+
+        $headers = Craft::$app->response->headers;
+        $headers->add('Content-Type', 'text/plain; charset=utf-8');
+
+        return $this->asRaw($string);
     }
 }
