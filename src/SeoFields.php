@@ -72,7 +72,7 @@ class SeoFields extends Plugin
             function (RegisterUrlRulesEvent $event) {
                 $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getCurrentSite());
 
-                if ($robots->enableRobots) {
+                if ($robots) {
                     $event->rules = array_merge($event->rules, [
                         'robots.txt' => 'seo-fields/robots/render',
                     ]);
