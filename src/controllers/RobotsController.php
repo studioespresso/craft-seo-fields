@@ -20,13 +20,12 @@ class RobotsController extends Controller
         $this->redirect("seo-fields/robots/$primarySite->handle");
     }
 
-    public function actionRobots($siteHandle = null)
+    public function actionSettings($siteHandle = null)
     {
         $currentSite = Craft::$app->sites->getSiteByHandle($siteHandle);
         Craft::$app->sites->setCurrentSite($currentSite);
         $data = SeoFields::$plugin->defaultsService->getDataBySite($currentSite);
         return $this->renderTemplate('seo-fields/_robots', [
-            'sites' => Craft::$app->sites->getEditableSites(),
             'data' => $data
         ]);
     }

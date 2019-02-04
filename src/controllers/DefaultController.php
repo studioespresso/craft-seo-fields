@@ -23,7 +23,6 @@ class DefaultController extends Controller
         Craft::$app->sites->setCurrentSite($currentSite);
         $data = SeoFields::$plugin->defaultsService->getDataBySite($currentSite);
         return $this->renderTemplate('seo-fields/_defaults', [
-            'sites' => Craft::$app->sites->getEditableSites(),
             'data' => $data
         ]);
 

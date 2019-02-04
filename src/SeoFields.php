@@ -90,7 +90,9 @@ class SeoFields extends Plugin
                     'seo-fields/defaults' => 'seo-fields/default/index',
                     'seo-fields/defaults/<siteHandle:{handle}>' => 'seo-fields/default/defaults',
                     'seo-fields/robots' => 'seo-fields/robots/index',
-                    'seo-fields/robots/<siteHandle:{handle}>' => 'seo-fields/robots/robots',
+                    'seo-fields/robots/<siteHandle:{handle}>' => 'seo-fields/robots/settings',
+                    'seo-fields/sitemap' => 'seo-fields/sitemap/index',
+                    'seo-fields/sitemap/<siteHandle:{handle}>' => 'seo-fields/sitemap/settings',
                 ]);
             }
         );
