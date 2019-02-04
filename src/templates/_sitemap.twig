@@ -1,0 +1,16 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{% extends 'seo-fields/_includes/_header' %}
+{% import "_includes/forms" as forms %}
+
+{% set selectedSubnavItem = 'sitemap' %}
+{% set title = 'Sitemap.xml' %}
+
+{% block content %}
+    {{ actionInput('seo-fields/sitemap/save') }}
+    {% if data.id is defined %}
+        {{ forms.hidden({
+            name: 'id',
+            value: data.id
+        }) }}
+    {% endif %}
+{% endblock %}
