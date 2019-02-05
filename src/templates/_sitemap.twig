@@ -7,8 +7,23 @@
 
 {% block content %}
     {{ actionInput('seo-fields/sitemap/save') }}
-    <h1>Vertical Table</h1>
-
+    <div class="field">
+        <div class="heading">
+            <h2>What is a sitemap?</h2>
+            <div class="instructions">
+                A sitemap is a file where you provide information about the pages, videos, and other files on your site,
+                and the relationships between them. Search engines like Google read this file to more intelligently
+                crawl your site. A sitemap tells the crawler which files you think are important in your site, and also
+                provides valuable information about these files: for example, for pages, when the page was last updated,
+                how often the page is changed, and any alternate language versions of a page.
+            </div>
+        </div>
+    </div>
+    <div class="field">
+        <div class="heading">
+            <h2>Sections</h2>
+        </div>
+    </div>
     <table class="data fullwidth collapsible">
         <thead>
         <tr>
@@ -74,7 +89,8 @@
                 </td>
                 <td>
                     <label for="{{ section.id }}-enabled">
-                            <input type="checkbox" id="{{ section.id }}-enabled" name="data[{{ section.id }}][enabled]"> Enabled?
+                        <input type="checkbox" id="{{ section.id }}-enabled" name="data[{{ section.id }}][enabled]">
+                        Enabled?
                     </label>
                 </td>
             </tr>
