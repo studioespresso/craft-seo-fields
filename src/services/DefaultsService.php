@@ -59,7 +59,7 @@ class DefaultsService extends Component
         if ($record) {
             $model = new SeoDefaultsModel();
             $fields = array_merge(
-                Json::decode($record->getAttribute("defaultMeta")),
+                Json::decode($record->getAttribute("defaultMeta")) ?? [],
                 [
                     'id' => $record->id,
                     'enableRobots' => $record->enableRobots,

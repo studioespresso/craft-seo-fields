@@ -1,0 +1,26 @@
+# robots.txt for {{ siteUrl }}
+
+{% switch craft.app.config.general.env %}
+
+{% case "live" %}
+
+    User-agent: *
+    Disallow: /cpresources/
+    Disallow: /vendor/
+    Disallow: /.env
+
+{% case "local" %}
+
+    # local - disallow all
+
+    User-agent: *
+    Disallow: /
+
+{% default %}
+
+    User-agent: *
+    Disallow: /cpresources/
+    Disallow: /vendor/
+    Disallow: /.env
+
+{% endswitch %}

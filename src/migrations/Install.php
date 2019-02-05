@@ -4,6 +4,7 @@ namespace studioespresso\seofields\migrations;
 
 use Craft;
 use craft\db\Migration;
+use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\records\DefaultsRecord;
 
 /***
@@ -26,6 +27,7 @@ class Install extends Migration
             $this->addForeignKeys();
             // Refresh the db schema caches
             Craft::$app->db->schema->refresh();
+            $this->createSiteDefaults();
         }
 
         return true;
@@ -40,6 +42,20 @@ class Install extends Migration
 
     // Protected Methods
     // =========================================================================
+    protected function createSiteDefaults()
+    {
+        $sites = Craft::$app->getSites()->getAllSiteIds();
+        foreach($sites as $siteId) {
+            $default = new DefaultsRecord();
+            $default->setAttribute('siteId', $siteId);
+            $default->setAttribute('enableRobots', true);
+            $default->setAttribute('robots', file_get_contents(CRAFT_VENDOR_PATH . '/studioespresso/craft-seo-fields/src/templates/_placeholder/_robots.twig'));
+            if($default->validate()) {
+                $default->save();
+            }
+        }
+    }
+
     protected function createTables()
     {
         $tablesCreated = false;
@@ -54,6 +70,7 @@ class Install extends Migration
                     'defaultMeta' => $this->text(),
                     'enableRobots' => $this->boolean()->defaultValue(1),
                     'robots' => $this->text(),
+                    'sitemap' => $this->text(),
                     'dateCreated' => $this->dateTime()->notNull(),
                     'dateUpdated' => $this->dateTime()->notNull(),
                     'uid' => $this->uid(),

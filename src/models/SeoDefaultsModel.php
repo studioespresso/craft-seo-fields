@@ -18,6 +18,8 @@ class SeoDefaultsModel extends Model
 
     public $robots;
 
+    public $sitemap;
+
     /**
      * @inheritdoc
      */
@@ -31,6 +33,7 @@ class SeoDefaultsModel extends Model
                     'siteId',
                     'enableRobots',
                     'robots',
+                    'sitemap',
                     'id'
                 ],
                 'safe',
