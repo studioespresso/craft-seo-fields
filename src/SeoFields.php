@@ -111,6 +111,10 @@ class SeoFields extends Plugin
             'label' => 'Robots.txt',
             'url' => 'seo-fields/robots',
         ];
+        $subNavs['sitemap'] = [
+            'label' => 'Sitemap.xml',
+            'url' => 'seo-fields/sitemap',
+        ];
         $navItem = array_merge($navItem, [
             'subnav' => $subNavs,
         ]);
