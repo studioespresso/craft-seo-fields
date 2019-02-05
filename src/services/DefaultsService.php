@@ -33,6 +33,7 @@ class DefaultsService extends Component
         $record->setAttribute('siteId', $model->siteId);
         $record->setAttribute('enableRobots', $model->enableRobots);
         $record->setAttribute('robots', $model->robots);
+        $record->setAttribute('sitemap', $model->sitemap);
 
         if ($record->validate()) {
             $record->save();
@@ -46,7 +47,10 @@ class DefaultsService extends Component
             ['id' => $id]
         );
         if ($record) {
-            $fields = array_merge(Json::decode($record->getAttribute("defaultMeta")), $record->toArray());
+            $fields = array_merge(
+                Json::decode($record->getAttribute("defaultMeta")) ?? [],
+                $record->toArray()
+            );
             $model = new SeoDefaultsModel();
             $model->setAttributes($fields);
             return $model;

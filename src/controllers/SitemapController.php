@@ -33,6 +33,15 @@ class SitemapController extends Controller
 
     public function actionSave()
     {
-        dd(Craft::$app->getRequest()->getBodyParams());
+        $data = [];
+        if(Craft::$app->getRequest()->getBodyParam('id')) {
+            $model = SeoFields::$plugin->defaultsService->getDataById(Craft::$app->getRequest()->getBodyParam('id'));
+        } else {
+            $model = new SeoDefaultsModel();
+        }
+        $data['sitemap'] = Craft::$app->getRequest()->getBodyParam('data');
+        $data['siteId'] = Craft::$app->sites->currentSite->id;
+        $model->setAttributes($data);
+        SeoFields::$plugin->defaultsService->saveDefaults($model, Craft::$app->sites->currentSite->id);
     }
 }

@@ -7,6 +7,12 @@
 
 {% block content %}
     {{ actionInput('seo-fields/sitemap/save') }}
+    {% if data.id is defined %}
+        {{ forms.hidden({
+            name: 'id',
+            value: data.id
+        }) }}
+    {% endif %}
     <div class="field">
         <div class="heading">
             <h2>What is a sitemap?</h2>
