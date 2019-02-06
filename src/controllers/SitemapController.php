@@ -52,8 +52,7 @@ class SitemapController extends Controller
         if (!$data) {
             throw new NotFoundHttpException(Craft::t('app', 'Page not found'), 404);
         }
-
-        dd($data);
+        $xml = SeoFields::$plugin->sitemapSerivce->getSitemap($data);
 
     }
 }

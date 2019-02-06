@@ -23,14 +23,26 @@ class SitemapService extends Component
     {
         $data = SeoFields::$plugin->defaultsService->getRecordForSite($site);
         $sitemapSettings = Json::decode($data->sitemap);
-        $shouldRender = array_filter($sitemapSettings, function ($section) {
-            return isset($section['enabled']) ? true : false;
-        });
 
-        if($shouldRender) {
+        $shouldRender = array_filter($sitemapSettings, function ($section) use ($sitemapSettings) {
+            if (isset($sitemapSettings[$section]['enabled'])) {
+                $site = Craft::$app->getSites()->getCurrentSite();
+                $sectionSites = Craft::$app->getSections()->getSectionById($section)->siteSettings;
+                if (isset($sectionSites[$site->id])) {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        }, ARRAY_FILTER_USE_KEY);
+        if ($shouldRender) {
             return $data;
         } else {
             return false;
         }
+    }
+
+    public function getSitemap($data)
+    {
     }
 }
