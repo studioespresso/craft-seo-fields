@@ -9,6 +9,7 @@ use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\records\DefaultsRecord;
 use studioespresso\seofields\SeoFields;
 use yii\helpers\StringHelper;
+use yii\web\NotFoundHttpException;
 
 class SitemapController extends Controller
 {
@@ -34,7 +35,7 @@ class SitemapController extends Controller
     public function actionSave()
     {
         $data = [];
-        if(Craft::$app->getRequest()->getBodyParam('id')) {
+        if (Craft::$app->getRequest()->getBodyParam('id')) {
             $model = SeoFields::$plugin->defaultsService->getDataById(Craft::$app->getRequest()->getBodyParam('id'));
         } else {
             $model = new SeoDefaultsModel();
@@ -43,5 +44,16 @@ class SitemapController extends Controller
         $data['siteId'] = Craft::$app->sites->currentSite->id;
         $model->setAttributes($data);
         SeoFields::$plugin->defaultsService->saveDefaults($model, Craft::$app->sites->currentSite->id);
+    }
+
+    public function actionRender()
+    {
+        $data = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());
+        if (!$data) {
+            throw new NotFoundHttpException(Craft::t('app', 'Page not found'), 404);
+        }
+
+        dd($data);
+
     }
 }

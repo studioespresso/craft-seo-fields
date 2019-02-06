@@ -19,7 +19,9 @@ use craft\services\Fields;
 use craft\web\UrlManager;
 use studioespresso\seofields\fields\SeoField;
 use studioespresso\seofields\models\Settings;
+use studioespresso\seofields\services\DefaultsService;
 use studioespresso\seofields\services\SeoFieldsService as SeoFieldsServiceService;
+use studioespresso\seofields\services\SitemapService;
 use studioespresso\seofields\variables\SeoFieldsVariable;
 use yii\base\Event;
 
@@ -31,6 +33,8 @@ use yii\base\Event;
  * @since     1.0.0
  *
  * @property  SeoFieldsServiceService $seoFieldsService
+ * @property  SitemapService $sitemapSerivce
+ * @property  DefaultsService $defaultsService
  * @method    Settings getSettings()
  */
 class SeoFields extends Plugin
@@ -77,6 +81,10 @@ class SeoFields extends Plugin
                         'robots.txt' => 'seo-fields/robots/render',
                     ]);
                 }
+
+                $event->rules = array_merge($event->rules, [
+                  'sitemap.xml' => 'seo-fields/sitemap/render'
+                ]);
             }
         );
 
