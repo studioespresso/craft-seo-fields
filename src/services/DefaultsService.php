@@ -67,7 +67,8 @@ class DefaultsService extends Component
                 [
                     'id' => $record->id,
                     'enableRobots' => $record->enableRobots,
-                    'robots' => $record->robots
+                    'robots' => $record->robots,
+                    'sitemap' => $record->sitemap
                 ]);
             $model->setAttributes($fields);
             return $model;
