@@ -5,6 +5,13 @@
 {% set selectedSubnavItem = 'sitemap' %}
 {% set title = 'Sitemap.xml' %}
 
+{% block contextMenu %}
+    {% if selectedSubnavItem == 'defaults' or sitemapPerSite %}
+        {% include 'seo-fields/_includes/_sites' %}
+    {% endif %}
+{% endblock %}
+
+
 {% block content %}
     {{ actionInput('seo-fields/sitemap/save') }}
     {% if data.id is defined %}

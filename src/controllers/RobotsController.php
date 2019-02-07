@@ -26,14 +26,15 @@ class RobotsController extends Controller
         Craft::$app->sites->setCurrentSite($currentSite);
         $data = SeoFields::$plugin->defaultsService->getDataBySite($currentSite);
         return $this->renderTemplate('seo-fields/_robots', [
-            'data' => $data
+            'data' => $data,
+            'robotsPerSite' => SeoFields::$plugin->getSettings()->robotsPerSite
         ]);
     }
 
     public function actionSave()
     {
         $data = [];
-        if(Craft::$app->getRequest()->getBodyParam('id')) {
+        if (Craft::$app->getRequest()->getBodyParam('id')) {
             $model = SeoFields::$plugin->defaultsService->getDataById(Craft::$app->getRequest()->getBodyParam('id'));
         } else {
             $model = new SeoDefaultsModel();
@@ -45,7 +46,8 @@ class RobotsController extends Controller
         SeoFields::$plugin->defaultsService->saveDefaults($model, Craft::$app->sites->currentSite->id);
     }
 
-    public function actionRender() {
+    public function actionRender()
+    {
         $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getCurrentSite());
         $string = Craft::$app->getView()->renderString(Template::raw($robots->robots));
 

@@ -5,6 +5,13 @@
 {% set selectedSubnavItem = 'robots' %}
 {% set title = 'Robots.txt' %}
 
+{% block contextMenu %}
+    {{ d(robotsPerSite) }}
+    {% if selectedSubnavItem == 'defaults' or robotsPerSite %}
+        {% include 'seo-fields/_includes/_sites' %}
+    {% endif %}
+{% endblock %}
+
 {% block content %}
     {{ actionInput('seo-fields/robots/save') }}
     {% if data.id is defined %}

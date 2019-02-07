@@ -29,6 +29,7 @@ class SitemapController extends Controller
         $sections = Craft::$app->getSections()->getAllSections();
         return $this->renderTemplate('seo-fields/_sitemap', [
             'data' => $data,
+            'sitemapPerSite' => SeoFields::$plugin->getSettings()->sitemapPerSite
         ]);
     }
 

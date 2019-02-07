@@ -23,6 +23,10 @@ class Settings extends Model
     // =========================================================================
     public $titleSeperator = '-';
 
+    public $robotsPerSite = false;
+
+    public $sitemapPerSite = false;
+
     // Public Methods
     // =========================================================================
 
@@ -39,7 +43,7 @@ class Settings extends Model
     public function rules()
     {
         return [
-            ['titleSeperator', 'string'],
+            ['titleSeperator', 'string']
         ];
     }
 }

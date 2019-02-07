@@ -5,6 +5,13 @@
 {% set selectedSubnavItem = 'defaults' %}
 
 {% import "_includes/forms" as forms %}
+
+{% block contextMenu %}
+    {% if selectedSubnavItem == 'defaults' %}
+        {% include 'seo-fields/_includes/_sites' %}
+    {% endif %}
+{% endblock %}
+
 {% block content %}
     {{ actionInput('seo-fields/default/save') }}
     {{ forms.textField({
