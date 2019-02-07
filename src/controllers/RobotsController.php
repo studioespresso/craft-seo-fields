@@ -48,7 +48,11 @@ class RobotsController extends Controller
 
     public function actionRender()
     {
-        $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getCurrentSite());
+        if(SeoFields::$plugin->getSettings()->robotsPerSite) {
+            $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getCurrentSite());
+        } else {
+            $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getPrimarySite());
+        }
         $string = Craft::$app->getView()->renderString(Template::raw($robots->robots));
 
         $headers = Craft::$app->response->headers;

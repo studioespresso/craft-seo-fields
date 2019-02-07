@@ -49,7 +49,11 @@ class SitemapController extends Controller
 
     public function actionRender()
     {
-        $data = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());
+        if(SeoFields::$plugin->getSettings()->sitemapPerSite) {
+            $data = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());
+        } else {
+            $data = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getPrimarySite());
+        }
         if (!$data) {
             throw new NotFoundHttpException(Craft::t('app', 'Page not found'), 404);
         }
