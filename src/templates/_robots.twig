@@ -6,7 +6,6 @@
 {% set title = 'Robots.txt' %}
 
 {% block contextMenu %}
-    {{ d(robotsPerSite) }}
     {% if selectedSubnavItem == 'defaults' or robotsPerSite %}
         {% include 'seo-fields/_includes/_sites' %}
     {% endif %}
