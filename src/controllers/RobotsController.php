@@ -40,7 +40,7 @@ class RobotsController extends Controller
         }
         $data['enableRobots'] = Craft::$app->getRequest()->getBodyParam('enableRobots');
         $data['robots'] = Craft::$app->getRequest()->getBodyParam('robots');
-        $data['siteId'] = Craft::$app->sites->currentSite->id;
+        $data['siteId'] = Craft::$app->getRequest()->getBodyParam('siteId');
         $model->setAttributes($data);
         SeoFields::$plugin->defaultsService->saveDefaults($model, Craft::$app->sites->currentSite->id);
     }

@@ -31,14 +31,11 @@ class DefaultController extends Controller
     public function actionSave()
     {
         $data = [];
+        $data['siteId'] = Craft::$app->getRequest()->getBodyParam('siteId');
         $data['titleSeperator'] = Craft::$app->getRequest()->getBodyParam('titleSeperator');
         $data['defaultSiteTitle'] = Craft::$app->getRequest()->getBodyParam('defaultSiteTitle');
-        $data['siteId'] = Craft::$app->sites->currentSite->id;
         $defaultsModel = new SeoDefaultsModel();
         $defaultsModel->setAttributes($data);
         SeoFields::$plugin->defaultsService->saveDefaults($defaultsModel, Craft::$app->sites->currentSite->id);
-
-
-
     }
 }

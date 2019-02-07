@@ -41,7 +41,7 @@ class SitemapController extends Controller
             $model = new SeoDefaultsModel();
         }
         $data['sitemap'] = Craft::$app->getRequest()->getBodyParam('data');
-        $data['siteId'] = Craft::$app->sites->currentSite->id;
+        $data['siteId'] = Craft::$app->getRequest()->getBodyParam('siteId');
         $model->setAttributes($data);
         SeoFields::$plugin->defaultsService->saveDefaults($model, Craft::$app->sites->currentSite->id);
     }
