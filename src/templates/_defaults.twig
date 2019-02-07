@@ -10,10 +10,14 @@
     {% if selectedSubnavItem == 'defaults' %}
         {% include 'seo-fields/_includes/_sites' %}
     {% endif %}
+
 {% endblock %}
 
 {% block content %}
     {{ actionInput('seo-fields/default/save') }}
+
+    <input type="hidden" name="siteId" value="{{ currentSite.id }}">
+
     {{ forms.textField({
         label: 'Default site title'|t('seofields'),
         id: 'defaultSiteTitle',

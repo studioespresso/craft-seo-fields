@@ -12,6 +12,10 @@
 {% endblock %}
 
 {% block content %}
+    {% if robotsPerSite %}
+        <input type="hidden" name="siteId" value="{{ currentSite.id }}">
+    {% endif %}
+    
     {{ actionInput('seo-fields/robots/save') }}
     {% if data.id is defined %}
         {{ forms.hidden({

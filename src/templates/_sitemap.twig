@@ -11,8 +11,11 @@
     {% endif %}
 {% endblock %}
 
-
 {% block content %}
+    {% if sitemapPerSite %}
+        <input type="hidden" name="siteId" value="{{ currentSite.id }}">
+    {% endif %}
+
     {{ actionInput('seo-fields/sitemap/save') }}
     {% if data.id is defined %}
         {{ forms.hidden({
