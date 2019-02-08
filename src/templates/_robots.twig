@@ -2,6 +2,8 @@
 {% extends 'seo-fields/_includes/_header' %}
 {% import "_includes/forms" as forms %}
 
+{% do view.registerAssetBundle("studioespresso\\seofields\\assetbundles\\robots\\RobotsAssets") %}
+
 {% set selectedSubnavItem = 'robots' %}
 {% set title = 'Robots.txt' %}
 
@@ -33,5 +35,14 @@
         on: data.enableRobots is not null ? data.enableRobots,
     }) }}
     
-    <textarea name="robots" id="robots" cols="30" rows="10">{{ data.robots }}</textarea>
+    <textarea name="robots" id="robots" cols="30" rows="40">{{ data.robots }}</textarea>
+    {% js %}
+        var editor = CodeMirror.fromTextArea(document.getElementById('robots'), {
+        lineNumbers: true,
+        matchBrackets: false,
+        mode: 'twig',
+        indentUnit: 4,
+        viewportMargin: 8
+        });
+    {% endjs %}
 {% endblock %}
