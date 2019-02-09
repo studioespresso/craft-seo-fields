@@ -23,7 +23,9 @@ class SitemapService extends Component
     {
         $data = SeoFields::$plugin->defaultsService->getRecordForSite($site);
         $sitemapSettings = Json::decode($data->sitemap);
-
+        if(!$sitemapSettings) {
+            return false;
+        }
         $shouldRender = array_filter($sitemapSettings, function ($section) use ($sitemapSettings) {
             if (isset($sitemapSettings[$section]['enabled'])) {
                 $site = Craft::$app->getSites()->getCurrentSite();
