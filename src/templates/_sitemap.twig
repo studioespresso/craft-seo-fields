@@ -61,8 +61,10 @@
         </tr>
         </thead>
         <tbody>
+
+        {% set sitemapSettings = data.sitemap|json_decode %}
         {% for section in craft.app.sections.getAllSections() %}
-            {% set settings = attribute(data.sitemap|json_decode, section.id) ?? []  %}
+            {% set settings = attribute(sitemapSettings.sections, section.id) ?? []  %}
             <tr>
                 <th>
                     {{ section.name }}
@@ -71,7 +73,7 @@
                     <div class="field">
                         <div class="input ltr">
                             <div class="select">
-                                <select name="data[{{ section.id }}][changefreq]" id="">
+                                <select name="data[sections][{{ section.id }}][changefreq]" id="">
                                     <option value="always" {% if settings|length and settings.changefreq == 'always' %}selected{% endif %}>always</option>
                                     <option value="hourly" {% if settings|length and settings.changefreq == 'hourly' %}selected{% endif %}>hourly</option>
                                     <option value="daily" {% if settings|length and settings.changefreq == 'daily' %}selected{% endif %}>daily</option>
@@ -88,7 +90,7 @@
                     <div class="field">
                         <div class="input ltr">
                             <div class="select">
-                                <select name="data[{{ section.id }}][priority]">
+                                <select name="data[sections][{{ section.id }}][priority]">
                                     <option value="1.0" {% if settings|length and settings.priority == '1.0' %}selected{% endif %}>1.0 (High)</option>
                                     <option value="0.9" {% if settings|length and settings.priority == '0.9' %}selected{% endif %}>0.9</option>
                                     <option value="0.8" {% if settings|length and settings.priority == '0.8' %}selected{% endif %}>0.8</option>
@@ -107,7 +109,7 @@
                 </td>
                 <td>
                     <label for="{{ section.id }}-enabled">
-                        <input type="checkbox" id="{{ section.id }}-enabled" name="data[{{ section.id }}][enabled]" {% if settings.enabled is defined %}checked{% endif %}>
+                        <input type="checkbox" id="{{ section.id }}-enabled" name="data[sections][{{ section.id }}][enabled]" {% if settings.enabled is defined %}checked{% endif %}>
                         Enabled?
                     </label>
                 </td>
