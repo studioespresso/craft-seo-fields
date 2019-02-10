@@ -26,7 +26,6 @@ class SitemapController extends Controller
         $currentSite = Craft::$app->sites->getSiteByHandle($siteHandle);
         Craft::$app->sites->setCurrentSite($currentSite);
         $data = SeoFields::$plugin->defaultsService->getDataBySite($currentSite);
-        $sections = Craft::$app->getSections()->getAllSections();
         return $this->renderTemplate('seo-fields/_sitemap', [
             'data' => $data,
             'sitemapPerSite' => SeoFields::$plugin->getSettings()->sitemapPerSite
@@ -49,7 +48,7 @@ class SitemapController extends Controller
 
     public function actionRender()
     {
-        if(SeoFields::$plugin->getSettings()->sitemapPerSite) {
+        if (SeoFields::$plugin->getSettings()->sitemapPerSite) {
             $data = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());
         } else {
             $data = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getPrimarySite());
