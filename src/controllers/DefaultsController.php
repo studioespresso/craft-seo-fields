@@ -8,7 +8,7 @@ use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\records\DefaultsRecord;
 use studioespresso\seofields\SeoFields;
 
-class DefaultController extends Controller
+class DefaultsController extends Controller
 {
 
     public function actionIndex()
@@ -17,7 +17,7 @@ class DefaultController extends Controller
         $this->redirect("seo-fields/defaults/$primarySite->handle");
     }
 
-    public function actionDefaults($siteHandle = null)
+    public function actionSettings($siteHandle = null)
     {
         $currentSite = Craft::$app->sites->getSiteByHandle($siteHandle);
         Craft::$app->sites->setCurrentSite($currentSite);

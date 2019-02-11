@@ -95,12 +95,8 @@ class SeoFields extends Plugin
                 // Register our Control Panel routes
                 $event->rules = array_merge($event->rules, [
                     'seo-fields' => 'seo-fields/default/index',
-                    'seo-fields/defaults' => 'seo-fields/default/index',
-                    'seo-fields/defaults/<siteHandle:{handle}>' => 'seo-fields/default/defaults',
-                    'seo-fields/robots' => 'seo-fields/robots/index',
-                    'seo-fields/robots/<siteHandle:{handle}>' => 'seo-fields/robots/settings',
-                    'seo-fields/sitemap' => 'seo-fields/sitemap/index',
-                    'seo-fields/sitemap/<siteHandle:{handle}>' => 'seo-fields/sitemap/settings',
+                    'seo-fields/<controller:(defaults|robots|sitemap)>' => 'seo-fields/<controller>/index',
+                    'seo-fields/<controller:(defaults|robots|sitemap)>/<siteHandle:{handle}>' => 'seo-fields/<controller>/settings',
                 ]);
             }
         );
