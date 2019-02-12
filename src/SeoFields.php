@@ -94,7 +94,7 @@ class SeoFields extends Plugin
             function (RegisterUrlRulesEvent $event) {
                 // Register our Control Panel routes
                 $event->rules = array_merge($event->rules, [
-                    'seo-fields' => 'seo-fields/default/index',
+                    'seo-fields' => 'seo-fields/defaults/index',
                     'seo-fields/<controller:(defaults|robots|sitemap)>' => 'seo-fields/<controller>/index',
                     'seo-fields/<controller:(defaults|robots|sitemap)>/<siteHandle:{handle}>' => 'seo-fields/<controller>/settings',
                 ]);
