@@ -15,7 +15,9 @@ use craft\base\Plugin;
 use craft\elements\Entry;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
+use craft\events\RegisterUserPermissionsEvent;
 use craft\services\Fields;
+use craft\services\UserPermissions;
 use craft\web\UrlManager;
 use studioespresso\seofields\fields\SeoField;
 use studioespresso\seofields\models\Settings;
@@ -75,15 +77,13 @@ class SeoFields extends Plugin
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
             function (RegisterUrlRulesEvent $event) {
                 $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getCurrentSite());
-
                 if ($robots) {
                     $event->rules = array_merge($event->rules, [
                         'robots.txt' => 'seo-fields/robots/render',
                     ]);
                 }
-
                 $event->rules = array_merge($event->rules, [
-                  'sitemap.xml' => 'seo-fields/sitemap/render'
+                    'sitemap.xml' => 'seo-fields/sitemap/render'
                 ]);
             }
         );
@@ -100,25 +100,52 @@ class SeoFields extends Plugin
                 ]);
             }
         );
+
+        Event::on(
+            UserPermissions::class,
+            UserPermissions::EVENT_REGISTER_PERMISSIONS,
+            function (RegisterUserPermissionsEvent $event) {
+
+                // Register our custom permissions
+                $event->permissions[Craft::t('seo-fields', 'SEO Fields')] = [
+                    'seo-fields:default' => [
+                        'label' => Craft::t('seo-fields', 'Defaults'),
+                    ],
+                    'seo-fields:robots' => [
+                        'label' => Craft::t('seo-fields', 'Robots'),
+                    ],
+                    'seo-fields:sitemap' => [
+                        'label' => Craft::t('seo-fields', 'Sitemap'),
+                    ],
+                ];
+            }
+        );
     }
 
     public function getCpNavItem()
     {
         $subNavs = [];
         $navItem = parent::getCpNavItem();
+        $currentUser = Craft::$app->getUser()->getIdentity();
         // Only show sub-navs the user has permission to view
-        $subNavs['defaults'] = [
-            'label' => 'Defaults',
-            'url' => 'seo-fields/defaults',
-        ];
-        $subNavs['robots'] = [
-            'label' => 'Robots.txt',
-            'url' => 'seo-fields/robots',
-        ];
-        $subNavs['sitemap'] = [
-            'label' => 'Sitemap.xml',
-            'url' => 'seo-fields/sitemap',
-        ];
+        if ($currentUser->can('seo-fields:defaults')) {
+            $subNavs['defaults'] = [
+                'label' => 'Defaults',
+                'url' => 'seo-fields/defaults',
+            ];
+        }
+        if ($currentUser->can('seo-fields:robots')) {
+            $subNavs['robots'] = [
+                'label' => 'Robots.txt',
+                'url' => 'seo-fields/robots',
+            ];
+        }
+        if ($currentUser->can('seo-fields:sitemap')) {
+            $subNavs['sitemap'] = [
+                'label' => 'Sitemap.xml',
+                'url' => 'seo-fields/sitemap',
+            ];
+        }
         $navItem = array_merge($navItem, [
             'subnav' => $subNavs,
         ]);
