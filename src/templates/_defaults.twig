@@ -19,7 +19,7 @@
     <input type="hidden" name="siteId" value="{{ currentSite.id }}">
 
     {{ forms.textField({
-        label: 'Default site title'|t('seofields'),
+        label: 'Default site title'|t('seo-fields'),
         id: 'defaultSiteTitle',
         name: 'defaultSiteTitle',
         size: 80,
@@ -27,8 +27,8 @@
     }}
 
     {{ forms.textField({
-        label: 'Title seperator'|t('seofields'),
-        instructions: 'A character used to seperate your `<title>` from the site name'|t('seofields'),
+        label: 'Title seperator'|t('seo-fields'),
+        instructions: 'A character used to seperate your `<title>` from the site name'|t('seo-fields'),
         id: 'titleSeperator',
         name: 'titleSeperator',
         size: 3,
