@@ -1,5 +1,16 @@
 {# @var craft \craft\web\twig\variables\CraftVariable #}
-{% extends 'seo-fields/_includes/_header' %}
+{% extends "_layouts/cp" %}
+
+{% set fullPageForm = true %}
+
+{% block header %}
+    {{ block('pageTitle') }}
+    {{ block('contextMenu') }}
+    <div class="flex-grow"></div>
+    <a href="{{ parseEnv(currentSite.baseUrl) }}/sitemap.xml" class="btn sharebtn" rel="noopener" target="_blank" style="margin-right: 10px;">{{ 'View sitemap.xml'|t('seo-fields') }}</a>
+    {{ block('actionButton') }}
+{% endblock %}
+
 {% import "_includes/forms" as forms %}
 
 {% set selectedSubnavItem = 'sitemap' %}
@@ -12,11 +23,11 @@
 {% endblock %}
 
 {% block content %}
+    {{ actionInput('seo-fields/sitemap/save') }}
     {% if sitemapPerSite %}
         <input type="hidden" name="siteId" value="{{ currentSite.id }}">
     {% endif %}
 
-    {{ actionInput('seo-fields/sitemap/save') }}
     {% if data.id is defined %}
         {{ forms.hidden({
             name: 'id',
