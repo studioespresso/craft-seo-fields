@@ -8,8 +8,8 @@
 <table class="data fullwidth collapsible">
     <thead>
     <tr>
-        <th>Product type</th>
-        <th>Update frequency
+        <th>{{ 'Product type'|t('seo-fields') }}</th>
+        <th>{{ 'Update frequency'|t('seo-fields') }}
             <span class="info"></span>
         </th>
         <th>Priority
@@ -18,7 +18,7 @@
             </span>
         </th>
         <th>
-            Enabled?
+            {{ 'Enabled?'|t('seo-fields') }}
         </th>
     </tr>
     </thead>
@@ -29,9 +29,7 @@
     {% for productType in craft.commerce.productTypes.getAllProductTypes %}
         {% set settings = attribute(sitemapSettings.products, productType.id) ?? [] %}
         <tr>
-            <th>
-                {{ productType.name }}
-            </th>
+            <th>{{ productType.name }}</th>
             <td>
                 <div class="field">
                     <div class="input ltr">
@@ -39,31 +37,31 @@
                             <select name="data[products][{{ productType.id }}][changefreq]" id="">
                                 <option value="always"
                                         {% if settings|length and settings.changefreq == 'always' %}selected{% endif %}>
-                                    always
+                                    {{ 'always'|t('seo-fields') }}
                                 </option>
                                 <option value="hourly"
                                         {% if settings|length and settings.changefreq == 'hourly' %}selected{% endif %}>
-                                    hourly
+                                    {{ 'hourly'|t('seo-fields') }}
                                 </option>
                                 <option value="daily"
                                         {% if settings|length and settings.changefreq == 'daily' %}selected{% endif %}>
-                                    daily
+                                    {{ 'daily'|t('seo-fields') }}
                                 </option>
                                 <option value="weekly"
                                         {% if settings|length and settings.changefreq == 'weekly' %}selected{% endif %}>
-                                    weekly
+                                    {{ 'weekly'|t('seo-fields') }}
                                 </option>
                                 <option value="monthly"
                                         {% if settings|length and settings.changefreq == 'monthly' %}selected{% endif %}>
-                                    monthly
+                                    {{ 'monthly'|t('seo-fields') }}
                                 </option>
                                 <option value="yearly"
                                         {% if settings|length and settings.changefreq == 'yearly' %}selected{% endif %}>
-                                    yearly
+                                    {{ 'yearly'|t('seo-fields') }}
                                 </option>
                                 <option value="never"
                                         {% if settings|length and settings.changefreq == 'never' %}selected{% endif %}>
-                                    never
+                                    {{ 'never'|t('seo-fields') }}
                                 </option>
                             </select>
                         </div>
@@ -76,40 +74,48 @@
                         <div class="select">
                             <select name="data[products][{{ productType.id }}][priority]">
                                 <option value="1.0"
-                                        {% if settings|length and settings.priority == '1.0' %}selected{% endif %}>1.0
-                                    (High)
+                                        {% if settings|length and settings.priority == '1.0' %}selected{% endif %}>
+                                    {{ '1.0 (High)'|t('seo-fields') }}
                                 </option>
                                 <option value="0.9"
-                                        {% if settings|length and settings.priority == '0.9' %}selected{% endif %}>0.9
+                                        {% if settings|length and settings.priority == '0.9' %}selected{% endif %}>
+                                    0.9
                                 </option>
                                 <option value="0.8"
-                                        {% if settings|length and settings.priority == '0.8' %}selected{% endif %}>0.8
+                                        {% if settings|length and settings.priority == '0.8' %}selected{% endif %}>
+                                    0.8
                                 </option>
                                 <option value="0.7"
-                                        {% if settings|length and settings.priority == '0.7' %}selected{% endif %}>0.7
+                                        {% if settings|length and settings.priority == '0.7' %}selected{% endif %}>
+                                    0.7
                                 </option>
                                 <option value="0.6"
-                                        {% if settings|length and settings.priority == '0.6' %}selected{% endif %}>0.6
+                                        {% if settings|length and settings.priority == '0.6' %}selected{% endif %}>
+                                    0.6
                                 </option>
                                 <option value="0.5"
                                         {% if settings|length and settings.priority == '0.5' %}selected{% endif %}
-                                        selected="">0.5 (Default)
+                                        selected="">{{ '0.5 (Default)'|t('seo-fields') }}
                                 </option>
                                 <option value="0.4"
-                                        {% if settings|length and settings.priority == '0.4' %}selected{% endif %}>0.4
+                                        {% if settings|length and settings.priority == '0.4' %}selected{% endif %}>
+                                    0.4
                                 </option>
                                 <option value="0.3"
-                                        {% if settings|length and settings.priority == '0.3' %}selected{% endif %}>0.3
+                                        {% if settings|length and settings.priority == '0.3' %}selected{% endif %}>
+                                    0.3
                                 </option>
                                 <option value="0.2"
-                                        {% if settings|length and settings.priority == '0.2' %}selected{% endif %}>0.2
+                                        {% if settings|length and settings.priority == '0.2' %}selected{% endif %}>
+                                    0.2
                                 </option>
                                 <option value="0.1"
-                                        {% if settings|length and settings.priority == '0.1' %}selected{% endif %}>0.1
+                                        {% if settings|length and settings.priority == '0.1' %}selected{% endif %}>
+                                    0.1
                                 </option>
                                 <option value="0.0"
-                                        {% if settings|length and settings.priority == '0.0' %}selected{% endif %}>0.0
-                                    (Low)
+                                        {% if settings|length and settings.priority == '0.0' %}selected{% endif %}>
+                                    {{ '0.0 (Low)'|t('seo-fields') }}
                                 </option>
                             </select>
                         </div>
@@ -121,7 +127,7 @@
                     <input type="checkbox" id="{{ productType.id }}-enabled"
                            name="data[products][{{ productType.id }}][enabled]"
                            {% if settings.enabled is defined %}checked{% endif %}>
-                    Enabled?
+                    {{ 'Enabled?'|t('seo-fields') }}
                 </label>
             </td>
         </tr>
