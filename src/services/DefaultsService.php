@@ -79,6 +79,10 @@ class DefaultsService extends Component
 
     public function getRobotsForSite(Site $site)
     {
+        if(!SeoFields::$plugin->getSettings()->robotsPerSite) {
+            $site = Craft::$app->getSites()->getPrimarySite();
+        }
+
         $record = $this->getRecordForSite($site);
         if ($record && !$record->enableRobots) {
             return false;
