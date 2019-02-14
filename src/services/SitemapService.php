@@ -60,9 +60,12 @@ class SitemapService extends Component
                 }
             }, ARRAY_FILTER_USE_KEY);
         }
-
+        
         if ($shouldRenderSections || $shouldRenderProducts) {
-            return $data;
+            return [
+                'products' => $shouldRenderProducts,
+                'sections' => $shouldRenderSections
+            ];
         } else {
             return false;
         }
