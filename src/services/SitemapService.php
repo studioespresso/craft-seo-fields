@@ -3,6 +3,8 @@
 namespace studioespresso\seofields\services;
 
 use craft\base\Model;
+use craft\commerce\models\ProductTypeSite;
+use craft\commerce\services\ProductTypes;
 use craft\helpers\Json;
 use craft\models\Site;
 use studioespresso\seofields\models\SeoDefaultsModel;
@@ -23,21 +25,43 @@ class SitemapService extends Component
     {
         $data = SeoFields::$plugin->defaultsService->getRecordForSite($site);
         $sitemapSettings = Json::decode($data->sitemap);
-        if(!$sitemapSettings) {
+        if (!$sitemapSettings) {
             return false;
         }
-        $shouldRender = array_filter($sitemapSettings, function ($section) use ($sitemapSettings) {
-            if (isset($sitemapSettings[$section]['enabled'])) {
-                $site = Craft::$app->getSites()->getCurrentSite();
-                $sectionSites = Craft::$app->getSections()->getSectionById($section)->siteSettings;
-                if (isset($sectionSites[$site->id])) {
-                    return true;
+
+        if (isset($sitemapSettings['sections'])) {
+            $shouldRenderSections = array_filter($sitemapSettings['sections'], function ($section) use ($sitemapSettings) {
+                if (isset($sitemapSettings['sections'][$section]['enabled'])) {
+                    $site = Craft::$app->getSites()->getCurrentSite();
+
+                    $sectionSites = Craft::$app->getSections()->getSectionById($section)->siteSettings;
+                    if (isset($sectionSites[$site->id])) {
+                        return true;
+                    }
+                } else {
+                    return false;
                 }
-            } else {
-                return false;
-            }
-        }, ARRAY_FILTER_USE_KEY);
-        if ($shouldRender) {
+            }, ARRAY_FILTER_USE_KEY);
+        }
+
+        if (isset($sitemapSettings['products'])) {
+            $shouldRenderProducts = array_filter($sitemapSettings['products'], function ($productType) use ($sitemapSettings) {
+                if (isset($sitemapSettings['products'][$productType]['enabled'])) {
+                    $productTypeService = new ProductTypes();
+                    $site = Craft::$app->getSites()->getCurrentSite();
+                    foreach ($productTypeService->getProductTypeSites($productType) as $productTypeSite) {
+                        if ($productTypeSite->siteId == $site->id) {
+                            return true;
+                        }
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }, ARRAY_FILTER_USE_KEY);
+        }
+
+        if ($shouldRenderSections || $shouldRenderProducts) {
             return $data;
         } else {
             return false;
