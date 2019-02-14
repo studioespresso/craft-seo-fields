@@ -123,8 +123,8 @@
                     </div>
                 </td>
                 <td>
-                    <label for="{{ section.id }}-enabled">
-                        <input type="checkbox" id="{{ section.id }}-enabled"
+                    <label for="section-{{ section.id }}-enabled">
+                        <input type="checkbox" id="section-{{ section.id }}-enabled"
                                name="data[sections][{{ section.id }}][enabled]"
                                {% if settings.enabled is defined %}checked{% endif %}>
                         {{ 'Enabled?'|t('seo-fields') }}
