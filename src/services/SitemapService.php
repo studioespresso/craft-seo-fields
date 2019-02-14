@@ -35,7 +35,8 @@ class SitemapService extends Component
                     $site = Craft::$app->getSites()->getCurrentSite();
 
                     $sectionSites = Craft::$app->getSections()->getSectionById($section)->siteSettings;
-                    if (isset($sectionSites[$site->id])) {
+
+                    if (isset($sectionSites[$site->id]) && $sectionSites[$site->id]->hasUrls) {
                         return true;
                     }
                 } else {
@@ -50,7 +51,7 @@ class SitemapService extends Component
                     $productTypeService = new ProductTypes();
                     $site = Craft::$app->getSites()->getCurrentSite();
                     foreach ($productTypeService->getProductTypeSites($productType) as $productTypeSite) {
-                        if ($productTypeSite->siteId == $site->id) {
+                        if ($productTypeSite->siteId == $site->id && $productTypeSite->hasUrls) {
                             return true;
                         }
                         return false;
@@ -60,7 +61,7 @@ class SitemapService extends Component
                 }
             }, ARRAY_FILTER_USE_KEY);
         }
-        
+
         if ($shouldRenderSections || $shouldRenderProducts) {
             return [
                 'products' => $shouldRenderProducts,
