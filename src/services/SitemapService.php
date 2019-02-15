@@ -33,9 +33,7 @@ class SitemapService extends Component
             $shouldRenderSections = array_filter($sitemapSettings['sections'], function ($section) use ($sitemapSettings) {
                 if (isset($sitemapSettings['sections'][$section]['enabled'])) {
                     $site = Craft::$app->getSites()->getCurrentSite();
-
                     $sectionSites = Craft::$app->getSections()->getSectionById($section)->siteSettings;
-
                     if (isset($sectionSites[$site->id]) && $sectionSites[$site->id]->hasUrls) {
                         return true;
                     }
@@ -74,5 +72,10 @@ class SitemapService extends Component
 
     public function getSitemap($data)
     {
+        $xml[] = '<?xml version="1.0" encoding="UTF-8"?>';
+
+
+        $xml = implode('', $xml);
+        return $xml;
     }
 }

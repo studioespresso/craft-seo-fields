@@ -58,5 +58,9 @@ class SitemapController extends Controller
         }
         $xml = SeoFields::$plugin->sitemapSerivce->getSitemap($data);
 
+        $headers = Craft::$app->response->headers;
+        $headers->add('Content-Type', 'text/xml; charset=utf-8');
+        $this->asRaw($xml);
+
     }
 }
