@@ -73,12 +73,33 @@ class SitemapService extends Component
         }
     }
 
-    public function getSitemap($data)
+    public function getSitemapIndex($data)
     {
         $xml[] = '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml[] = '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        if (isset($data['sections'])) {
+            $xml[] = $this->_addSectionsToIndex($data['sections']);
+        }
 
-
+        $xml[] = '</sitemapindex>';
         $xml = implode('', $xml);
         return $xml;
+    }
+
+    private function _addSectionsToIndex($sections)
+    {
+        $data = [];
+        foreach ($sections as $id => $settings) {
+            $section = Craft::$app->getSections()->getSectionById($id);
+            $data[] = '<sitemap>';
+            $data[] = '<loc>';
+            $data[] = Craft::$app->getRequest()->getBaseUrl() . '/sitemap_' . $section->handle . '_' . $section->id . '.xml';
+            $data[] = '</loc>';
+            $data[] = '<lastmod>';
+            $data[] = '</lastmod>';
+            $data[] = '</sitemap>';
+        }
+
+        return $data = implode('', $data);
     }
 }
