@@ -29,6 +29,9 @@ class SitemapService extends Component
             return false;
         }
 
+        $shouldRenderProducts = false;
+        $shouldRenderSections = false;
+
         if (isset($sitemapSettings['sections'])) {
             $shouldRenderSections = array_filter($sitemapSettings['sections'], function ($section) use ($sitemapSettings) {
                 if (isset($sitemapSettings['sections'][$section]['enabled'])) {
