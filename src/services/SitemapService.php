@@ -5,6 +5,7 @@ namespace studioespresso\seofields\services;
 use craft\base\Model;
 use craft\commerce\models\ProductTypeSite;
 use craft\commerce\services\ProductTypes;
+use craft\elements\Entry;
 use craft\helpers\Json;
 use craft\models\Site;
 use studioespresso\seofields\models\SeoDefaultsModel;
@@ -91,13 +92,17 @@ class SitemapService extends Component
         $data = [];
         foreach ($sections as $id => $settings) {
             $section = Craft::$app->getSections()->getSectionById($id);
-            $data[] = '<sitemap>';
-            $data[] = '<loc>';
-            $data[] = Craft::$app->getRequest()->getBaseUrl() . '/sitemap_' . $section->handle . '_' . $section->id . '.xml';
-            $data[] = '</loc>';
-            $data[] = '<lastmod>';
-            $data[] = '</lastmod>';
-            $data[] = '</sitemap>';
+            $sectionEntry = Entry::findOne(['sectionId' => $id]);
+            if($sectionEntry) {
+                $data[] = '<sitemap>';
+                $data[] = '<loc>';
+                $data[] = Craft::$app->getRequest()->getBaseUrl() . '/sitemap_' . $section->handle . '_' . $section->id . '.xml';
+                $data[] = '</loc>';
+                $data[] = '<lastmod>';
+                $data[] = $sectionEntry->dateUpdated->format('Y-m-d h:m:s');
+                $data[] = '</lastmod>';
+                $data[] = '</sitemap>';
+            }
         }
 
         return $data = implode('', $data);
