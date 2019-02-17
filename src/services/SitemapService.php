@@ -3,7 +3,9 @@
 namespace studioespresso\seofields\services;
 
 use craft\base\Model;
+use craft\commerce\elements\Product;
 use craft\commerce\models\ProductTypeSite;
+use craft\commerce\Plugin as Commerce;
 use craft\commerce\services\ProductTypes;
 use craft\elements\Entry;
 use craft\helpers\Json;
@@ -81,6 +83,9 @@ class SitemapService extends Component
         if (isset($data['sections'])) {
             $xml[] = $this->_addSectionsToIndex($data['sections']);
         }
+        if (isset($data['products'])) {
+            $xml[] = $this->_addProductsToIndex($data['products']);
+        }
 
         $xml[] = '</sitemapindex>';
         $xml = implode('', $xml);
@@ -94,17 +99,30 @@ class SitemapService extends Component
             $section = Craft::$app->getSections()->getSectionById($id);
             $sectionEntry = Entry::findOne(['sectionId' => $id]);
             if($sectionEntry) {
-                $data[] = '<sitemap>';
-                $data[] = '<loc>';
-                $data[] = Craft::$app->getRequest()->getBaseUrl() . '/sitemap_' . $section->handle . '_' . $section->id . '.xml';
-                $data[] = '</loc>';
-                $data[] = '<lastmod>';
+                $data[] = '<sitemap><loc>';
+                $data[] = Craft::$app->getRequest()->getBaseUrl() . htmlentities('/sitemap_section_' . $section->handle . '_' . $section->id . '.xml');
+                $data[] = '</loc><lastmod>';
                 $data[] = $sectionEntry->dateUpdated->format('Y-m-d h:m:s');
-                $data[] = '</lastmod>';
-                $data[] = '</sitemap>';
+                $data[] = '</lastmod></sitemap>';
             }
         }
+        return $data = implode('', $data);
+    }
 
+    private function _addProductsToIndex($productTypes)
+    {
+        $data = [];
+        foreach ($productTypes as $id => $settings) {
+            $type = Commerce::getInstance()->productTypes->getProductTypeById($id);
+            $typeEntry = Product::findOne(['typeId' => $type->id]);
+            if($typeEntry) {
+                $data[] = '<sitemap><loc>';
+                $data[] = Craft::$app->getRequest()->getBaseUrl() . htmlentities('/sitemap_products_' . $type->handle . '_' . $type->id . '.xml');
+                $data[] = '</loc><lastmod>';
+                $data[] = $typeEntry->dateUpdated->format('Y-m-d h:m:s');
+                $data[] = '</lastmod></sitemap>';
+            }
+        }
         return $data = implode('', $data);
     }
 }
