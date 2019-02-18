@@ -1,0 +1,40 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * SEO Fields plugin for Craft CMS
+ *
+ * SeoField Field Settings
+ *
+ * @author    Studio Espresso
+ * @copyright Copyright (c) 2019 Studio Espresso
+ * @link      https://studioespresso.co
+ * @package   SeoFields
+ * @since     1.0.0
+ */
+#}
+
+{% import "_includes/forms" as forms %}
+
+ {{ forms.lightswitchField({
+     label: "Show general Tab"|t("seo-fields"),
+     id: "showGeneralTab",
+     name: "showGeneralTab",
+     on: field.showGeneralTab,
+     errors: field.getErrors("showGeneralTab"),
+ }) }}
+
+ {{ forms.lightswitchField({
+     label: "Show Facebook Tab"|t("seo-fields"),
+     id: "showFacebookTab",
+     name: "showFacebookTab",
+     on: field.showFacebookTab,
+     errors: field.getErrors("showFacebookTab"),
+ }) }}
+
+ {{ forms.lightswitchField({
+     label: "Show Twitter Tab"|t("seo-fields"),
+     id: "showTwitterTab",
+     name: "showTwitterTab",
+     on: field.showTwitterTab,
+     errors: field.getErrors("showTwitterTab"),
+ }) }}
