@@ -47,6 +47,7 @@ class SeoField extends Field
     public $showGeneralTab = true;
     public $showFacebookTab = false;
     public $showTwitterTab = false;
+    public $allowSitenameOverwrite = false;
     public $metaTitle = '';
     public $metaDescription = '';
 
@@ -78,6 +79,7 @@ class SeoField extends Field
     {
         $rules = parent::rules();
         $rules = array_merge($rules, [
+            ['allowSitenameOverwrite', 'boolean'],
             ['showGeneralTab', 'boolean'],
             ['showFacebookTab', 'boolean'],
             ['showTwitterTab', 'boolean'],
