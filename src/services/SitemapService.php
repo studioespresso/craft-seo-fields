@@ -80,11 +80,12 @@ class SitemapService extends Component
     {
         $xml[] = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml[] = '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        $currentSite = Craft::$app->getSites()->getCurrentSite();
         if (isset($data['sections'])) {
-            $xml[] = $this->_addSectionsToIndex($data['sections']);
+            $xml[] = $this->_addSectionsToIndex($data['sections'], $currentSite);
         }
         if (isset($data['products'])) {
-            $xml[] = $this->_addProductsToIndex($data['products']);
+            $xml[] = $this->_addProductsToIndex($data['products'], $currentSite);
         }
 
         $xml[] = '</sitemapindex>';
@@ -92,7 +93,7 @@ class SitemapService extends Component
         return $xml;
     }
 
-    private function _addSectionsToIndex($sections)
+    private function _addSectionsToIndex($sections, $site)
     {
         $data = [];
         foreach ($sections as $id => $settings) {
@@ -100,7 +101,7 @@ class SitemapService extends Component
             $sectionEntry = Entry::findOne(['sectionId' => $id]);
             if($sectionEntry) {
                 $data[] = '<sitemap><loc>';
-                $data[] = Craft::$app->getRequest()->getBaseUrl() . htmlentities('/sitemap_section_' . $section->handle . '_' . $section->id . '.xml');
+                $data[] = Craft::$app->getRequest()->getBaseUrl() . htmlentities('/sitemap_' . $site->id .'_section_' . $section->handle . '_' . $section->id . '.xml');
                 $data[] = '</loc><lastmod>';
                 $data[] = $sectionEntry->dateUpdated->format('Y-m-d h:m:s');
                 $data[] = '</lastmod></sitemap>';
@@ -109,7 +110,7 @@ class SitemapService extends Component
         return $data = implode('', $data);
     }
 
-    private function _addProductsToIndex($productTypes)
+    private function _addProductsToIndex($productTypes, $site)
     {
         $data = [];
         foreach ($productTypes as $id => $settings) {
@@ -117,7 +118,7 @@ class SitemapService extends Component
             $typeEntry = Product::findOne(['typeId' => $type->id]);
             if($typeEntry) {
                 $data[] = '<sitemap><loc>';
-                $data[] = Craft::$app->getRequest()->getBaseUrl() . htmlentities('/sitemap_products_' . $type->handle . '_' . $type->id . '.xml');
+                $data[] = Craft::$app->getRequest()->getBaseUrl() . htmlentities('/sitemap_' . $site->id .'_products_' . $type->handle . '_' . $type->id . '.xml');
                 $data[] = '</loc><lastmod>';
                 $data[] = $typeEntry->dateUpdated->format('Y-m-d h:m:s');
                 $data[] = '</lastmod></sitemap>';
