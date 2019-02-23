@@ -14,13 +14,12 @@ class RobotsAssets extends AssetBundle
      */
     public function init()
     {
-        $this->sourcePath = "@studioespresso/seofields/assetbundles/robots/dist";
+        $this->sourcePath = "@studioespresso/seofields/assetbundles/seofields/dist";
         $this->depends = [
             CpAsset::class,
         ];
         $this->js = [
-            'js/codemirror.js',
-            'js/twig.js',
+            'js/robots_codemirror.js',
         ];
         $this->css = [
             'css/robots.css',
