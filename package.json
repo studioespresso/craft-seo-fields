@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/janhenckens/craft3-seo-fields#readme",
   "devDependencies": {
+    "codemirror": "^5.44.0",
     "css-loader": "^2.1.0",
     "webpack": "^4.29.5",
     "webpack-cli": "^3.2.3"

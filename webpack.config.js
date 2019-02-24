@@ -2,8 +2,7 @@ const path = require("path");
 
 module.exports = {
     entry: {
-
-        robots_codemirror: "./src/assetbundles/src/js/robots-codemirror.js",
+        robots_codemirror: "./src/assetbundles/src/js/robots_codemirror.js",
     },
     output: {
         filename: "[name].min.js",
