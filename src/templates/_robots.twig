@@ -2,7 +2,7 @@
 {% extends 'seo-fields/_includes/_header' %}
 {% import "_includes/forms" as forms %}
 
-{% do view.registerAssetBundle("studioespresso\\seofields\\assetbundles\\RobotsAsset") %}
+{% do view.registerAssetBundle("studioespresso\\seofields\\assetbundles\\RobotsAsset", 3) %}
 
 {% set selectedSubnavItem = 'robots' %}
 {% set title = 'Robots.txt' %}
@@ -17,7 +17,7 @@
     {% if robotsPerSite %}
         <input type="hidden" name="siteId" value="{{ currentSite.id }}">
     {% endif %}
-    
+
     {{ actionInput('seo-fields/robots/save') }}
     {% if data.id is defined %}
         {{ forms.hidden({
@@ -34,15 +34,13 @@
         value: 1,
         on: data.enableRobots is not null ? data.enableRobots,
     }) }}
-    
-    <textarea name="robots" id="robots" cols="30" rows="40">{{ data.robots }}</textarea>
-    {% js %}
-        var editor = CodeMirror.fromTextArea(document.getElementById('robots'), {
-        lineNumbers: true,
-        matchBrackets: false,
-        mode: 'twig',
-        indentUnit: 4,
-        viewportMargin: 8
-        });
-    {% endjs %}
+
+    {{ forms.textareaField({
+        label: 'Robots.txt content'|t('seo-fields'),
+        id: 'robots',
+        name: 'robots',
+        value: data.robots,
+        rows: 25,
+    }) }}
+
 {% endblock %}

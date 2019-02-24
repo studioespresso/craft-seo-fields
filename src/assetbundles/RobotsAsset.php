@@ -19,7 +19,7 @@ class RobotsAsset extends AssetBundle
         $this->depends = [
             CpAsset::class,
         ];
-        $this->jsOptions['position'] = View::POS_BEGIN;
+        $this->jsOptions['position'] = View::POS_END;
         $this->js = [
             'js/robots_codemirror.min.js',
         ];
