@@ -1,19 +1,33 @@
 const path = require("path");
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+
+var ExtractCSS = new ExtractTextPlugin('[name]');
 
 module.exports = {
+    mode: 'production',
     entry: {
-        robots_codemirror: "./src/assetbundles/src/js/robots_codemirror.js",
+        'robots.min.js': "./src/assetbundles/src/js/robots_codemirror.js",
+        'robots.css': "./src/assetbundles/src/css/robots.css",
     },
     output: {
-        filename: "[name].min.js",
-        path: path.join(__dirname, "/src/assetbundles/dist/js")
+        filename: "[name]",
+        path: path.join(__dirname, "/src/assetbundles/dist")
     },
     module: {
         rules: [
             {
                 test: /\.css$/,
-                use: ['css-loader'],
+                use: ExtractCSS.extract({
+                    fallback: "style-loader",
+                    use: [
+                        "css-loader",
+                    ]
+                })
             },
         ],
-    }
+    },
+    plugins: [
+        ExtractCSS
+    ],
+    watch: true
 }

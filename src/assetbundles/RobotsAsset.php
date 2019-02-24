@@ -21,10 +21,12 @@ class RobotsAsset extends AssetBundle
         ];
         $this->jsOptions['position'] = View::POS_END;
         $this->js = [
-            'js/robots_codemirror.min.js',
+            'robots.min.js',
         ];
 
-        $this->css = [];
+        $this->css = [
+            'robots.css'
+        ];
 
         parent::init();
     }
