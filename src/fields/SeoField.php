@@ -10,6 +10,7 @@
 
 namespace studioespresso\seofields\fields;
 
+use studioespresso\seofields\models\SeoFieldModel;
 use studioespresso\seofields\SeoFields;
 use studioespresso\seofields\assetbundles\seofieldfield\SeoFieldFieldAsset;
 
@@ -104,11 +105,6 @@ class SeoField extends Field
     /**
      * Normalizes the field’s value for use.
      *
-     * This method is called when the field’s value is first accessed from the element. For example, the first time
-     * `entry.myFieldHandle` is called from a template, or right before [[getInputHtml()]] is called. Whatever
-     * this method returns is what `entry.myFieldHandle` will likewise return, and what [[getInputHtml()]]’s and
-     * [[serializeValue()]]’s $value arguments will be set to.
-     *
      * @param mixed                 $value   The raw field value
      * @param ElementInterface|null $element The element the field is associated with, if there is one
      *
@@ -116,19 +112,18 @@ class SeoField extends Field
      */
     public function normalizeValue($value, ElementInterface $element = null)
     {
-        return $value;
+        if($value instanceof SeoFieldModel) {
+            return $value;
+        } else {
+            return new SeoFieldModel();
+        }
+        //return $value;
     }
 
     /**
      * Modifies an element query.
      *
      * This method will be called whenever elements are being searched for that may have this field assigned to them.
-     *
-     * If the method returns `false`, the query will be stopped before it ever gets a chance to execute.
-     *
-     * @param ElementQueryInterface $query The element query
-     * @param mixed                 $value The value that was set on this field’s corresponding [[ElementCriteriaModel]] param,
-     *                                     if any.
      *
      * @return null|false `false` in the event that the method is sure that no elements are going to be found.
      */
@@ -164,21 +159,20 @@ class SeoField extends Field
     public function getInputHtml($value, ElementInterface $element = null): string
     {
         // Register our asset bundle
-        Craft::$app->getView()->registerAssetBundle(SeoFieldFieldAsset::class);
 
         // Get our id and namespace
         $id = Craft::$app->getView()->formatInputId($this->handle);
         $namespacedId = Craft::$app->getView()->namespaceInputId($id);
 
         // Variables to pass down to our field JavaScript to let it namespace properly
-        $jsonVars = [
-            'id' => $id,
-            'name' => $this->handle,
-            'namespace' => $namespacedId,
-            'prefix' => Craft::$app->getView()->namespaceInputId(''),
-            ];
-        $jsonVars = Json::encode($jsonVars);
-        Craft::$app->getView()->registerJs("$('#{$namespacedId}-field').SeoFieldsSeoField(" . $jsonVars . ");");
+//        $jsonVars = [
+//            'id' => $id,
+//            'name' => $this->handle,
+//            'namespace' => $namespacedId,
+//            'prefix' => Craft::$app->getView()->namespaceInputId(''),
+//            ];
+//        $jsonVars = Json::encode($jsonVars);
+//        Craft::$app->getView()->registerJs("$('#{$namespacedId}-field').SeoFieldsSeoField(" . $jsonVars . ");");
 
         // Render the input template
         return Craft::$app->getView()->renderTemplate(
