@@ -8,6 +8,7 @@ class SeoFieldModel extends Model
 {
     public $metaTitle;
     public $metaDescription;
+    public $siteName;
 
     public function getTitle() {
         return $this->metaTitle;
@@ -24,6 +25,7 @@ class SeoFieldModel extends Model
                 [
                     'metaTitle',
                     'metaDescription',
+                    'siteName'
                 ],
                 'safe',
             ],

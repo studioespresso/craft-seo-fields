@@ -113,7 +113,11 @@ class SeoField extends Field
     public function normalizeValue($value, ElementInterface $element = null)
     {
         $model = new SeoFieldModel();
-        $model->setAttributes(Json::decodeIfJson($value));
+        if(is_array($value)) {
+            $model->setAttributes($value);
+        } else {
+            $model->setAttributes(Json::decodeIfJson($value));
+        }
         return $model;
     }
 

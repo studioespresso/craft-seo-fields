@@ -95,6 +95,7 @@
 .seofields-google-result {
     font-family: arial, sans-serif;
     max-width: 600px;
+    padding: 0.2rem 0.1rem;
 }
 .seofields-google-result > div {
     pointer-events: none;
