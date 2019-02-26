@@ -9,7 +9,6 @@
     order: 1;
     display: block;
     padding: 0.5rem 1rem;
-    margin-right: 0.2rem;
     cursor: pointer;
     background: #f1f5f8;
     transition: background ease 0.2s;
@@ -21,10 +20,10 @@
     flex-grow: 1;
     width: 100%;
     display: none;
-    padding: 0.4rem 1rem 2rem;
+    padding: 0.6rem 1rem 2rem;
     color: #576575;
     background: #fff;
-    border-width: 1px  1px 1px 1px;
+    border-width: 0px  1px 1px 1px;
     border-style: solid;
     border-color: #e7eef3;
 }
@@ -41,7 +40,7 @@
     padding-bottom: 10px;
     cursor: default;
     background-clip: padding-box;
-    border-radius: 2px 2px 0 0;
+    border-radius: 1px 1px 0 0;
     border: solid rgba(0, 0, 20, 0.1);
     border-top-width: medium;
     border-right-width: medium;
