@@ -35,11 +35,6 @@
         "hasCpSettings": true,
         "hasCpSection": true,
         "changelogUrl": "https://raw.githubusercontent.com/studioespresso/craft3-seo-fields/master/CHANGELOG.md",
-        "components": {
-            "seoFieldsService": "studioespresso\\seofields\\services\\SeoFieldsService",
-            "defaultsService": "studioespresso\\seofields\\services\\DefaultsService",
-            "sitemapSerivce": "studioespresso\\seofields\\services\\SitemapService"
-        },
         "class": "studioespresso\\seofields\\SeoFields"
     }
 }

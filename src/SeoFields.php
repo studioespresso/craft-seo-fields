@@ -12,7 +12,6 @@ namespace studioespresso\seofields;
 
 use Craft;
 use craft\base\Plugin;
-use craft\elements\Entry;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
@@ -22,7 +21,6 @@ use craft\web\UrlManager;
 use studioespresso\seofields\fields\SeoField;
 use studioespresso\seofields\models\Settings;
 use studioespresso\seofields\services\DefaultsService;
-use studioespresso\seofields\services\SeoFieldsService as SeoFieldsServiceService;
 use studioespresso\seofields\services\SitemapService;
 use studioespresso\seofields\variables\SeoFieldsVariable;
 use yii\base\Event;
@@ -34,7 +32,7 @@ use yii\base\Event;
  * @package   SeoFields
  * @since     1.0.0
  *
- * @property  SeoFieldsServiceService $seoFieldsService
+ *
  * @property  SitemapService $sitemapSerivce
  * @property  DefaultsService $defaultsService
  * @method    Settings getSettings()
@@ -62,6 +60,11 @@ class SeoFields extends Plugin
     {
         parent::init();
         self::$plugin = $this;
+
+        $this->setComponents([
+            "defaultsService"=> DefaultsService::class,
+            "sitemapSerivce"=>  SitemapService::class
+        ]);
 
         // Register our fields
         Event::on(
