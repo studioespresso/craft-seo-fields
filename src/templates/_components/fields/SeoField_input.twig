@@ -1,0 +1,64 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * SEO Fields plugin for Craft CMS 3.x
+ *
+ * SeoField Field Input
+ *
+ * @author    Studio Espresso
+ * @copyright Copyright (c) 2019 Studio Espresso
+ * @link      https://studioespresso.co
+ * @package   SeoFields
+ * @since     1.0.0
+ */
+#}
+
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("studioespresso\\seofields\\assetbundles\\SeoFieldAsset") %}
+
+<div class="tabs">
+    <input type="radio" name="tabs" id="tabone" checked="checked">
+    <label for="tabone" class="label">{{ 'General meta'|t('seo-fields') }}</label>
+    <div class="tab">
+            <h3>{{ 'Google results page preview'|t('seo-fields') }}</h3>
+            <div class="seofields-google-result">
+                <div class="seofields-google-result__headline" contenteditable>
+                    {{ value.metaTitle|length ? value.metaTitle : 'blaaa' }}
+                </div>
+                <div class="seofields-google-result__link" contenteditable>
+                    www.yourpage.com
+                </div>
+                <div class="seofields-google-result__description" contenteditable>
+                    {{ value.metaDescription|length ? value.metaDescription : 'blaaa' }}
+                </div>
+            </div>
+        {{ forms.textField({
+            label: "Meta title"|t("seo-fields"),
+            id: name ~ "-metaTitle",
+            name: name ~ "[metaTitle]",
+            value: value.metaTitle,
+        }) }}
+
+        {{ forms.textField({
+            label: "Meta description"|t("seo-fields"),
+            id: name ~ "-metaDescription",
+            name: name ~ "[metaDescription]",
+            value: value.metaDescription
+        }) }}
+    </div>
+
+    <input type="radio" name="tabs" id="tabtwo">
+    <label for="tabtwo" class="label">{{ 'Facebook'|t('seo-fields') }}</label>
+    <div class="tab">
+        <h1>Tab Two Content</h1>
+    </div>
+
+    <input type="radio" name="tabs" id="tabthree">
+    <label for="tabthree" class="label">{{ 'Twitter'|t('seo-fields') }}</label>
+    <div class="tab">
+        <h1>Tab Three Content</h1>
+    </div>
+</div>
+
+

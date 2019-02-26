@@ -112,12 +112,7 @@ class SeoField extends Field
      */
     public function normalizeValue($value, ElementInterface $element = null)
     {
-        if($value instanceof SeoFieldModel) {
-            return $value;
-        } else {
-            return new SeoFieldModel();
-        }
-        //return $value;
+        return Json::decodeIfJson($value);
     }
 
     /**
@@ -163,16 +158,6 @@ class SeoField extends Field
         // Get our id and namespace
         $id = Craft::$app->getView()->formatInputId($this->handle);
         $namespacedId = Craft::$app->getView()->namespaceInputId($id);
-
-        // Variables to pass down to our field JavaScript to let it namespace properly
-//        $jsonVars = [
-//            'id' => $id,
-//            'name' => $this->handle,
-//            'namespace' => $namespacedId,
-//            'prefix' => Craft::$app->getView()->namespaceInputId(''),
-//            ];
-//        $jsonVars = Json::encode($jsonVars);
-//        Craft::$app->getView()->registerJs("$('#{$namespacedId}-field').SeoFieldsSeoField(" . $jsonVars . ");");
 
         // Render the input template
         return Craft::$app->getView()->renderTemplate(
