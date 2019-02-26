@@ -27,7 +27,7 @@
                     {{ value.metaTitle|length ? value.metaTitle : 'blaaa' }}
                 </div>
                 <div class="seofields-google-result__link" contenteditable>
-                    www.yourpage.com
+                    {{ element.getUrl() }}
                 </div>
                 <div class="seofields-google-result__description" contenteditable>
                     {{ value.metaDescription|length ? value.metaDescription : 'blaaa' }}

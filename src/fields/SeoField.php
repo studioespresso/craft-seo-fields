@@ -165,6 +165,7 @@ class SeoField extends Field
         return Craft::$app->getView()->renderTemplate(
             'seo-fields/_components/fields/SeoField_input',
             [
+                'element' => $element,
                 'name' => $this->handle,
                 'value' => $value,
                 'field' => $this,
