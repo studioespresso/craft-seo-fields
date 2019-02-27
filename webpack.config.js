@@ -7,6 +7,7 @@ module.exports = {
     mode: 'production',
     entry: {
         'robots.min.js': "./src/assetbundles/src/js/robots_codemirror.js",
+        'field.js': "./src/assetbundles/src/js/field.js",
         'robots.css': "./src/assetbundles/src/css/robots.css",
         'field.css': "./src/assetbundles/src/css/field.css",
     },

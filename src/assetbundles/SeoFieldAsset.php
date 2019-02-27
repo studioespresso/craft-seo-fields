@@ -20,6 +20,10 @@ class SeoFieldAsset extends AssetBundle
             CpAsset::class,
         ];
 
+        $this->js = [
+            'field.js'
+        ];
+
         $this->css = [
             'field.css'
         ];
