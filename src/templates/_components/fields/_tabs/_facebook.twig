@@ -1,5 +1,33 @@
+{% import "_includes/forms" as forms %}
+
 <input type="radio" name="tabs" id="facebook-tab">
 <label for="facebook-tab" class="label">{{ 'Facebook'|t('seo-fields') }}</label>
 <div class="tab">
-    <h1>Tab Two Content</h1>
+    {{ forms.textField({
+        label: "Facebook title"|t("seo-fields"),
+        id: name ~ "-facebookTitle",
+        name: name ~ "[facebookTitle]",
+        value: value.facebookTitle,
+    }) }}
+
+    {% if volumes %}
+        {{ forms.elementSelectField({
+            label: "Facebook OG Image"|t('seo-fields'),
+            id: name ~ "-facebookImage",
+            name: name ~ "[facebookImage]",
+            elements: [craft.assets.id(value.facebookImage[0]).one()],
+            elementType: "craft\\elements\\Asset",
+            viewMode: "large",
+            criteria: {
+                kind: ["image"],
+            },
+            limit: 1,
+            selectionLabel: "Select Facebook OG image"|t('seo-fields'),
+        }) }}
+    {% else %}
+        <div class="field">
+            <h3>{{ 'Facebook OG image'|t('seo-fields') }}</h3>
+            <p class="warning">{{ 'No asset volumes defined'|t('seo-fields') }}.</p>
+        </div>
+    {% endif %}
 </div>

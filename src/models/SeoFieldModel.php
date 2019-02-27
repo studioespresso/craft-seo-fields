@@ -12,6 +12,7 @@ class SeoFieldModel extends Model
     public $metaDescription;
     public $facebookTitle;
     public $facebookDescription;
+    public $facebookImage;
     public $twitterTitle;
     public $twitterDescription;
     public $siteName;
@@ -39,7 +40,10 @@ class SeoFieldModel extends Model
                 [
                     'metaTitle',
                     'metaDescription',
-                    'siteName'
+                    'siteName',
+                    'facebookTitle',
+                    'facebookDescription',
+                    'facebookImage'
                 ],
                 'safe',
             ],

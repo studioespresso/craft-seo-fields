@@ -175,6 +175,9 @@ class SeoField extends Field
         $jsonVars = Json::encode($jsonVars);
         Craft::$app->getView()->registerJs("$('#{$namespacedId}-field').SeoField(" . $jsonVars . ");");
 
+        if(Craft::$app->getVolumes()->getAllVolumes()) {
+            $volumes = true;
+        }
         // Render the input template
         return Craft::$app->getView()->renderTemplate(
             'seo-fields/_components/fields/SeoField_input',
@@ -185,6 +188,7 @@ class SeoField extends Field
                 'field' => $this,
                 'id' => $id,
                 'namespacedId' => $namespacedId,
+                'volumes' => $volumes ?? false
             ]
         );
     }
