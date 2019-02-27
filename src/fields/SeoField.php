@@ -115,7 +115,7 @@ class SeoField extends Field
         $model = new SeoFieldModel();
         if(is_array($value)) {
             $model->setAttributes($value);
-        } else {
+        } elseif($value) {
             $model->setAttributes(Json::decodeIfJson($value));
         }
         return $model;

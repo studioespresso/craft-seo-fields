@@ -18,21 +18,22 @@
 {% do view.registerAssetBundle("studioespresso\\seofields\\assetbundles\\SeoFieldAsset") %}
 
 <div class="tabs">
-    <input type="radio" name="tabs" id="tabone" checked="checked">
-    <label for="tabone" class="label">{{ 'General meta'|t('seo-fields') }}</label>
+    {% if field.showGeneralTab %}
+    <input type="radio" name="tabs" id="general-tab" checked="checked">
+    <label for="general-tab" class="label">{{ 'General meta'|t('seo-fields') }}</label>
     <div class="tab">
-            <h3>{{ 'Google results page preview'|t('seo-fields') }}</h3>
-            <div class="seofields-google-result">
-                <div class="seofields-google-result__headline" contenteditable>
-                    {{ value.metaTitle|length ? value.metaTitle : element.title }}
-                </div>
-                <div class="seofields-google-result__link" contenteditable>
-                    {{ element.getUrl() }}
-                </div>
-                <div class="seofields-google-result__description" contenteditable>
-                    {{ value.metaDescription|length ? value.metaDescription : 'blaaa' }}
-                </div>
+        <h3>{{ 'Google results page preview'|t('seo-fields') }}</h3>
+        <div class="seofields-google-result">
+            <div class="seofields-google-result__headline" contenteditable>
+                {{ value.metaTitle|length ? value.metaTitle : element.title }}
             </div>
+            <div class="seofields-google-result__link" contenteditable>
+                {{ element.getUrl() }}
+            </div>
+            <div class="seofields-google-result__description" contenteditable>
+                {{ value.metaDescription|length ? value.metaDescription : 'blaaa' }}
+            </div>
+        </div>
 
 
         {{ forms.textField({
@@ -57,18 +58,23 @@
             value: value.metaDescription
         }) }}
     </div>
+    {% endif %}
+    {% if field.showFacebookTab %}
 
-    <input type="radio" name="tabs" id="tabtwo">
-    <label for="tabtwo" class="label">{{ 'Facebook'|t('seo-fields') }}</label>
-    <div class="tab">
-        <h1>Tab Two Content</h1>
-    </div>
+        <input type="radio" name="tabs" id="facebook-tab">
+        <label for="facebook-tab" class="label">{{ 'Facebook'|t('seo-fields') }}</label>
+        <div class="tab">
+            <h1>Tab Two Content</h1>
+        </div>
+    {% endif %}
+    {% if field.showTwitterTab %}
 
-    <input type="radio" name="tabs" id="tabthree">
-    <label for="tabthree" class="label">{{ 'Twitter'|t('seo-fields') }}</label>
-    <div class="tab">
-        <h1>Tab Three Content</h1>
-    </div>
+        <input type="radio" name="tabs" id="twitter-tab">
+        <label for="twitter-tab" class="label">{{ 'Twitter'|t('seo-fields') }}</label>
+        <div class="tab">
+            <h1>Tab Three Content</h1>
+        </div>
+    {% endif %}
 </div>
 
 
