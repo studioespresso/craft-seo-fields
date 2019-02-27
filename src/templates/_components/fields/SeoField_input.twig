@@ -25,7 +25,7 @@
         <h3>{{ 'Google results page preview'|t('seo-fields') }}</h3>
         <div class="seofields-google-result">
             <div class="seofields-google-result__headline" contenteditable>
-                {{ value.metaTitle|length ? value.metaTitle : element.title }}
+                {{ value.metaTitle|length ? value.getPageTitle() : element.title }}
             </div>
             <div class="seofields-google-result__link" contenteditable>
                 {{ element.getUrl() }}

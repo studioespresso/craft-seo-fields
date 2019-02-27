@@ -2,16 +2,30 @@
 
 namespace studioespresso\seofields\models;
 
+use Craft;
 use craft\base\Model;
+use studioespresso\seofields\SeoFields;
 
 class SeoFieldModel extends Model
 {
     public $metaTitle;
     public $metaDescription;
+    public $facebookTitle;
+    public $facebookDescription;
+    public $twitterTitle;
+    public $twitterDescription;
     public $siteName;
 
-    public function getTitle() {
-        return $this->metaTitle;
+    public function getPageTitle()
+    {
+
+        $siteDefault = SeoFields::getInstance()->defaultsService->getDataBySite(Craft::$app->getSites()->getCurrentSite());
+        if($this->siteName) {
+            $siteName = $this->siteName;
+        } else {
+            $siteName = $siteDefault->defaultSiteTitle;
+        }
+        return $this->metaTitle . ' ' . $siteDefault->titleSeperator . ' ' . $siteName;
     }
 
 
