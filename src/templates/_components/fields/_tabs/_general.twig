@@ -1,0 +1,40 @@
+{% import "_includes/forms" as forms %}
+
+<input type="radio" name="tabs" id="general-tab" checked="checked">
+<label for="general-tab" class="label">{{ 'General meta'|t('seo-fields') }}</label>
+<div class="tab">
+    <h3>{{ 'Google results page preview'|t('seo-fields') }}</h3>
+    <div class="seofields-google-result">
+        <div class="seofields-google-result__headline" contenteditable>
+            {{ value.metaTitle|length ? value.getPageTitle() : element.title }}
+        </div>
+        <div class="seofields-google-result__link" contenteditable>
+            {{ element.getUrl() }}
+        </div>
+        <div class="seofields-google-result__description" contenteditable>
+            {{ value.metaDescription|length ? value.metaDescription : 'blaaa' }}
+        </div>
+    </div>
+
+    {{ forms.textField({
+        label: "Meta title"|t("seo-fields"),
+        id: name ~ "-metaTitle",
+        name: name ~ "[metaTitle]",
+        value: value.metaTitle,
+    }) }}
+    {% if field.allowSitenameOverwrite %}
+        {{ forms.textField({
+            label: "Site name"|t("seo-fields"),
+            id: name ~ "-siteName",
+            name: name ~ "[siteName]",
+            value: value.siteName,
+        }) }}
+    {% endif %}
+
+    {{ forms.textField({
+        label: "Meta description"|t("seo-fields"),
+        id: name ~ "-metaDescription",
+        name: name ~ "[metaDescription]",
+        value: value.metaDescription
+    }) }}
+</div>
