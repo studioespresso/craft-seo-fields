@@ -31,10 +31,21 @@
         }) }}
     {% endif %}
 
-    {{ forms.textField({
-        label: "Meta description"|t("seo-fields"),
-        id: name ~ "-metaDescription",
-        name: name ~ "[metaDescription]",
-        value: value.metaDescription
-    }) }}
+    <div class="field" id="{{ name ~ "-metaDescription" }}-field">
+        <div class="heading">
+            <label id="{{ name ~ "[metaDescription]" }}-label" for="{{ name ~ "-metaDescription" }}">{{ "Meta description"|t("seo-fields") }}</label>
+        </div>
+        <div class="input ltr">
+            {{ forms.textArea({
+                id: name ~ "-metaDescription",
+                name: name ~ "[metaDescription]",
+                value: value.metaDescription,
+                class: "nicetext",
+                maxlength: 300,
+                showCharsLeft: true,
+                warning: false,
+                errors: value.getErrors("metaDescription"),
+            }) }}
+        </div>
+    </div>
 </div>

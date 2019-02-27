@@ -10,6 +10,24 @@
         value: value.facebookTitle,
     }) }}
 
+    <div class="field" id="{{ name ~ "-facebookDescription" }}-field">
+        <div class="heading">
+            <label id="{{ name ~ "[facebookDescription]" }}-label" for="{{ name ~ "-facebookDescription" }}">{{ "Facebook OG description"|t("seo-fields") }}</label>
+        </div>
+        <div class="input ltr">
+            {{ forms.textArea({
+                id: name ~ "-facebookDescription",
+                name: name ~ "[facebookDescription]",
+                value: value.facebookDescription,
+                class: "nicetext",
+                maxlength: 300,
+                showCharsLeft: true,
+                warning: false,
+                errors: value.getErrors("facebookDescription"),
+            }) }}
+        </div>
+    </div>
+
     {% if volumes %}
         {{ forms.elementSelectField({
             label: "Facebook OG Image"|t('seo-fields'),
