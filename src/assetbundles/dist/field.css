@@ -137,3 +137,59 @@
     zoom: 1;
 }
 
+.fb-preview-container {
+    padding: 3rem;
+}
+.fb-preview {
+    margin: 0 auto;
+    background-color: rgb(242, 243, 245);
+    width: 500px;
+}
+
+.fb-text-wrap {
+    padding: 10px 12px 10px 12px;
+}
+
+.fb-og-title {
+    color: rgb(29, 33, 41);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, ".SFNSText-Regular", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 20px;
+    margin-top: 5px;
+    overflow-wrap: break-word;
+}
+
+.fb-og-description {
+    color: rgb(96, 103, 112);
+    direction: ltr;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, ".SFNSText-Regular", sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    margin-top: 3px;
+    max-height: 80px;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.fb-url {
+    color: rgb(96, 103, 112);
+    direction: ltr;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, ".SFNSText-Regular", sans-serif;
+    font-size: 12px;
+    line-height: 11px;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+}

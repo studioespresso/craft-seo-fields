@@ -19,14 +19,14 @@
 
 <div class="tabs">
     {% if field.showGeneralTab %}
-        {% include 'seo-fields/_components/fields/_tabs/_general.twig' %}
+        {% include 'seo-fields/_components/fields/_tabs/_general.twig'  %}
     {% endif %}
     {% if field.showFacebookTab %}
-        {% include 'seo-fields/_components/fields/_tabs/_facebook.twig' %}
+        {% include 'seo-fields/_components/fields/_tabs/_facebook.twig' with { tabSelected: true} %}
     {% endif %}
-    {% if field.showTwitterTab %}
-        {% include 'seo-fields/_components/fields/_tabs/_twitter.twig' %}
-    {% endif %}
+    {#{% if field.showTwitterTab %}#}
+        {#{% include 'seo-fields/_components/fields/_tabs/_twitter.twig' %}#}
+    {#{% endif %}#}
 </div>
 
 

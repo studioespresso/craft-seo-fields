@@ -1,6 +1,6 @@
 {% import "_includes/forms" as forms %}
 
-<input type="radio" name="tabs" id="facebook-tab">
+<input type="radio" name="tabs" id="facebook-tab" {% if tabSelected %}checked="checked"{% endif %}>
 <label for="facebook-tab" class="label">{{ 'Facebook'|t('seo-fields') }}</label>
 <div class="tab">
     {{ forms.textField({
@@ -12,8 +12,31 @@
 
     <div class="field" id="{{ name ~ "-facebookDescription" }}-field">
         <div class="heading">
-            <label id="{{ name ~ "[facebookDescription]" }}-label" for="{{ name ~ "-facebookDescription" }}">{{ "Facebook OG description"|t("seo-fields") }}</label>
+            <label id="{{ name ~ "[facebookDescription]" }}-label"
+                   for="{{ name ~ "-facebookDescription" }}">{{ "Facebook OG description"|t("seo-fields") }}</label>
         </div>
+
+
+        <div class="fb-preview-container">
+            <div class="fb-preview">
+                {% set ogImage = craft.assets.id(value.facebookImage[0]).one() %}
+                {#<div class="fb-image-wrap" style="background-image: url('{{ ogImage.getUrl() }}')">#}
+
+                {#</div>#}
+                <div class="fb-text-wrap">
+                    <div class="fb-url">
+                        {{ element.getUrl() }}
+                    </div>
+                    <div class="fb-og-title">
+                        {{ value.facebookTitle }}
+                    </div>
+                    <div class="fb-og-description">
+                        {{ value.facebookDescription }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="input ltr">
             {{ forms.textArea({
                 id: name ~ "-facebookDescription",
@@ -33,7 +56,7 @@
             label: "Facebook OG Image"|t('seo-fields'),
             id: name ~ "-facebookImage",
             name: name ~ "[facebookImage]",
-            elements: [craft.assets.id(value.facebookImage[0]).one()],
+            elements: [value.facebookImage|length ?craft.assets.id(value.facebookImage[0]).one() : null],
             elementType: "craft\\elements\\Asset",
             viewMode: "large",
             criteria: {
