@@ -150,6 +150,13 @@
     padding: 10px 12px 10px 12px;
 }
 
+.fb-image-wrap {
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 250px;
+}
+
 .fb-og-title {
     color: rgb(29, 33, 41);
     font-family: system-ui, -apple-system, BlinkMacSystemFont, ".SFNSText-Regular", sans-serif;
