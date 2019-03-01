@@ -34,4 +34,26 @@
         size: 3,
         value: data['titleSeperator']})
     }}
+
+
+    {% if craft.app.volumes.getAllVolumes()|length %}
+        {{ forms.elementSelectField({
+            label: "Default Meta image"|t('seo-fields'),
+            id: "defaultImage",
+            name: "defaultImage",
+            elements: [data['defaultImage'] is defined ? craft.assets.id(data['defaultImage'][0]).one() : null],
+            elementType: "craft\\elements\\Asset",
+            viewMode: "large",
+            criteria: {
+                kind: ["image"],
+            },
+            limit: 1,
+            selectionLabel: "Select an image"|t('seo-fields'),
+        }) }}
+    {% else %}
+        <div class="field">
+            <h3>{{ 'Default Meta image'|t('seo-fields') }}</h3>
+            <p class="warning">{{ 'No asset volumes defined'|t('seo-fields') }}.</p>
+        </div>
+    {% endif %}
 {% endblock %}

@@ -29,7 +29,7 @@ class DefaultsService extends Component
         if (!$record) {
             $record = new DefaultsRecord();
         }
-        $record->setAttribute('defaultMeta', $model->toArray(['defaultSiteTitle', 'titleSeperator']));
+        $record->setAttribute('defaultMeta', $model->toArray(['defaultSiteTitle', 'titleSeperator', 'defaultImage']));
         $record->setAttribute('siteId', $model->siteId);
         $record->setAttribute('enableRobots', $model->enableRobots);
         $record->setAttribute('robots', $model->robots);

@@ -68,6 +68,7 @@ class Install extends Migration
                     'id' => $this->primaryKey(),
                     'siteId' => $this->integer(11)->notNull(),
                     'defaultMeta' => $this->text(),
+                    'defaultImage' => $this->integer(11),
                     'enableRobots' => $this->boolean()->defaultValue(1),
                     'robots' => $this->text(),
                     'sitemap' => $this->text(),
@@ -90,6 +91,16 @@ class Install extends Migration
             '{{%sites}}',
             'id',
             'CASCADE'
+        );
+
+        $this->addForeignKey(
+            $this->db->getForeignKeyName(DefaultsRecord::tableName(), 'defaultImage'),
+            DefaultsRecord::tableName(),
+            'defaultImage',
+            '{{%assets}}',
+            'id',
+            null,
+            'SET NULL'
         );
     }
 

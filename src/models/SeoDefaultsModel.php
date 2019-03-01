@@ -10,6 +10,8 @@ class SeoDefaultsModel extends Model
 
     public $defaultSiteTitle;
 
+    public $defaultImage;
+
     public $titleSeperator;
 
     public $siteId;
@@ -29,6 +31,7 @@ class SeoDefaultsModel extends Model
             [
                 [
                     'defaultSiteTitle',
+                    'defaultImage',
                     'titleSeperator',
                     'siteId',
                     'enableRobots',

@@ -57,7 +57,7 @@
         </div>
     </div>
 
-    {% if volumes %}
+    {% if craft.app.volumes.getAllVolumes()|length %}
         {{ forms.elementSelectField({
             label: "Facebook OG Image"|t('seo-fields'),
             id: name ~ "-facebookImage",
