@@ -64,7 +64,7 @@ class SeoFieldModel extends Model
 
     public function getOgDescription()
     {
-        return $this->metaDescription;
+        return $this->facebookDescription ? $this->facebookDescription : $this->metaDescription;
     }
 
     public function getOgImage()

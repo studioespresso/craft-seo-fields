@@ -22,7 +22,7 @@
                     {{ value.getOgTitle(element) }}
                 </div>
                 <div class="fb-og-description">
-                    {{ value.getOgDescription() }}
+                    {{ value.getOgDescription()|length > 70 ? value.getOgDescription()|slice(0, 70) ~ '...' : value.getOgDescription()  }}
                 </div>
             </div>
         </div>
