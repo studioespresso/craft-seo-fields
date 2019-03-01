@@ -17,6 +17,9 @@ class SeoFieldModel extends Model
     public $twitterDescription;
     public $siteName;
 
+    /**
+     * @var SeoDefaultsModel
+     */
     public $siteDefault;
 
     public function init()
@@ -44,10 +47,6 @@ class SeoFieldModel extends Model
         return $this->metaTitle . $this->getSiteNameWithSeperator();
     }
 
-    public function getOgDescription()
-    {
-        return $this->metaDescription;
-    }
 
     public function getOgTitle($element)
     {
@@ -56,15 +55,26 @@ class SeoFieldModel extends Model
         } else {
             $siteName = $this->siteDefault->defaultSiteTitle;
         }
-        if(!$this->facebookTitle) {
+        if (!$this->facebookTitle) {
             return $element->title . $this->getSiteNameWithSeperator();
         } else {
             return $this->facebookTitle . $this->getSiteNameWithSeperator();
         }
-
-
     }
 
+    public function getOgDescription()
+    {
+        return $this->metaDescription;
+    }
+
+    public function getOgImage()
+    {
+        if($this->facebookImage) {
+            return Craft::$app->getAssets()->getAssetById($this->facebookImage[0]);
+        } elseif($this->siteDefault->defaultImage) {
+            return Craft::$app->getAssets()->getAssetById($this->siteDefault->defaultImage[0]);
+        }
+    }
 
     /**
      * @inheritdoc
