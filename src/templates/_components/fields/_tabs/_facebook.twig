@@ -1,6 +1,6 @@
 {% import "_includes/forms" as forms %}
 
-<input type="radio" name="tabs" id="facebook-tab" {% if tabSelected %}checked="checked"{% endif %}>
+<input type="radio" name="tabs" id="facebook-tab" {% if tabSelected is defined %}checked="checked"{% endif %}>
 <label for="facebook-tab" class="label">{{ 'Facebook'|t('seo-fields') }}</label>
 <div class="tab">
     <div class="fb-preview-container">

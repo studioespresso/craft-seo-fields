@@ -18,15 +18,20 @@
 {% do view.registerAssetBundle("studioespresso\\seofields\\assetbundles\\SeoFieldAsset") %}
 
 <div class="tabs">
-    {% if field.showGeneralTab %}
-        {% include 'seo-fields/_components/fields/_tabs/_general.twig'  %}
+    {{ dd() }}
+    {% set tabSelected = false %}
+    {% if field.tabs.general %}
+        {% if not field.tabs.facebook or field.tabs.twitter %}
+            {% set tabSelected = true %}
+        {% endif %}
+        {% include 'seo-fields/_components/fields/_tabs/_general.twig' with { tabSelected : tabSelected}  %}
     {% endif %}
-    {% if field.showFacebookTab %}
-        {% include 'seo-fields/_components/fields/_tabs/_facebook.twig' with { tabSelected: true} %}
+    {% if field.tabs.facebook %}
+        {% include 'seo-fields/_components/fields/_tabs/_facebook.twig' with { tabSelected : tabSelected}  %}
     {% endif %}
-    {#{% if field.showTwitterTab %}#}
-        {#{% include 'seo-fields/_components/fields/_tabs/_twitter.twig' %}#}
-    {#{% endif %}#}
+    {% if field.tabs.twitter %}
+        {% include 'seo-fields/_components/fields/_tabs/_twitter.twig' with { tabSelected : tabSelected}  %}
+    {% endif %}
 </div>
 
 

@@ -1,6 +1,6 @@
 {% import "_includes/forms" as forms %}
 
-<input type="radio" name="tabs" id="general-tab" {% if tabSelected %}checked="checked"{% endif %}>
+<input type="radio" name="tabs" id="general-tab" {% if tabSelected is defined %}checked="checked"{% endif %}>
 <label for="general-tab" class="label">{{ 'General meta'|t('seo-fields') }}</label>
 <div class="tab">
     <h3>{{ 'Google results page preview'|t('seo-fields') }}</h3>
