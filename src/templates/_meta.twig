@@ -1,5 +1,13 @@
 {# SEO Fields meta fields #}
 
-    <title>{{ meta.getPageTitle() }}</title>
-    <meta name="description" content="{{ meta.metaDescription }}">
+    <title>{{ meta.getPageTitle(entry) }}</title>
 
+    <meta name="description" content="{{ meta.metaDescription }}">
+    <meta property="og:url" content="{{ entry.getUrl() }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{{ meta.getOgTitle(entry) }}" />
+    <meta property="og:image" content="{{ meta.getOgImage().getUrl() }}" />
+    <meta property="og:description" content="{{ meta.getOgDescription() }}" />
+    <meta property="og:site_name" content="" />
+    <meta property="og:locale" content="nl-BE" />
+    <meta property="og:locale:alternate" content="en" />

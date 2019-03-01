@@ -37,13 +37,17 @@ class SeoFieldModel extends Model
         return ' ' . $this->siteDefault->titleSeperator . ' ' . $siteName;
     }
 
-    public function getPageTitle()
+    public function getPageTitle($element = null)
     {
         if ($this->siteName) {
             $siteName = $this->siteName;
         } else {
             $siteName = $this->siteDefault->defaultSiteTitle;
         }
+        if($element && !$this->metaTitle) {
+            return $element->title . $this->getSiteNameWithSeperator();
+        }
+
         return $this->metaTitle . $this->getSiteNameWithSeperator();
     }
 

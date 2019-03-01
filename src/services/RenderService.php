@@ -34,7 +34,7 @@ class RenderService extends Component
         Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_CP);
         return Craft::$app->getView()->renderTemplate(
             'seo-fields/_meta',
-            ['meta' => $meta]
+            ['meta' => $meta, 'entry' => $context['entry']]
         );
     }
 }
