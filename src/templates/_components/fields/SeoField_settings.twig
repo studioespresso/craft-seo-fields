@@ -27,23 +27,20 @@
  {{ forms.lightswitchField({
      label: "Show general Tab"|t("seo-fields"),
      id: "showGeneralTab",
-     name: "showGeneralTab",
-     on: field.showGeneralTab,
-     errors: field.getErrors("showGeneralTab"),
+     name: "tabs[general]",
+     on: field.tabs|length ? field.tabs.general : '',
  }) }}
 
  {{ forms.lightswitchField({
      label: "Show Facebook Tab"|t("seo-fields"),
      id: "showFacebookTab",
-     name: "showFacebookTab",
-     on: field.showFacebookTab,
-     errors: field.getErrors("showFacebookTab"),
+     name: "tabs[facebook]",
+     on: field.tabs|length ? field.tabs.facebook : '',
  }) }}
 
  {{ forms.lightswitchField({
      label: "Show Twitter Tab"|t("seo-fields"),
      id: "showTwitterTab",
-     name: "showTwitterTab",
-     on: field.showTwitterTab,
-     errors: field.getErrors("showTwitterTab"),
+     name: "tabs[twitter]",
+     on: field.tabs|length ? field.tabs.twitter : '',
  }) }}

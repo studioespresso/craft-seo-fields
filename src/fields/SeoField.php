@@ -45,9 +45,7 @@ class SeoField extends Field
      * @var string
      */
 
-    public $showGeneralTab = true;
-    public $showFacebookTab = false;
-    public $showTwitterTab = false;
+    public $tabs = [];
     public $allowSitenameOverwrite = false;
 
     // Static Methods
@@ -79,9 +77,7 @@ class SeoField extends Field
         $rules = parent::rules();
         $rules = array_merge($rules, [
             ['allowSitenameOverwrite', 'boolean'],
-            ['showGeneralTab', 'boolean'],
-            ['showFacebookTab', 'boolean'],
-            ['showTwitterTab', 'boolean'],
+
         ]);
         return $rules;
     }
