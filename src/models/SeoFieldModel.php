@@ -17,16 +17,52 @@ class SeoFieldModel extends Model
     public $twitterDescription;
     public $siteName;
 
-    public function getPageTitle()
-    {
+    public $siteDefault;
 
-        $siteDefault = SeoFields::getInstance()->defaultsService->getDataBySite(Craft::$app->getSites()->getCurrentSite());
-        if($this->siteName) {
+    public function init()
+    {
+        $this->siteDefault = $siteDefault = SeoFields::getInstance()->defaultsService->getDataBySite(Craft::$app->getSites()->getCurrentSite());
+    }
+
+    public function getSiteNameWithSeperator()
+    {
+        if ($this->siteName) {
             $siteName = $this->siteName;
         } else {
-            $siteName = $siteDefault->defaultSiteTitle;
+            $siteName = $this->siteDefault->defaultSiteTitle;
         }
-        return $this->metaTitle . ' ' . $siteDefault->titleSeperator . ' ' . $siteName;
+        return ' ' . $this->siteDefault->titleSeperator . ' ' . $siteName;
+    }
+
+    public function getPageTitle()
+    {
+        if ($this->siteName) {
+            $siteName = $this->siteName;
+        } else {
+            $siteName = $this->siteDefault->defaultSiteTitle;
+        }
+        return $this->metaTitle . $this->getSiteNameWithSeperator();
+    }
+
+    public function getOgDescription()
+    {
+        return $this->metaDescription;
+    }
+
+    public function getOgTitle($element)
+    {
+        if ($this->siteName) {
+            $siteName = $this->siteName;
+        } else {
+            $siteName = $this->siteDefault->defaultSiteTitle;
+        }
+        if(!$this->facebookTitle) {
+            return $element->title . $this->getSiteNameWithSeperator();
+        } else {
+            return $this->facebookTitle . $this->getSiteNameWithSeperator();
+        }
+
+
     }
 
 

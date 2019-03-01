@@ -5,25 +5,28 @@
 <div class="tab">
     <div class="fb-preview-container">
         <div class="fb-preview">
+            {% if value.facebookImage|length %}
+
             {% set ogImage = craft.assets.id(value.facebookImage[0]).one() %}
-            <div class="fb-image-wrap">
-                {% set ogTransform = {
-                    width: 500,
-                    height: 261,
-                    quality: 90,
-                    mode: "scale"
-                } %}
-                <img src="{{ ogImage.getUrl(ogTransform) }}" width="500" height="261">
-            </div>
+                <div class="fb-image-wrap">
+                    {% set ogTransform = {
+                        width: 500,
+                        height: 261,
+                        quality: 90,
+                        mode: "scale"
+                    } %}
+                    <img src="{{ ogImage.getUrl(ogTransform) }}" width="500" height="261">
+                </div>
+            {% endif %}
             <div class="fb-text-wrap">
                 <div class="fb-url">
                     {{ element.getUrl()|replace('https://', '') }}
                 </div>
                 <div class="fb-og-title">
-                    {{ value.facebookTitle }}
+                    {{ value.getOgTitle(element) }}
                 </div>
                 <div class="fb-og-description">
-                    {{ value.facebookDescription }}
+                    {{ value.getOgDescription() }}
                 </div>
             </div>
         </div>
