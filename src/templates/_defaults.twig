@@ -41,7 +41,7 @@
             label: "Default Meta image"|t('seo-fields'),
             id: "defaultImage",
             name: "defaultImage",
-            elements: [data['defaultImage'] is defined ? craft.assets.id(data['defaultImage'][0]).one() : null],
+            elements: [data['defaultImage']|length ? craft.assets.id(data['defaultImage'][0]).one() : null],
             elementType: "craft\\elements\\Asset",
             viewMode: "large",
             criteria: {
