@@ -1,7 +1,7 @@
 {% import "_includes/forms" as forms %}
 
-<input type="radio" name="tabs" id="facebook-tab" {% if tabSelected is defined %}checked="checked"{% endif %}>
-<label for="facebook-tab" class="label">{{ 'Facebook'|t('seo-fields') }}</label>
+<input type="radio" name="tabs" id="facebook-tab" >
+<label for="facebook-tab" class="label">{{ "Facebook"|t("seo-fields") }}</label>
 <div class="tab">
     <div class="fb-preview-container">
         <div class="fb-preview">
@@ -16,13 +16,13 @@
                 </div>
             <div class="fb-text-wrap">
                 <div class="fb-url">
-                    {{ element.getUrl()|replace('https://', '') }}
+                    {{ element.getUrl()|replace("https://", "") }}
                 </div>
                 <div class="fb-og-title">
                     {{ value.getOgTitle(element) }}
                 </div>
                 <div class="fb-og-description">
-                    {{ value.getOgDescription()|length > 70 ? value.getOgDescription()|slice(0, 70) ~ '...' : value.getOgDescription()  }}
+                    {{ value.getOgDescription()|length > 70 ? value.getOgDescription()|slice(0, 70) ~ "..." : value.getOgDescription()  }}
                 </div>
             </div>
         </div>
@@ -69,8 +69,8 @@
         }) }}
     {% else %}
         <div class="field">
-            <h3>{{ 'Facebook OG image'|t('seo-fields') }}</h3>
-            <p class="warning">{{ 'No asset volumes defined'|t('seo-fields') }}.</p>
+            <h3>{{ "Facebook OG image"|t("seo-fields") }}</h3>
+            <p class="warning">{{ "No asset volumes defined"|t("seo-fields") }}.</p>
         </div>
     {% endif %}
 </div>

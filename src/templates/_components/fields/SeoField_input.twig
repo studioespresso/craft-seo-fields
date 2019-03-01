@@ -19,17 +19,16 @@
 
 <div class="tabs">
     {{ dd() }}
-    {% set tabSelected = false %}
     {% if field.tabs.general %}
-        {% if not field.tabs.facebook or field.tabs.twitter %}
-            {% set tabSelected = true %}
-        {% endif %}
-        {% include 'seo-fields/_components/fields/_tabs/_general.twig' with { tabSelected : tabSelected}  %}
+        {% set tabSelected = false %}
+        {% include 'seo-fields/_components/fields/_tabs/_general.twig'  %}
     {% endif %}
     {% if field.tabs.facebook %}
+        {% set tabSelected = false %}
         {% include 'seo-fields/_components/fields/_tabs/_facebook.twig' with { tabSelected : tabSelected}  %}
     {% endif %}
     {% if field.tabs.twitter %}
+        {% set tabSelected = false %}
         {% include 'seo-fields/_components/fields/_tabs/_twitter.twig' with { tabSelected : tabSelected}  %}
     {% endif %}
 </div>
