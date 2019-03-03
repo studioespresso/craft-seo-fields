@@ -15,6 +15,7 @@ use craft\base\Plugin;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
+use craft\helpers\UrlHelper;
 use craft\services\Fields;
 use craft\services\UserPermissions;
 use craft\web\UrlManager;
@@ -187,6 +188,14 @@ class SeoFields extends Plugin
                 'settings' => $this->getSettings()
             ]
         );
+    }
+
+    protected function afterInstall()
+    {
+        if(!Craft::$app->getRequest()->isConsoleRequest) {
+            parent::afterInstall();
+            Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('seo-fields'))->send();
+        }
     }
 
 
