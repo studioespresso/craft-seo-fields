@@ -199,5 +199,16 @@
     text-overflow: ellipsis;
     text-transform: uppercase;
     white-space: nowrap;
+}
 
+@media only screen and (min-width: 700px) {
+    .seo-fields-facebook-text {
+        width: 70%;
+        float: left;
+    }
+    .seo-fields-facebook-image {
+        width: 25%;
+        margin-left: 24px;
+        float: left;
+    }
 }
