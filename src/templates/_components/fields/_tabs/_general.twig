@@ -3,16 +3,15 @@
 <input type="radio" name="tabs" id="general-tab" checked="checked">
 <label for="general-tab" class="label">{{ "General meta"|t("seo-fields") }}</label>
 <div class="tab">
-    <h3>{{ "Google results page preview"|t("seo-fields") }}</h3>
     <div class="seofields-google-result">
-        <div class="seofields-google-result__headline" contenteditable>
+        <div class="seofields-google-result__headline">
             {{ value.getPageTitle(element) }}
         </div>
-        <div class="seofields-google-result__link" contenteditable>
+        <div class="seofields-google-result__link">
             {{ element.getUrl() }}
         </div>
-        <div class="seofields-google-result__description" contenteditable>
-            {{ value.metaDescription|length ? value.metaDescription : 'blaaa' }}
+        <div class="seofields-google-result__description">
+            {{ value.metaDescription|length ? value.metaDescription : '' }}
         </div>
     </div>
 
@@ -22,6 +21,7 @@
         name: name ~ "[metaTitle]",
         value: value.metaTitle,
     }) }}
+
     {% if field.allowSitenameOverwrite %}
         {{ forms.textField({
             label: "Site name"|t("seo-fields"),
