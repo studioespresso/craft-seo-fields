@@ -78,6 +78,7 @@ class SeoFieldModel extends Model
         } elseif($this->siteDefault->defaultImage) {
             return Craft::$app->getAssets()->getAssetById($this->siteDefault->defaultImage[0]);
         }
+        return false;
     }
 
     /**
