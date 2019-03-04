@@ -6,13 +6,16 @@
     <div class="fb-preview-container">
         <div class="fb-preview">
             <div class="fb-image-wrap">
-                {% set ogTransform = {
-                    width: 500,
-                    height: 261,
-                    quality: 90,
-                    mode: "scale"
-                } %}
-                <img src="{{ value.getOgImage().getUrl(ogTransform) }}" width="500" height="261">
+                {% if value.getOgImage() %}
+
+                    {% set ogTransform = {
+                        width: 500,
+                        height: 261,
+                        quality: 90,
+                        mode: "scale"
+                    } %}
+                    <img src="{{ value.getOgImage().getUrl(ogTransform) }}" width="500" height="261">
+                {% endif %}
             </div>
             <div class="fb-text-wrap">
                 <div class="fb-url">
