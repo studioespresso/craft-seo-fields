@@ -112,12 +112,13 @@ class SitemapService extends Component
                 ]);
                 break;
         }
-        
+
         return $this->_addEntriesToIndex($data);
     }
 
     private function _addEntriesToIndex($entries) {
         $data = [];
+        $data[] = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
         foreach ($entries as $entry) {
             if ($entry->getUrl()) {
                 $data[] = '<url><loc>';
@@ -127,6 +128,7 @@ class SitemapService extends Component
                 $data[] = '</lastmod></url>';
             }
         }
+        $data[] = '</urlset>';
         return $data = implode('', $data);
     }
 

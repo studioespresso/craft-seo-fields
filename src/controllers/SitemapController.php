@@ -13,7 +13,7 @@ use yii\web\NotFoundHttpException;
 
 class SitemapController extends Controller
 {
-    public $allowAnonymous = ['actionRender'];
+    public $allowAnonymous = ['actionRender', 'actionDetail'];
 
     public function actionIndex()
     {
