@@ -8,14 +8,17 @@ use craft\commerce\models\ProductTypeSite;
 use craft\commerce\Plugin as Commerce;
 use craft\commerce\services\ProductTypes;
 use craft\elements\Entry;
+use craft\events\RegisterUrlRulesEvent;
 use craft\helpers\Json;
 use craft\models\Site;
+use craft\web\UrlManager;
 use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\records\DefaultsRecord;
 use studioespresso\seofields\SeoFields;
 
 use Craft;
 use craft\base\Component;
+use yii\base\Event;
 
 /**
  * @author    Studio Espresso
@@ -93,15 +96,49 @@ class SitemapService extends Component
         return $xml;
     }
 
+    public function getSitemapData($siteId, $type, $sectionId)
+    {
+        switch ($type) {
+            case 'products':
+                $data = Product::findAll([
+                    'siteId' => $siteId,
+                    'typeId' => $sectionId,
+                ]);
+                break;
+            case 'section':
+                $data = Entry::findAll([
+                    'siteId' => $siteId,
+                    'sectionId' => $sectionId
+                ]);
+                break;
+        }
+        
+        return $this->_addEntriesToIndex($data);
+    }
+
+    private function _addEntriesToIndex($entries) {
+        $data = [];
+        foreach ($entries as $entry) {
+            if ($entry->getUrl()) {
+                $data[] = '<url><loc>';
+                $data[] = $entry->getUrl();
+                $data[] = '</loc><lastmod>';
+                $data[] = $entry->dateUpdated->format('Y-m-d h:m:s');
+                $data[] = '</lastmod></url>';
+            }
+        }
+        return $data = implode('', $data);
+    }
+
     private function _addSectionsToIndex($sections, $site)
     {
         $data = [];
         foreach ($sections as $id => $settings) {
             $section = Craft::$app->getSections()->getSectionById($id);
             $sectionEntry = Entry::findOne(['sectionId' => $id]);
-            if($sectionEntry) {
+            if ($sectionEntry) {
                 $data[] = '<sitemap><loc>';
-                $data[] = Craft::$app->getRequest()->getBaseUrl() . htmlentities('/sitemap_' . $site->id .'_section_' . $section->handle . '_' . $section->id . '.xml');
+                $data[] = Craft::$app->getRequest()->getBaseUrl() . htmlentities('/sitemap_' . $site->id . '_section_' . $section->id . '_' . $section->handle . '.xml');
                 $data[] = '</loc><lastmod>';
                 $data[] = $sectionEntry->dateUpdated->format('Y-m-d h:m:s');
                 $data[] = '</lastmod></sitemap>';
@@ -116,9 +153,9 @@ class SitemapService extends Component
         foreach ($productTypes as $id => $settings) {
             $type = Commerce::getInstance()->productTypes->getProductTypeById($id);
             $typeEntry = Product::findOne(['typeId' => $type->id]);
-            if($typeEntry) {
+            if ($typeEntry) {
                 $data[] = '<sitemap><loc>';
-                $data[] = Craft::$app->getRequest()->getBaseUrl() . htmlentities('/sitemap_' . $site->id .'_products_' . $type->handle . '_' . $type->id . '.xml');
+                $data[] = Craft::$app->getRequest()->getBaseUrl() . htmlentities('/sitemap_' . $site->id . '_products_' . $type->id . '_' . $type->handle. '.xml');
                 $data[] = '</loc><lastmod>';
                 $data[] = $typeEntry->dateUpdated->format('Y-m-d h:m:s');
                 $data[] = '</lastmod></sitemap>';
