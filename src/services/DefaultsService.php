@@ -57,9 +57,8 @@ class DefaultsService extends Component
         }
     }
 
-    public function getDataBySite(Site $site)
-    {
-        $record = $this->getRecordForSite($site);
+    public function getDataBySiteId($siteId) {
+        $record = $this->getRecordForSiteId($siteId);
         if ($record) {
             $model = new SeoDefaultsModel();
             $fields = array_merge(
@@ -77,13 +76,18 @@ class DefaultsService extends Component
         }
     }
 
+    public function getDataBySite(Site $site)
+    {
+        return $this->getDataBySiteId($site->id);
+    }
+
     public function getRobotsForSite(Site $site)
     {
         if(!SeoFields::$plugin->getSettings()->robotsPerSite) {
             $site = Craft::$app->getSites()->getPrimarySite();
         }
 
-        $record = $this->getRecordForSite($site);
+        $record = $this->getRecordForSiteId($site->id);
         if ($record && !$record->enableRobots) {
             return false;
         } else {
@@ -97,9 +101,9 @@ class DefaultsService extends Component
         }
     }
 
-    public function getRecordForSite(Site $site) {
+    public function getRecordForSiteId($siteId) {
         $record = DefaultsRecord::findOne(
-            ['siteId' => $site->id]
+            ['siteId' => $siteId]
         );
         return $record;
     }

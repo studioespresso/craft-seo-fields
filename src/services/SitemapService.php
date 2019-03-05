@@ -29,7 +29,7 @@ class SitemapService extends Component
 {
     public function shouldRenderBySiteId(Site $site)
     {
-        $data = SeoFields::$plugin->defaultsService->getRecordForSite($site);
+        $data = SeoFields::$plugin->defaultsService->getRecordForSiteId($site->id);
         $sitemapSettings = Json::decode($data->sitemap);
         if (!$sitemapSettings) {
             return false;
@@ -98,6 +98,7 @@ class SitemapService extends Component
 
     public function getSitemapData($siteId, $type, $sectionId)
     {
+        $settings = $this->getSettingsBySiteId($siteId);
         switch ($type) {
             case 'products':
                 $data = Product::findAll([
@@ -113,19 +114,27 @@ class SitemapService extends Component
                 break;
         }
 
-        return $this->_addEntriesToIndex($data);
+        return $this->_addEntriesToIndex($data, $settings[$type][$sectionId]);
     }
 
-    private function _addEntriesToIndex($entries) {
+    private function getSettingsBySiteId($siteId)
+    {
+        $settings = SeoFields::$plugin->defaultsService->getDataBySiteId($siteId);
+        return Json::decodeIfJson($settings->sitemap);
+    }
+
+    private function _addEntriesToIndex($entries, $settings)
+    {
         $data = [];
         $data[] = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
         foreach ($entries as $entry) {
             if ($entry->getUrl()) {
-                $data[] = '<url><loc>';
-                $data[] = $entry->getUrl();
-                $data[] = '</loc><lastmod>';
-                $data[] = $entry->dateUpdated->format('Y-m-d h:m:s');
-                $data[] = '</lastmod></url>';
+                $data[] = "<url>";
+                $data[] = "<loc>" . $entry->getUrl() . "</loc>";
+                $data[] = "<lastmod>" . $entry->dateUpdated->format('Y-m-d h:m:s') . "</lastmod>";
+                $data[] = "<changefreq>" . $settings['changefreq'] . "</changefreq>";
+                $data[] = "<priority>" . $settings['priority'] . "</priority>";
+                $data[] = "</url>";
             }
         }
         $data[] = '</urlset>';
@@ -157,7 +166,7 @@ class SitemapService extends Component
             $typeEntry = Product::findOne(['typeId' => $type->id]);
             if ($typeEntry) {
                 $data[] = '<sitemap><loc>';
-                $data[] = Craft::$app->getRequest()->getBaseUrl() . htmlentities('/sitemap_' . $site->id . '_products_' . $type->id . '_' . $type->handle. '.xml');
+                $data[] = Craft::$app->getRequest()->getBaseUrl() . htmlentities('/sitemap_' . $site->id . '_products_' . $type->id . '_' . $type->handle . '.xml');
                 $data[] = '</loc><lastmod>';
                 $data[] = $typeEntry->dateUpdated->format('Y-m-d h:m:s');
                 $data[] = '</lastmod></sitemap>';
