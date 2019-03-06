@@ -204,7 +204,7 @@
     white-space: nowrap;
 }
 
-@media only screen and (min-width: 700px) {
+@media only screen and (min-width: 770px) and (max-width: 1200px), (min-width: 1330px) {
     .seo-fields-facebook-text {
         width: 65%;
         float: left;
