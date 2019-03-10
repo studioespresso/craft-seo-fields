@@ -16,15 +16,6 @@
 {% import "_includes/forms" as forms %}
 
  {{ forms.lightswitchField({
-     label: "Allow sitename overwrite"|t("seo-fields"),
-     instructions: "Allow the user to overwrite the sitename that gets added to the entry title on a per-entry basis",
-     id: "allowSitenameOverwrite",
-     name: "allowSitenameOverwrite",
-     on: field.allowSitenameOverwrite,
-     errors: field.getErrors("allowSitenameOverwrite"),
- }) }}
-
- {{ forms.lightswitchField({
      label: "Show general Tab"|t("seo-fields"),
      id: "showGeneralTab",
      name: "tabs[general]",
@@ -43,4 +34,22 @@
      id: "showTwitterTab",
      name: "tabs[twitter]",
      on: field.tabs|length ? field.tabs.twitter : '',
+ }) }}
+
+ {{ forms.lightswitchField({
+     label: "Allow sitename overwrite"|t("seo-fields"),
+     instructions: "Allow the user to overwrite the sitename that gets added to the entry title on a per-entry basis",
+     id: "allowSitenameOverwrite",
+     name: "allowSitenameOverwrite",
+     on: field.allowSitenameOverwrite,
+     errors: field.getErrors("allowSitenameOverwrite"),
+ }) }}
+
+ {{ forms.lightswitchField({
+     label: "Allow sitename to be hidden"|t("seo-fields"),
+     instructions: "Allow the user to hide the sitename on a per entry basis",
+     id: "allowSitenameDisable",
+     name: "allowSitenameDisable",
+     on: field.allowSitenameDisable,
+     errors: field.getErrors("allowSitenameDisable"),
  }) }}

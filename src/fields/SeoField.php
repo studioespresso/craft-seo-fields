@@ -47,6 +47,7 @@ class SeoField extends Field
 
     public $tabs = [];
     public $allowSitenameOverwrite = false;
+    public $allowSitenameDisable = false;
 
     // Static Methods
     // =========================================================================
@@ -77,6 +78,7 @@ class SeoField extends Field
         $rules = parent::rules();
         $rules = array_merge($rules, [
             ['allowSitenameOverwrite', 'boolean'],
+            ['allowSitenameDisable', 'boolean'],
 
         ]);
         return $rules;
