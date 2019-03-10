@@ -4,6 +4,7 @@ namespace studioespresso\seofields\models;
 
 use Craft;
 use craft\base\Model;
+use craft\models\AssetTransform;
 use studioespresso\seofields\SeoFields;
 
 class SeoFieldModel extends Model
@@ -74,11 +75,25 @@ class SeoFieldModel extends Model
     public function getOgImage()
     {
         if($this->facebookImage) {
-            return Craft::$app->getAssets()->getAssetById($this->facebookImage[0]);
+            $asset =  Craft::$app->getAssets()->getAssetById($this->facebookImage[0]);
         } elseif($this->siteDefault->defaultImage) {
-            return Craft::$app->getAssets()->getAssetById($this->siteDefault->defaultImage[0]);
+            $asset = Craft::$app->getAssets()->getAssetById($this->siteDefault->defaultImage[0]);
         }
-        return false;
+        if(!$asset) {
+            return false;
+        }
+
+        $transform = new AssetTransform();
+        $transform->width = 1200;
+        $transform->height = 590;
+        $transform->mode = 'fit';
+
+        $transformed = $asset->setTransform($transform);
+        return [
+            'height' => $asset->getHeight($transform),
+            'width' => $asset->getWidth($transform),
+            'url' => $asset->getUrl($transform),
+        ];
     }
 
     /**
