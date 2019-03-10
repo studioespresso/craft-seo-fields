@@ -17,6 +17,7 @@ class SeoFieldModel extends Model
     public $twitterTitle;
     public $twitterDescription;
     public $siteName;
+    public $hideSiteName;
 
     /**
      * @var SeoDefaultsModel
@@ -60,10 +61,13 @@ class SeoFieldModel extends Model
         } else {
             $siteName = $this->siteDefault->defaultSiteTitle;
         }
-        if (!$this->facebookTitle) {
-            return $element->title . $this->getSiteNameWithSeperator();
-        } else {
+        
+        if ($this->facebookTitle) {
             return $this->facebookTitle . $this->getSiteNameWithSeperator();
+        } elseif($this->metaTitle) {
+            return $this->metaTitle . $this->getSiteNameWithSeperator();
+        } else {
+            return $element->title . $this->getSiteNameWithSeperator();
         }
     }
 
@@ -107,6 +111,7 @@ class SeoFieldModel extends Model
                     'metaTitle',
                     'metaDescription',
                     'siteName',
+                    'hideSiteName',
                     'facebookTitle',
                     'facebookDescription',
                     'facebookImage'
