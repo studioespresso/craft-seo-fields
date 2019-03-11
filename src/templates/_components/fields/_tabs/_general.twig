@@ -29,6 +29,13 @@
             name: name ~ "[siteName]",
             value: value.siteName,
         }) }}
+
+        {{ forms.lightswitchField({
+            label: "Show Twitter Tab"|t("seo-fields"),
+            id: name ~ "-hideSiteName",
+            name: name ~ "[hideSiteName]",
+            on: value.hideSiteName,
+        }) }}
     {% endif %}
 
     <div class="field" id="{{ name ~ "-metaDescription" }}-field">

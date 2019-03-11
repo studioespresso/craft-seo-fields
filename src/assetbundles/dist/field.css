@@ -1,11 +1,11 @@
-.tabs {
+.seofields-tabs {
     display: flex;
     flex-wrap: wrap;
     border-bottom: 1px solid #e7eef3;
     margin-top: 1rem;
 }
 
-.tabs .label {
+.seofields-tabs .label {
     order: 1;
     display: block;
     padding: 0.5rem 1rem;
@@ -14,7 +14,7 @@
     transition: background ease 0.2s;
 }
 
-.tabs .tab {
+.seofields-tabs .tab {
     padding-top: 0.3rem;
     order: 99;
     flex-grow: 1;
@@ -28,11 +28,11 @@
     border-color: #e7eef3;
 }
 
-.tabs input[type="radio"] {
+.seofields-tabs input[type="radio"] {
     display: none;
 }
 
-.tabs input[type="radio"]:checked + label {
+.seofields-tabs input[type="radio"]:checked + label {
     color: #29323d;
     background: #fff;
     background-clip: border-box;
@@ -50,17 +50,17 @@
     z-index: 1;
 }
 
-.tabs input[type="radio"]:checked + label + .tab {
+.seofields-tabs input[type="radio"]:checked + label + .tab {
     display: block;
 }
 
 @media (max-width: 45em) {
-    .tabs .tab,
-    .tabs label {
+    .seofields-tabs .tab,
+    .seofields-tabs label {
         order: initial;
     }
 
-    .tabs label {
+    .seofields-tabs label {
         width: 100%;
         margin-right: 0;
         margin-top: 0.2rem;

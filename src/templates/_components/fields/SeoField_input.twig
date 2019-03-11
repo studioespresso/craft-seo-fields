@@ -17,8 +17,7 @@
 
 {% do view.registerAssetBundle("studioespresso\\seofields\\assetbundles\\SeoFieldAsset") %}
 
-<div class="tabs">
-    {{ dd() }}
+<div class="seofields-tabs">
     {% if field.tabs.general %}
         {% set tabSelected = false %}
         {% include 'seo-fields/_components/fields/_tabs/_general.twig'  %}
