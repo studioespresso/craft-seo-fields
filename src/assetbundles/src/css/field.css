@@ -14,7 +14,7 @@
     transition: background ease 0.2s;
 }
 
-.seofields-tabs .tab {
+.seofields-tabs .seofields-tab-content {
     padding-top: 0.3rem;
     order: 99;
     flex-grow: 1;
@@ -32,7 +32,7 @@
     display: none;
 }
 
-.seofields-tabs input[type="radio"]:checked + label {
+.seofields-tabs input.seofields-tab:checked + label {
     color: #29323d;
     background: #fff;
     background-clip: border-box;
@@ -50,12 +50,12 @@
     z-index: 1;
 }
 
-.seofields-tabs input[type="radio"]:checked + label + .tab {
+.seofields-tabs input.seofields-tab:checked + label + .seofields-tab-content {
     display: block;
 }
 
 @media (max-width: 45em) {
-    .seofields-tabs .tab,
+    .seofields-tabs .seofields-tab-content,
     .seofields-tabs label {
         order: initial;
     }

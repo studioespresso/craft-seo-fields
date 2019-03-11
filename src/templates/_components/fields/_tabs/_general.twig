@@ -1,8 +1,8 @@
 {% import "_includes/forms" as forms %}
 
-<input type="radio" name="tabs" id="general-tab" checked="checked">
+<input type="radio" name="tabs" id="general-tab" checked="checked" class="seofields-tab">
 <label for="general-tab" class="label">{{ "General meta"|t("seo-fields") }}</label>
-<div class="tab">
+<div class="seofields-tab-content">
     <div class="seofields-google-result">
         <div class="seofields-google-result__headline">
             {{ value.getPageTitle(element) }}
@@ -30,11 +30,11 @@
             value: value.siteName,
         }) }}
 
-        {{ forms.lightswitchField({
-            label: "Show Twitter Tab"|t("seo-fields"),
+        {{ forms.checkboxField({
+            label: "Hide site name"|t("seo-fields"),
             id: name ~ "-hideSiteName",
             name: name ~ "[hideSiteName]",
-            on: value.hideSiteName,
+            checked: value.hideSiteName,
         }) }}
     {% endif %}
 
