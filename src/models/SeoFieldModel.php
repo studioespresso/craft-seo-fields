@@ -31,6 +31,9 @@ class SeoFieldModel extends Model
 
     public function getSiteNameWithSeperator()
     {
+        if($this->hideSiteName) {
+           return false;
+        }
         if ($this->siteName) {
             $siteName = $this->siteName;
         } else {
@@ -46,6 +49,7 @@ class SeoFieldModel extends Model
         } else {
             $siteName = $this->siteDefault->defaultSiteTitle;
         }
+
         if($element && !$this->metaTitle) {
             return $element->title . $this->getSiteNameWithSeperator();
         }
