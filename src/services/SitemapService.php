@@ -85,18 +85,34 @@ class SitemapService extends Component
 
     public function getSitemapIndex($data)
     {
-        $xml[] = '<?xml version="1.0" encoding="UTF-8"?>';
-        $xml[] = '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-        $currentSite = Craft::$app->getSites()->getCurrentSite();
-        if (isset($data['sections'])) {
-            $xml[] = $this->_addSectionsToIndex($data['sections'], $currentSite);
-        }
-        if (isset($data['products'])) {
-            $xml[] = $this->_addProductsToIndex($data['products'], $currentSite);
-        }
 
-        $xml[] = '</sitemapindex>';
-        $xml = implode('', $xml);
+        $currentSite = Craft::$app->getSites()->getCurrentSite();
+        $cacheDependency = new TagDependency([
+            'tags' => [
+                self::SITEMAP_CACHE_KEY,
+                self::SITEMAP_CACHE_KEY. '_index_site' . $currentSite->id
+            ]
+        ]);
+        
+        $xml = Craft::$app->getCache()->getOrSet(
+            self::SITEMAP_CACHE_KEY. '_index_site' . $currentSite->id,
+            function() use ($data) {
+                $xml[] = '<?xml version="1.0" encoding="UTF-8"?>';
+                $xml[] = '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+                if (isset($data['sections'])) {
+                    $xml[] = $this->_addSectionsToIndex($data['sections'], $currentSite);
+                }
+                if (isset($data['products'])) {
+                    $xml[] = $this->_addProductsToIndex($data['products'], $currentSite);
+                }
+
+                $xml[] = '</sitemapindex>';
+                $xml = implode('', $xml);
+                return $xml;
+            },
+            null,
+            $cacheDependency
+        );
         return $xml;
     }
 
