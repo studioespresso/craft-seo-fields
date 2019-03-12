@@ -19,6 +19,7 @@ use studioespresso\seofields\SeoFields;
 use Craft;
 use craft\base\Component;
 use yii\base\Event;
+use yii\caching\TagDependency;
 
 /**
  * @author    Studio Espresso
@@ -27,6 +28,9 @@ use yii\base\Event;
  */
 class SitemapService extends Component
 {
+
+    const SITEMAP_CACHE_KEY = 'seofields_cache_sitemaps';
+
     public function shouldRenderBySiteId(Site $site)
     {
         $data = SeoFields::$plugin->defaultsService->getRecordForSiteId($site->id);
@@ -115,6 +119,14 @@ class SitemapService extends Component
         }
 
         return $this->_addEntriesToIndex($data, $settings[$type][$sectionId]);
+    }
+
+    public function clearCaches()
+    {
+        TagDependency::invalidate(
+            Craft::$app->getCache(),
+            self::SITEMAP_CACHE_KEY
+        );
     }
 
     private function getSettingsBySiteId($siteId)

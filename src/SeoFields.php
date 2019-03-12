@@ -12,6 +12,7 @@ namespace studioespresso\seofields;
 
 use Craft;
 use craft\base\Plugin;
+use craft\events\RegisterCacheOptionsEvent;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
@@ -20,6 +21,7 @@ use craft\helpers\UrlHelper;
 use craft\services\Fields;
 use craft\services\Sites;
 use craft\services\UserPermissions;
+use craft\utilities\ClearCaches;
 use craft\web\UrlManager;
 use craft\web\View;
 use studioespresso\seofields\fields\SeoField;
@@ -78,10 +80,11 @@ class SeoFields extends Plugin
         });
 
         $this->_registerField();
-        $this->_registerSiteEvents();
         $this->_registerCpRoutes();
         $this->_registerFrontendRoutes();
         $this->_registerPermissions();
+        $this->_registerSiteEvents();
+        $this->_registerCacheOptions();
     }
 
     public function getCpNavItem()
@@ -227,6 +230,25 @@ class SeoFields extends Plugin
                 if ($event->isNew) {
                     SeoFields::$plugin->defaultsService->copyDefaultsForSite($event->site, $event->oldPrimarySiteId);
                 }
+            }
+        );
+    }
+
+    private function _registerCacheOptions()
+    {
+        Event::on(
+            ClearCaches::class,
+            ClearCaches::EVENT_REGISTER_CACHE_OPTIONS,
+            function (RegisterCacheOptionsEvent $event) {
+                // Register our Control Panel routes
+                $event->options = array_merge(
+                    $event->options, [
+                    [
+                        "key" => 'seofields_sitemaps',
+                        "label" => "Sitemap caches (SEO Fields)",
+                        "action" => [SeoFields::$plugin->sitemapSerivce, 'clearCaches']
+                    ]
+                ]);
             }
         );
     }
