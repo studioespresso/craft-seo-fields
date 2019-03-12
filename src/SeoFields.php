@@ -15,8 +15,10 @@ use craft\base\Plugin;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
+use craft\events\SiteEvent;
 use craft\helpers\UrlHelper;
 use craft\services\Fields;
+use craft\services\Sites;
 use craft\services\UserPermissions;
 use craft\web\UrlManager;
 use craft\web\View;
@@ -66,80 +68,20 @@ class SeoFields extends Plugin
         self::$plugin = $this;
 
         $this->setComponents([
-            "defaultsService"=> DefaultsService::class,
-            "sitemapSerivce"=>  SitemapService::class,
+            "defaultsService" => DefaultsService::class,
+            "sitemapSerivce" => SitemapService::class,
             "renderService" => RenderService::class
         ]);
 
-        Craft::$app->view->hook('seo-fields', function(array &$context) {
+        Craft::$app->view->hook('seo-fields', function (array &$context) {
             return $this->renderService->renderMeta($context);
         });
 
-        // Register our fields
-        Event::on(
-            Fields::class,
-            Fields::EVENT_REGISTER_FIELD_TYPES,
-            function (RegisterComponentTypesEvent $event) {
-                $event->types[] = SeoField::class;
-            }
-        );
-
-        Event::on(
-            UrlManager::class,
-            UrlManager::EVENT_REGISTER_SITE_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
-                $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getCurrentSite());
-                if ($robots) {
-                    $event->rules = array_merge($event->rules, [
-                        'robots.txt' => 'seo-fields/robots/render',
-                    ]);
-                }
-                if (SeoFields::$plugin->getSettings()->sitemapPerSite) {
-                    $shouldRender = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());
-                } else {
-                    $shouldRender = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getPrimarySite());
-                }
-                if($shouldRender) {
-                    $event->rules = array_merge($event->rules, [
-                        'sitemap.xml' => 'seo-fields/sitemap/render',
-                        'sitemap_<siteId:\d>_<type:(sections|products)>_<sectionId:\d>_<handle:.*>.xml' => 'seo-fields/sitemap/detail'
-                    ]);
-                }
-            }
-        );
-
-        Event::on(
-            UrlManager::class,
-            UrlManager::EVENT_REGISTER_CP_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
-                // Register our Control Panel routes
-                $event->rules = array_merge($event->rules, [
-                    'seo-fields' => 'seo-fields/defaults/index',
-                    'seo-fields/<controller:(defaults|robots|sitemap)>' => 'seo-fields/<controller>/index',
-                    'seo-fields/<controller:(defaults|robots|sitemap)>/<siteHandle:{handle}>' => 'seo-fields/<controller>/settings',
-                ]);
-            }
-        );
-
-        Event::on(
-            UserPermissions::class,
-            UserPermissions::EVENT_REGISTER_PERMISSIONS,
-            function (RegisterUserPermissionsEvent $event) {
-
-                // Register our custom permissions
-                $event->permissions[Craft::t('seo-fields', 'SEO Fields')] = [
-                    'seo-fields:default' => [
-                        'label' => Craft::t('seo-fields', 'Defaults'),
-                    ],
-                    'seo-fields:robots' => [
-                        'label' => Craft::t('seo-fields', 'Robots'),
-                    ],
-                    'seo-fields:sitemap' => [
-                        'label' => Craft::t('seo-fields', 'Sitemap'),
-                    ],
-                ];
-            }
-        );
+        $this->_registerField();
+        $this->_registerSiteEvents();
+        $this->_registerCpRoutes();
+        $this->_registerFrontendRoutes();
+        $this->_registerPermissions();
     }
 
     public function getCpNavItem()
@@ -193,11 +135,100 @@ class SeoFields extends Plugin
 
     protected function afterInstall()
     {
-        if(!Craft::$app->getRequest()->isConsoleRequest) {
+        if (!Craft::$app->getRequest()->isConsoleRequest) {
             parent::afterInstall();
             Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('seo-fields'))->send();
         }
     }
 
+    private function _registerField()
+    {
+        Event::on(
+            Fields::class,
+            Fields::EVENT_REGISTER_FIELD_TYPES,
+            function (RegisterComponentTypesEvent $event) {
+                $event->types[] = SeoField::class;
+            }
+        );
+    }
+
+    private function _registerPermissions()
+    {
+        Event::on(
+            UserPermissions::class,
+            UserPermissions::EVENT_REGISTER_PERMISSIONS,
+            function (RegisterUserPermissionsEvent $event) {
+
+                // Register our custom permissions
+                $event->permissions[Craft::t('seo-fields', 'SEO Fields')] = [
+                    'seo-fields:default' => [
+                        'label' => Craft::t('seo-fields', 'Defaults'),
+                    ],
+                    'seo-fields:robots' => [
+                        'label' => Craft::t('seo-fields', 'Robots'),
+                    ],
+                    'seo-fields:sitemap' => [
+                        'label' => Craft::t('seo-fields', 'Sitemap'),
+                    ],
+                ];
+            }
+        );
+    }
+
+    private function _registerFrontendRoutes()
+    {
+        Event::on(
+            UrlManager::class,
+            UrlManager::EVENT_REGISTER_SITE_URL_RULES,
+            function (RegisterUrlRulesEvent $event) {
+                $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getCurrentSite());
+                if ($robots) {
+                    $event->rules = array_merge($event->rules, [
+                        'robots.txt' => 'seo-fields/robots/render',
+                    ]);
+                }
+                if (SeoFields::$plugin->getSettings()->sitemapPerSite) {
+                    $shouldRender = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());
+                } else {
+                    $shouldRender = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getPrimarySite());
+                }
+                if ($shouldRender) {
+                    $event->rules = array_merge($event->rules, [
+                        'sitemap.xml' => 'seo-fields/sitemap/render',
+                        'sitemap_<siteId:\d>_<type:(sections|products)>_<sectionId:\d>_<handle:.*>.xml' => 'seo-fields/sitemap/detail'
+                    ]);
+                }
+            }
+        );
+    }
+
+    private function _registerCpRoutes()
+    {
+        Event::on(
+            UrlManager::class,
+            UrlManager::EVENT_REGISTER_CP_URL_RULES,
+            function (RegisterUrlRulesEvent $event) {
+                // Register our Control Panel routes
+                $event->rules = array_merge($event->rules, [
+                    'seo-fields' => 'seo-fields/defaults/index',
+                    'seo-fields/<controller:(defaults|robots|sitemap)>' => 'seo-fields/<controller>/index',
+                    'seo-fields/<controller:(defaults|robots|sitemap)>/<siteHandle:{handle}>' => 'seo-fields/<controller>/settings',
+                ]);
+            }
+        );
+    }
+
+    private function _registerSiteEvents()
+    {
+        Event::on(
+            Sites::class,
+            Sites::EVENT_AFTER_SAVE_SITE,
+            function (SiteEvent $event) {
+                if ($event->isNew) {
+                    SeoFields::$plugin->defaultsService->copyDefaultsForSite($event->site, $event->oldPrimarySiteId);
+                }
+            }
+        );
+    }
 
 }

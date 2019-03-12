@@ -57,7 +57,8 @@ class DefaultsService extends Component
         }
     }
 
-    public function getDataBySiteId($siteId) {
+    public function getDataBySiteId($siteId)
+    {
         $record = $this->getRecordForSiteId($siteId);
         if ($record) {
             $model = new SeoDefaultsModel();
@@ -83,7 +84,7 @@ class DefaultsService extends Component
 
     public function getRobotsForSite(Site $site)
     {
-        if(!SeoFields::$plugin->getSettings()->robotsPerSite) {
+        if (!SeoFields::$plugin->getSettings()->robotsPerSite) {
             $site = Craft::$app->getSites()->getPrimarySite();
         }
 
@@ -101,10 +102,19 @@ class DefaultsService extends Component
         }
     }
 
-    public function getRecordForSiteId($siteId) {
+    public function getRecordForSiteId($siteId)
+    {
         $record = DefaultsRecord::findOne(
             ['siteId' => $siteId]
         );
         return $record;
+    }
+
+    public function copyDefaultsForSite(Site $site, $oldPrimarySiteId)
+    {
+      $defaults = $this->getDataBySiteId($oldPrimarySiteId);
+      $defaults->siteId = $site->id;
+      $this->saveDefaults($defaults, $site->id);
+      return true;
     }
 }
