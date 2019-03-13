@@ -244,6 +244,14 @@ class SeoFields extends Plugin
                 SeoFields::$plugin->sitemapSerivce->clearCaches(SitemapService::SITEMAP_CACHE_KEY);
             }
         );
+
+        Event::on(
+            Elements::class,
+            Elements::EVENT_AFTER_DELETE_ELEMENT,
+            function(ElementEvent $event) {
+                SeoFields::$plugin->sitemapSerivce->clearCaches(SitemapService::SITEMAP_CACHE_KEY);
+            }
+        );
     }
 
     private function _registerCacheOptions()
