@@ -137,11 +137,11 @@ class SitemapService extends Component
         return $this->_addEntriesToIndex($data, $settings[$type][$sectionId]);
     }
 
-    public function clearCaches()
+    public function clearCaches($tags = self::SITEMAP_CACHE_KEY)
     {
         TagDependency::invalidate(
             Craft::$app->getCache(),
-            self::SITEMAP_CACHE_KEY
+            $tags
         );
     }
 

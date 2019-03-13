@@ -12,13 +12,17 @@ namespace studioespresso\seofields;
 
 use Craft;
 use craft\base\Plugin;
+use craft\events\ElementEvent;
 use craft\events\RegisterCacheOptionsEvent;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
+use craft\events\SectionEvent;
 use craft\events\SiteEvent;
 use craft\helpers\UrlHelper;
+use craft\services\Elements;
 use craft\services\Fields;
+use craft\services\Sections;
 use craft\services\Sites;
 use craft\services\UserPermissions;
 use craft\utilities\ClearCaches;
@@ -83,7 +87,7 @@ class SeoFields extends Plugin
         $this->_registerCpRoutes();
         $this->_registerFrontendRoutes();
         $this->_registerPermissions();
-        $this->_registerSiteEvents();
+        $this->_registerListeners();
         $this->_registerCacheOptions();
     }
 
@@ -221,7 +225,7 @@ class SeoFields extends Plugin
         );
     }
 
-    private function _registerSiteEvents()
+    private function _registerListeners()
     {
         Event::on(
             Sites::class,
@@ -230,6 +234,14 @@ class SeoFields extends Plugin
                 if ($event->isNew) {
                     SeoFields::$plugin->defaultsService->copyDefaultsForSite($event->site, $event->oldPrimarySiteId);
                 }
+            }
+        );
+
+        Event::on(
+            Elements::class,
+            Elements::EVENT_AFTER_SAVE_ELEMENT,
+            function(ElementEvent $event) {
+                SeoFields::$plugin->sitemapSerivce->clearCaches(SitemapService::SITEMAP_CACHE_KEY);
             }
         );
     }
