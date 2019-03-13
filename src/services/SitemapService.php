@@ -2,6 +2,7 @@
 
 namespace studioespresso\seofields\services;
 
+use craft\base\Element;
 use craft\base\Model;
 use craft\commerce\elements\Product;
 use craft\commerce\models\ProductTypeSite;
@@ -90,13 +91,13 @@ class SitemapService extends Component
         $cacheDependency = new TagDependency([
             'tags' => [
                 self::SITEMAP_CACHE_KEY,
-                self::SITEMAP_CACHE_KEY. '_index_site' . $currentSite->id
+                self::SITEMAP_CACHE_KEY . '_index_site' . $currentSite->id
             ]
         ]);
-        
+
         $xml = Craft::$app->getCache()->getOrSet(
-            self::SITEMAP_CACHE_KEY. '_index_site' . $currentSite->id,
-            function() use ($data) {
+            self::SITEMAP_CACHE_KEY . '_index_site' . $currentSite->id,
+            function () use ($data, $currentSite) {
                 $xml[] = '<?xml version="1.0" encoding="UTF-8"?>';
                 $xml[] = '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
                 if (isset($data['sections'])) {
@@ -134,15 +135,48 @@ class SitemapService extends Component
                 break;
         }
 
-        return $this->_addEntriesToIndex($data, $settings[$type][$sectionId]);
+        $cacheDependency = new TagDependency([
+            'tags' => [
+                self::SITEMAP_CACHE_KEY,
+                self::SITEMAP_CACHE_KEY . "_" . $siteId . "_" . $sectionId
+            ]
+        ]);
+
+        $data = Craft::$app->getCache()->getOrSet(
+            '',
+            function () use ($data, $type, $settings, $sectionId) {
+                return $this->_addEntriesToSitemap($data, $settings[$type][$sectionId]);
+            },
+            null,
+            $cacheDependency
+        );
+
+        return $data;
     }
 
-    public function clearCaches($tags = self::SITEMAP_CACHE_KEY)
+    public function clearCaches($tags = [self::SITEMAP_CACHE_KEY])
     {
         TagDependency::invalidate(
             Craft::$app->getCache(),
             $tags
         );
+    }
+
+    public function clearCacheForElement(Element $element)
+    {
+        $elementType = get_class($element);
+        $typeHandle = explode('\\', $elementType);
+        $typeHandle = end($typeHandle);
+        switch (strtolower($typeHandle)) {
+            case 'entry':
+                $section = Craft::$app->getSections()->getSectionById($element->sectionId);
+                $id = $section->id;
+                break;
+        }
+        
+        if($id) {
+            $this->clearCaches(self::SITEMAP_CACHE_KEY . "_" .$element->siteId . "_" . $id);
+        }
     }
 
     private function getSettingsBySiteId($siteId)
@@ -151,7 +185,7 @@ class SitemapService extends Component
         return Json::decodeIfJson($settings->sitemap);
     }
 
-    private function _addEntriesToIndex($entries, $settings)
+    private function _addEntriesToSitemap($entries, $settings)
     {
         $data = [];
         $data[] = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';

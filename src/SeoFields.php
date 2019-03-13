@@ -241,7 +241,7 @@ class SeoFields extends Plugin
             Elements::class,
             Elements::EVENT_AFTER_SAVE_ELEMENT,
             function(ElementEvent $event) {
-                SeoFields::$plugin->sitemapSerivce->clearCaches(SitemapService::SITEMAP_CACHE_KEY);
+                SeoFields::$plugin->sitemapSerivce->clearCacheForElement($event->element);
             }
         );
 
@@ -249,7 +249,7 @@ class SeoFields extends Plugin
             Elements::class,
             Elements::EVENT_AFTER_DELETE_ELEMENT,
             function(ElementEvent $event) {
-                SeoFields::$plugin->sitemapSerivce->clearCaches(SitemapService::SITEMAP_CACHE_KEY);
+                SeoFields::$plugin->sitemapSerivce->clearCacheForElement($event->element);
             }
         );
     }
