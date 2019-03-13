@@ -16,6 +16,7 @@ class SeoFieldModel extends Model
     public $facebookImage;
     public $twitterTitle;
     public $twitterDescription;
+    public $twitterImage;
     public $siteName;
     public $hideSiteName;
 
@@ -104,6 +105,10 @@ class SeoFieldModel extends Model
         ];
     }
 
+    public function getTwitterImage() {
+        
+    }
+
     /**
      * @inheritdoc
      */
@@ -118,7 +123,10 @@ class SeoFieldModel extends Model
                     'hideSiteName',
                     'facebookTitle',
                     'facebookDescription',
-                    'facebookImage'
+                    'facebookImage',
+                    'twitterTitle',
+                    'twitterDescription',
+                    'twitterImage',
                 ],
                 'safe',
             ],

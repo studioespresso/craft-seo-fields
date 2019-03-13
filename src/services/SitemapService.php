@@ -173,7 +173,7 @@ class SitemapService extends Component
                 $id = $section->id;
                 break;
         }
-        
+
         if($id) {
             $this->clearCaches(self::SITEMAP_CACHE_KEY . "_" .$element->siteId . "_" . $id);
         }

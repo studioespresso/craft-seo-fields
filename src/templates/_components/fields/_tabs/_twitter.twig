@@ -3,5 +3,73 @@
 <input type="radio" name="tabs" id="twitter-tab" class="seofields-tab">
 <label for="twitter-tab" class="label">{{ 'Twitter'|t('seo-fields') }}</label>
 <div class="seofields-tab-content">
-    <h1>Tab Three Content</h1>
+    <div class="twitter-preview-container">
+        <div class="twitter-preview">
+            <div class="twitter-image-wrap">
+                {% if value.getTwitterImage() %}
+                    <img src="{{ value.getTwitterImage().url }}" width="500" height="261">
+                {% endif %}
+            </div>
+            <div class="twitter-text-wrap">
+                <div class="twitter-url">
+                    {{ element.getUrl()|replace("https://", "") }}
+                </div>
+                <div class="twitter-og-title">
+                    {{ value.getOgTitle(element) }}
+                </div>
+                <div class="twitter-og-description">
+                    {{ value.getOgDescription()|length > 70 ? value.getOgDescription()|slice(0, 70) ~ "..." : value.getOgDescription() }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="seo-fields-twitter-text">
+        {{ forms.textField({
+            label: "Twitter title"|t("seo-fields"),
+            id: name ~ "-twitterTitle",
+            name: name ~ "[twitterTitle]",
+            value: value.twitterTitle,
+        }) }}
+
+        <div class="field" id="{{ name ~ "-twitterDescription" }}-field">
+            <div class="heading">
+                <label id="{{ name ~ "[twitterDescription]" }}-label"
+                       for="{{ name ~ "-twitterDescription" }}">{{ "Twitter description"|t("seo-fields") }}</label>
+            </div>
+            <div class="input ltr">
+                {{ forms.textArea({
+                    id: name ~ "-twitterDescription",
+                    name: name ~ "[twitterDescription]",
+                    value: value.twitterDescription,
+                    maxlength: 300,
+                    showCharsLeft: true,
+                    warning: false,
+                    errors: value.getErrors("twitterDescription"),
+                }) }}
+            </div>
+        </div>
+    </div>
+    <div class="seo-fields-twitter-image">
+
+        {% if craft.app.volumes.getAllVolumes()|length %}
+            {{ forms.elementSelectField({
+                label: "Twitter image"|t('seo-fields'),
+                id: name ~ "-twitterImage",
+                name: name ~ "[twitterImage]",
+                elements: [value.twitterImage|length ?craft.assets.id(value.twitterImage[0]).one() : null],
+                elementType: "craft\\elements\\Asset",
+                viewMode: "large",
+                criteria: {
+                    kind: ["image"],
+                },
+                limit: 1,
+                selectionLabel: "Select Twitter image"|t('seo-fields'),
+            }) }}
+        {% else %}
+            <div class="field">
+                <h3>{{ "Twitter image"|t("seo-fields") }}</h3>
+                <p class="warning">{{ "No asset volumes defined"|t("seo-fields") }}.</p>
+            </div>
+        {% endif %}
+    </div>
 </div>
