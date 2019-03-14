@@ -85,7 +85,7 @@ class SeoFieldModel extends Model
         $transform = new AssetTransform();
         $transform->width = 1200;
         $transform->height = 590;
-        $transform->mode = 'fit';
+        $transform->mode = 'crop';
 
         $transformed = $asset->setTransform($transform);
         return [
