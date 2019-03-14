@@ -27,7 +27,7 @@ class SeoFieldModel extends Model
 
     public function init()
     {
-        $this->siteDefault = $siteDefault = SeoFields::getInstance()->defaultsService->getDataBySite(Craft::$app->getSites()->getCurrentSite());
+        $this->siteDefault =  SeoFields::getInstance()->defaultsService->getDataBySite(Craft::$app->getSites()->getCurrentSite());
     }
 
     public function getSiteNameWithSeperator()
@@ -40,17 +40,13 @@ class SeoFieldModel extends Model
         } else {
             $siteName = $this->siteDefault->defaultSiteTitle;
         }
-        return ' ' . $this->siteDefault->titleSeperator . ' ' . $siteName;
+
+        $seperator = $this->siteDefault->titleSeperator ? $this->siteDefault->titleSeperator : '-';
+        return ' ' . $seperator  . ' ' . $siteName;
     }
 
     public function getPageTitle($element = null)
     {
-        if ($this->siteName) {
-            $siteName = $this->siteName;
-        } else {
-            $siteName = $this->siteDefault->defaultSiteTitle;
-        }
-
         if($element && !$this->metaTitle) {
             return $element->title . $this->getSiteNameWithSeperator();
         }
@@ -61,12 +57,6 @@ class SeoFieldModel extends Model
 
     public function getOgTitle($element)
     {
-        if ($this->siteName) {
-            $siteName = $this->siteName;
-        } else {
-            $siteName = $this->siteDefault->defaultSiteTitle;
-        }
-        
         if ($this->facebookTitle) {
             return $this->facebookTitle . $this->getSiteNameWithSeperator();
         } elseif($this->metaTitle) {
@@ -106,7 +96,7 @@ class SeoFieldModel extends Model
     }
 
     public function getTwitterImage() {
-        
+
     }
 
     /**
