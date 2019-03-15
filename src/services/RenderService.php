@@ -27,6 +27,10 @@ class RenderService extends Component
         try {
             if(isset($context['entry']) && isset($context['entry'][$handle])) {
                 $meta = $context['entry'][$handle];
+            } elseif(isset($context['product']) && isset($context['product'][$handle])) {
+                $meta = $context['product'][$handle];
+            } else {
+                return false;
             }
         } catch(\Exception $e) {
             return false;
