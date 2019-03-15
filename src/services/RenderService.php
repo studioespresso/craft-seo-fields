@@ -22,6 +22,7 @@ class RenderService extends Component
     public function renderMeta($context, $handle = 'seo')
     {
         $meta = false;
+        $handle = SeoFields::$plugin->getSettings()->fieldHandle;
 
         try {
             if(isset($context['entry']) && isset($context['entry'][$handle])) {

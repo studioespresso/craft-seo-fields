@@ -27,6 +27,8 @@ class Settings extends Model
 
     public $sitemapPerSite = false;
 
+    public $fieldHandle = 'seo';
+
     // Public Methods
     // =========================================================================
 
