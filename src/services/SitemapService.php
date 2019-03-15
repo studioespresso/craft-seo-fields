@@ -211,7 +211,7 @@ class SitemapService extends Component
             $sectionEntry = Entry::findOne(['sectionId' => $id]);
             if ($sectionEntry) {
                 $data[] = '<sitemap><loc>';
-                $data[] = Craft::$app->getRequest()->getBaseUrl() . htmlentities('/sitemap_' . $site->id . '_sections_' . $section->id . '_' . $section->handle . '.xml');
+                $data[] = Craft::$app->getRequest()->getHostInfo() . htmlentities('/sitemap_' . $site->id . '_sections_' . $section->id . '_' . $section->handle . '.xml');
                 $data[] = '</loc><lastmod>';
                 $data[] = $sectionEntry->dateUpdated->format('Y-m-d h:m:s');
                 $data[] = '</lastmod></sitemap>';
