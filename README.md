@@ -29,7 +29,6 @@ SEO Fields lets you set default title & description for your site (or sites) and
 
 Additionally, you can configure your robots.txt and your sitemaps as well.
 
-
 ## Field
 
 ### 1. Your field
@@ -40,6 +39,8 @@ If you use a different handle for your field, simply copy [this file](src/config
 ### 2. Templating
 To put SEO Fields on your html, just add `{% hook 'seo-fields' %}` within the `<head>` tag in your layout. 
  
+ 
+ If you want more control over what the plugin output, you can include your own snippet instead of the templat hook. Have a look at the [default template](src/templates/_meta.twig) to get you started.
 
 ---
 Brought to you by [Studio Espresso](https://studioespresso.co)
