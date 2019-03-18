@@ -30,9 +30,16 @@ SEO Fields lets you set default title & description for your site (or sites) and
 Additionally, you can configure your robots.txt and your sitemaps as well.
 
 
-## Usage
+## Field
 
-To let SEO Fields handle your meta html, just add `{% hook 'seo-fields' %}` within the `<head>` tag in your layout. 
+### 1. Your field
+The plugin assumes that the handle of the `SEO Fields` field will be simply: `seo`. If it can't find that field, it won't output anything.
+
+If you use a different handle for your field, simply copy [this file](src/config.php) to the `config` directory of your project and change the fieldhandle to your own. 
+
+### 2. Templating
+To put SEO Fields on your html, just add `{% hook 'seo-fields' %}` within the `<head>` tag in your layout. 
+ 
 
 ---
 Brought to you by [Studio Espresso](https://studioespresso.co)
