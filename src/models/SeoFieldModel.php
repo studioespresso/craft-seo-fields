@@ -50,7 +50,6 @@ class SeoFieldModel extends Model
         if ($element && !$this->metaTitle) {
             return $element->title . $this->getSiteNameWithSeperator();
         }
-
         return $this->metaTitle . $this->getSiteNameWithSeperator();
     }
 
@@ -59,16 +58,28 @@ class SeoFieldModel extends Model
     {
         if ($this->facebookTitle) {
             return $this->facebookTitle . $this->getSiteNameWithSeperator();
-        } elseif ($this->metaTitle) {
-            return $this->metaTitle . $this->getSiteNameWithSeperator();
         } else {
-            return $element->title . $this->getSiteNameWithSeperator();
+            return $this->getPageTitle($element);
+        }
+    }
+
+    public function getTwitterTitle($element)
+    {
+        if ($this->twitterTitle) {
+            return $this->twitterTitle . $this->getSiteNameWithSeperator();
+        } else {
+            return $this->getPageTitle($element);
         }
     }
 
     public function getOgDescription()
     {
         return $this->facebookDescription ? $this->facebookDescription : $this->metaDescription;
+    }
+
+    public function getTwitterDescription()
+    {
+        return $this->twitterDescription ? $this->twitterDescription : $this->metaDescription;
     }
 
     public function getOgImage()
@@ -101,7 +112,7 @@ class SeoFieldModel extends Model
         if (!$asset) {
             return false;
         }
-        
+
         $transform = $this->_getPreviewTransform();
         $transformed = $asset->setTransform($transform);
         return [
