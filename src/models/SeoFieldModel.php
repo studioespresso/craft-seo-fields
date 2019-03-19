@@ -27,13 +27,13 @@ class SeoFieldModel extends Model
 
     public function init()
     {
-        $this->siteDefault =  SeoFields::getInstance()->defaultsService->getDataBySite(Craft::$app->getSites()->getCurrentSite());
+        $this->siteDefault = SeoFields::getInstance()->defaultsService->getDataBySite(Craft::$app->getSites()->getCurrentSite());
     }
 
     public function getSiteNameWithSeperator()
     {
-        if($this->hideSiteName) {
-           return false;
+        if ($this->hideSiteName) {
+            return false;
         }
         if ($this->siteName) {
             $siteName = $this->siteName;
@@ -42,12 +42,12 @@ class SeoFieldModel extends Model
         }
 
         $seperator = $this->siteDefault->titleSeperator ? $this->siteDefault->titleSeperator : '-';
-        return ' ' . $seperator  . ' ' . $siteName;
+        return ' ' . $seperator . ' ' . $siteName;
     }
 
     public function getPageTitle($element = null)
     {
-        if($element && !$this->metaTitle) {
+        if ($element && !$this->metaTitle) {
             return $element->title . $this->getSiteNameWithSeperator();
         }
 
@@ -59,7 +59,7 @@ class SeoFieldModel extends Model
     {
         if ($this->facebookTitle) {
             return $this->facebookTitle . $this->getSiteNameWithSeperator();
-        } elseif($this->metaTitle) {
+        } elseif ($this->metaTitle) {
             return $this->metaTitle . $this->getSiteNameWithSeperator();
         } else {
             return $element->title . $this->getSiteNameWithSeperator();
@@ -73,21 +73,16 @@ class SeoFieldModel extends Model
 
     public function getOgImage()
     {
-        if($this->facebookImage) {
-            $asset =  Craft::$app->getAssets()->getAssetById($this->facebookImage[0]);
-        } elseif($this->siteDefault->defaultImage) {
+        if ($this->facebookImage) {
+            $asset = Craft::$app->getAssets()->getAssetById($this->facebookImage[0]);
+        } elseif ($this->siteDefault->defaultImage) {
             $asset = Craft::$app->getAssets()->getAssetById($this->siteDefault->defaultImage[0]);
         }
-        if(!$asset) {
+        if (!$asset) {
             return false;
         }
 
-        $transform = new AssetTransform();
-        $transform->width = 1200;
-        $transform->height = 590;
-        $transform->mode = 'crop';
-
-        $transformed = $asset->setTransform($transform);
+        $transformed = $asset->setTransform($this->_getPreviewTransform());
         return [
             'height' => $asset->getHeight($transform),
             'width' => $asset->getWidth($transform),
@@ -95,8 +90,23 @@ class SeoFieldModel extends Model
         ];
     }
 
-    public function getTwitterImage() {
+    public function getTwitterImage()
+    {
+        if ($this->twitterImage) {
+            $asset = Craft::$app->getAssets()->getAssetById($this->twitterImage[0]);
+        } elseif ($this->siteDefault->defaultImage) {
+            $asset = Craft::$app->getAssets()->getAssetById($this->siteDefault->defaultImage[0]);
+        }
+        if (!$asset) {
+            return false;
+        }
 
+        $transformed = $asset->setTransform($this->_getPreviewTransform());
+        return [
+            'height' => $asset->getHeight($transform),
+            'width' => $asset->getWidth($transform),
+            'url' => $asset->getUrl($transform),
+        ];
     }
 
     /**
@@ -121,5 +131,14 @@ class SeoFieldModel extends Model
                 'safe',
             ],
         ];
+    }
+
+    private function _getPreviewTransform()
+    {
+        $transform = new AssetTransform();
+        $transform->width = 1200;
+        $transform->height = 590;
+        $transform->mode = 'crop';
+        return $transform;
     }
 }
