@@ -82,7 +82,8 @@ class SeoFieldModel extends Model
             return false;
         }
 
-        $transformed = $asset->setTransform($this->_getPreviewTransform());
+        $transform = $this->_getPreviewTransform();
+        $transformed = $asset->setTransform($transform);
         return [
             'height' => $asset->getHeight($transform),
             'width' => $asset->getWidth($transform),
@@ -100,8 +101,9 @@ class SeoFieldModel extends Model
         if (!$asset) {
             return false;
         }
-
-        $transformed = $asset->setTransform($this->_getPreviewTransform());
+        
+        $transform = $this->_getPreviewTransform();
+        $transformed = $asset->setTransform($transform);
         return [
             'height' => $asset->getHeight($transform),
             'width' => $asset->getWidth($transform),
