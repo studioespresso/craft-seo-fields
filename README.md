@@ -2,6 +2,8 @@
 
 Fields for your meta & OG data, sitemaps & robots.txt
 
+![Screenshot](https://www.studioespresso.co/resources/seofields/banner.png)
+
 ## Requirements
 
 This plugin requires Craft CMS 3.1.0 or later.
@@ -32,7 +34,7 @@ Additionally, you can configure your robots.txt and your sitemaps as well.
 ## Field
 
 ### 1. Your field
-The plugin assumes that the handle of the `SEO Fields` field will be simply: `seo`. If it can't find that field, it won't output anything.
+The plugin assumes that the handle of the `SEO Fields` field will be simply: __`seo`__. If it can't find that field, it won't output anything.
 
 If you use a different handle for your field, simply copy [this file](src/config.php) to the `config` directory of your project and change the fieldhandle to your own. 
 
