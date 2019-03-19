@@ -1,6 +1,6 @@
 {% import "_includes/forms" as forms %}
 
-<input type="radio" name="tabs" id="twitter-tab" class="seofields-tab">
+<input type="radio" name="tabs" id="twitter-tab" class="seofields-tab" {% if tabSelected %}checked="checked"{% endif %}>
 <label for="twitter-tab" class="label">{{ 'Twitter'|t('seo-fields') }}</label>
 <div class="seofields-tab-content">
     <div class="twitter-preview-container">
@@ -14,10 +14,10 @@
                 <div class="twitter-url">
                     {{ element.getUrl()|replace("https://", "") }}
                 </div>
-                <div class="twitter-og-title">
+                <div class="twitter-title">
                     {{ value.getOgTitle(element) }}
                 </div>
-                <div class="twitter-og-description">
+                <div class="twitter-description">
                     {{ value.getOgDescription()|length > 70 ? value.getOgDescription()|slice(0, 70) ~ "..." : value.getOgDescription() }}
                 </div>
             </div>

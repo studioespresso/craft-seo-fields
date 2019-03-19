@@ -140,28 +140,33 @@
     zoom: 1;
 }
 
-.fb-preview-container {
+.fb-preview-container, .twitter-preview-container {
     padding: 2rem 1rem;
 }
-.fb-preview {
+
+.fb-preview , .twitter-preview{
     margin: 0 auto;
     background-color: rgb(242, 243, 245);
     width: 500px;
     box-shadow: inset 0 0 0 1.7px rgba(0,0,0,.1),0 1px 4px 0 rgba(0,0,0,.1);
 }
 
-.fb-text-wrap {
+.twitter-preview {
+    border-radius: 10px;
+}
+
+.fb-text-wrap, .twitter-text-wrap {
     padding: 10px 12px 10px 12px;
 }
 
-.fb-image-wrap {
+.fb-image-wrap, .twitter-image-wrap {
     background-position: 50% 50%;
     background-repeat: no-repeat;
     background-size: contain;
     height: 261px;
 }
 
-.fb-og-title {
+.fb-og-title, .twitter-title {
     color: rgb(29, 33, 41);
     font-family: system-ui, -apple-system, BlinkMacSystemFont, ".SFNSText-Regular", sans-serif;
     font-size: 16px;
@@ -171,7 +176,7 @@
     overflow-wrap: break-word;
 }
 
-.fb-og-description {
+.fb-og-description, .twitter-description {
     color: rgb(96, 103, 112);
     direction: ltr;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, ".SFNSText-Regular", sans-serif;
@@ -185,7 +190,7 @@
     overflow-y: hidden;
 }
 
-.fb-url {
+.fb-url, .twitter-url {
     color: rgb(96, 103, 112);
     direction: ltr;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, ".SFNSText-Regular", sans-serif;
