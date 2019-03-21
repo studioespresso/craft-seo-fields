@@ -53,11 +53,14 @@ class RobotsController extends Controller
         } else {
             $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getPrimarySite());
         }
-        $string = Craft::$app->getView()->renderString(Template::raw($robots->robots));
+        try {
+            $string = Craft::$app->getView()->renderString(Template::raw($robots->robots));
+            $headers = Craft::$app->response->headers;
+            $headers->add('Content-Type', 'text/plain; charset=utf-8');
+            return $this->asRaw($string);
+        } catch(\Exception $e) {
 
-        $headers = Craft::$app->response->headers;
-        $headers->add('Content-Type', 'text/plain; charset=utf-8');
-
-        return $this->asRaw($string);
+        }
+        return;
     }
 }
