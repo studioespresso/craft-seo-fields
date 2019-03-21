@@ -2,11 +2,11 @@
 
 namespace studioespresso\seofields\services;
 
-use craft\web\View;
-use studioespresso\seofields\SeoFields;
-
 use Craft;
 use craft\base\Component;
+use craft\web\View;
+use studioespresso\seofields\models\SeoFieldModel;
+use studioespresso\seofields\SeoFields;
 
 /**
  *
@@ -25,14 +25,14 @@ class RenderService extends Component
         $handle = SeoFields::$plugin->getSettings()->fieldHandle;
 
         try {
-            if(isset($context['entry']) && isset($context['entry'][$handle])) {
+            if (isset($context['entry']) && isset($context['entry'][$handle])) {
                 $meta = $context['entry'][$handle];
-            } elseif(isset($context['product']) && isset($context['product'][$handle])) {
+            } elseif (isset($context['product']) && isset($context['product'][$handle])) {
                 $meta = $context['product'][$handle];
             } else {
-                return false;
+                $meta = new SeoFieldModel();
             }
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
 
@@ -42,4 +42,5 @@ class RenderService extends Component
             ['meta' => $meta, 'entry' => $context['entry']]
         );
     }
+
 }
