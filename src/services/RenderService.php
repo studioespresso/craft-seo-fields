@@ -23,6 +23,7 @@ class RenderService extends Component
     {
         $meta = false;
         $handle = SeoFields::$plugin->getSettings()->fieldHandle;
+        Craft::beginProfile('renderMeta', __METHOD__);
 
         try {
             if (isset($context['entry']) && isset($context['entry'][$handle])) {
@@ -37,6 +38,7 @@ class RenderService extends Component
         }
 
         Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_CP);
+        Craft::endProfile('renderMeta', __METHOD__);
         return Craft::$app->getView()->renderTemplate(
             'seo-fields/_meta',
             ['meta' => $meta, 'entry' => $context['entry']]
