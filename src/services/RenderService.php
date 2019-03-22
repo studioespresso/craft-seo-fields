@@ -4,9 +4,12 @@ namespace studioespresso\seofields\services;
 
 use Craft;
 use craft\base\Component;
+use craft\elements\Entry;
 use craft\web\View;
+use studioespresso\seofields\events\RegisterSeoElementEvent;
 use studioespresso\seofields\models\SeoFieldModel;
 use studioespresso\seofields\SeoFields;
+use yii\base\Event;
 
 /**
  *
@@ -16,34 +19,38 @@ use studioespresso\seofields\SeoFields;
  */
 class RenderService extends Component
 {
+
     // Public Methods
     // =========================================================================
-
     public function renderMeta($context, $handle = 'seo')
     {
         $meta = false;
         $handle = SeoFields::$plugin->getSettings()->fieldHandle;
         Craft::beginProfile('renderMeta', __METHOD__);
+        $elements = [Entry::class];
 
-        try {
-            if (isset($context['entry'])) {
-                if (isset($context['entry'][$handle])) {
-                    $meta = $context['entry'][$handle];
+        $event = new RegisterSeoElementEvent([
+            'elements' => $elements,
+        ]);
+
+        Event::trigger(SeoFields::class, SeoFields::EVENT_SEOFIELDS_REGISTER_ELEMENT, $event);
+        $registeredElements = array_filter($event->elements);
+
+        foreach($registeredElements as $item) {
+            $class = explode('\\', $item);
+            $elementName = strtolower(end($class));
+            if(isset($context[$elementName])) {
+                if (isset($context[$elementName][$handle])) {
+                    $meta = $context[$elementName][$handle];
                 } else {
                     $meta = new SeoFieldModel();
                 }
-                $element = $context['entry'];
-            } elseif (isset($context['product'])) {
-                if (isset($context['product'][$handle])) {
-                    $meta = $context['product'][$handle];
-                } else {
-                    $meta = new SeoFieldModel();
-                }
-                $element = $context['product'];
+                $element = $context[$elementName];
             }
-        } catch
-        (\Exception $e) {
-            return false;
+        }
+
+        if(!$meta) {
+            $meta = new SeoFieldModel();
         }
 
         Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_CP);
