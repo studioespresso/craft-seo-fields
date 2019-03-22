@@ -26,14 +26,23 @@ class RenderService extends Component
         Craft::beginProfile('renderMeta', __METHOD__);
 
         try {
-            if (isset($context['entry']) && isset($context['entry'][$handle])) {
-                $meta = $context['entry'][$handle];
-            } elseif (isset($context['product']) && isset($context['product'][$handle])) {
-                $meta = $context['product'][$handle];
-            } else {
-                $meta = new SeoFieldModel();
+            if (isset($context['entry'])) {
+                if (isset($context['entry'][$handle])) {
+                    $meta = $context['entry'][$handle];
+                } else {
+                    $meta = new SeoFieldModel();
+                }
+                $element = $context['entry'];
+            } elseif (isset($context['product'])) {
+                if (isset($context['product'][$handle])) {
+                    $meta = $context['product'][$handle];
+                } else {
+                    $meta = new SeoFieldModel();
+                }
+                $element = $context['product'];
             }
-        } catch (\Exception $e) {
+        } catch
+        (\Exception $e) {
             return false;
         }
 
@@ -41,7 +50,7 @@ class RenderService extends Component
         Craft::endProfile('renderMeta', __METHOD__);
         return Craft::$app->getView()->renderTemplate(
             'seo-fields/_meta',
-            ['meta' => $meta, 'entry' => $context['entry']]
+            ['meta' => $meta, 'entry' => $element]
         );
     }
 
