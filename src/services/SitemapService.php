@@ -172,6 +172,9 @@ class SitemapService extends Component
                 $section = Craft::$app->getSections()->getSectionById($element->sectionId);
                 $id = $section->id;
                 break;
+            default:
+                return false;
+                break;
         }
 
         if($id) {
