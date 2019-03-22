@@ -12,6 +12,7 @@ namespace studioespresso\seofields;
 
 use Craft;
 use craft\base\Plugin;
+use craft\commerce\elements\Product;
 use craft\events\ElementEvent;
 use craft\events\RegisterCacheOptionsEvent;
 use craft\events\RegisterComponentTypesEvent;
@@ -28,6 +29,7 @@ use craft\services\UserPermissions;
 use craft\utilities\ClearCaches;
 use craft\web\UrlManager;
 use craft\web\View;
+use studioespresso\seofields\events\RegisterSeoElementEvent;
 use studioespresso\seofields\fields\SeoField;
 use studioespresso\seofields\models\Settings;
 use studioespresso\seofields\services\DefaultsService;
@@ -66,6 +68,9 @@ class SeoFields extends Plugin
     // =========================================================================
     public $schemaVersion = '1.0.0';
 
+
+    const EVENT_SEOFIELDS_REGISTER_ELEMENT = "registerSeoElement";
+
     // Public Methods
     // =========================================================================
     public function init()
@@ -89,6 +94,7 @@ class SeoFields extends Plugin
         $this->_registerPermissions();
         $this->_registerListeners();
         $this->_registerCacheOptions();
+        $this->_registerCustomElements();
     }
 
     public function getCpNavItem()
@@ -240,7 +246,7 @@ class SeoFields extends Plugin
         Event::on(
             Elements::class,
             Elements::EVENT_AFTER_SAVE_ELEMENT,
-            function(ElementEvent $event) {
+            function (ElementEvent $event) {
                 SeoFields::$plugin->sitemapSerivce->clearCacheForElement($event->element);
             }
         );
@@ -248,7 +254,7 @@ class SeoFields extends Plugin
         Event::on(
             Elements::class,
             Elements::EVENT_AFTER_DELETE_ELEMENT,
-            function(ElementEvent $event) {
+            function (ElementEvent $event) {
                 SeoFields::$plugin->sitemapSerivce->clearCacheForElement($event->element);
             }
         );
@@ -271,6 +277,27 @@ class SeoFields extends Plugin
                 ]);
             }
         );
+    }
+
+    private function _registerCustomElements()
+    {
+        $elements = [];
+        if (Craft::$app->getPlugins()->isPluginEnabled('calendar')) {
+            $elements[] = \Solspace\Calendar\Elements\Event::class;
+        }
+        if (Craft::$app->getPlugins()->isPluginEnabled('commerce')) {
+            $elements[] = \craft\commerce\elements\Product::class;
+        }
+
+        if ($elements) {
+            Event::on(
+                __CLASS__,
+                self::EVENT_SEOFIELDS_REGISTER_ELEMENT,
+                function (RegisterSeoElementEvent $event) use ($elements) {
+                    $event->elements = array_merge($event->elements, $elements);
+                }
+            );
+        }
     }
 
 }
