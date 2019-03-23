@@ -5,8 +5,6 @@ module.exports = {
         logo: '/icon-vuepress.svg',
         search: true,
         searchMaxSuggestions: 5,
-        repo: 'studioespresso/craft-seo-fields',
-        repoLabel: 'Contribute!',
         docsRepo: 'studioespresso/craft-seo-fields',
         docsDir: 'docs',
         docsBranch: 'develop',
@@ -27,6 +25,10 @@ module.exports = {
                 items: [
                     {text: 'SEO Fields', link: '/'}
                 ]
+            },
+            {
+                text: 'Questions? Get in touch!',
+                link: 'mailto:info@studioespresso.co',
             }
         ]
     }
