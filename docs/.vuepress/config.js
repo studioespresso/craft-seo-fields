@@ -1,6 +1,10 @@
 module.exports = {
     base: '/plugins/seo-fields/',
     title: 'Studio Espresso',
+    head: [
+        ['link', { rel: 'icon', href: `/favicon.png` }],
+        ['meta', { name: 'theme-color', content: '#3b68b5' }],
+    ],
     themeConfig: {
         logo: '/icon-vuepress.svg',
         search: true,
