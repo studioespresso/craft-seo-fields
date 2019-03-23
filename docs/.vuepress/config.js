@@ -1,7 +1,6 @@
 module.exports = {
     base: '/plugins/seo-fields/',
     title: 'Studio Espresso',
-    description: '',
     themeConfig: {
         logo: '/icon-vuepress.svg',
         search: true,
