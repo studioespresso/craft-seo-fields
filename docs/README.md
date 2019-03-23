@@ -1,6 +1,7 @@
 ---
 title: SEO Fields
 ---
+# SEO Fields for Craft CMS
 Fields for your meta & OG data, sitemaps & robots.txt
 
 ![Banner](./images/banner.png)

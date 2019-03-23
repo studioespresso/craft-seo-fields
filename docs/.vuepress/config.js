@@ -24,12 +24,12 @@ module.exports = {
             '/sitemap',
         ],
         nav: [
-            {
-                text: 'Plugins',
-                items: [
-                    {text: 'SEO Fields', link: '/'}
-                ]
-            },
+            // {
+            //     text: 'Plugins',
+            //     items: [
+            //         {text: 'SEO Fields', link: '/'}
+            //     ]
+            // },
             {
                 text: 'Questions? Get in touch!',
                 link: 'mailto:info@studioespresso.co',
