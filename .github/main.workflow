@@ -1,8 +1,4 @@
-action "deploy docs" {
-  uses = "./.deploy-docs/"
-}
-
-workflow "New workflow" {
+workflow "Docs to github pages" {
   on = "push"
   resolves = ["Deploy docs!"]
 }
