@@ -5,7 +5,9 @@
   "private": true,
   "scripts": {
     "build": "webpack --config webpack.config.js --progress --hide-modules",
-    "watch": "webpack --watch --config webpack.config.js --progress --hide-modules"
+    "watch": "webpack --watch --config webpack.config.js --progress --hide-modules",
+    "docs": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
   },
   "repository": {
     "type": "git",
@@ -22,6 +24,7 @@
     "css-loader": "^2.1.0",
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "style-loader": "^0.23.1",
+    "vuepress": "^1.0.0-alpha.44",
     "webpack": "^4.29.5",
     "webpack-cli": "^3.2.3"
   }
