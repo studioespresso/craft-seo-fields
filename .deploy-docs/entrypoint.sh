@@ -1,7 +1,7 @@
 #!/bin/sh -l
 
 sh -c "echo $*"
-echo GITHUB_EVENT_NAME
-echo GITHUB_REF
+env
 cd docs
 pwd
+yarn install
