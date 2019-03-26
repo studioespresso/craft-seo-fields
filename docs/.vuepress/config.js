@@ -1,5 +1,5 @@
 module.exports = {
-    base: '',
+    base: '/craft-seo-fields/',
     title: 'Studio Espresso',
     head: [
         ['link', { rel: 'icon', href: `/favicon.png` }],
