@@ -1,5 +1,5 @@
 module.exports = {
-    base: '/plugins/seo-fields/',
+    base: '',
     title: 'Studio Espresso',
     head: [
         ['link', { rel: 'icon', href: `/favicon.png` }],
