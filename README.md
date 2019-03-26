@@ -33,7 +33,7 @@ Additionally, you can configure your robots.txt and your sitemaps as well.
 
 
 
-| 📑 More information & documentation is available [here](https://studioespresso.github.io/craft-seo-fields/). |
+| 📑 [More information & documentation is available here](https://studioespresso.github.io/craft-seo-fields/) |
 | --- |
 ---
 Brought to you by [Studio Espresso](https://studioespresso.co)
