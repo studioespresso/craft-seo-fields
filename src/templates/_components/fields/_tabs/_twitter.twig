@@ -5,11 +5,11 @@
 <div class="seofields-tab-content">
     <div class="twitter-preview-container">
         <div class="twitter-preview">
+            {% if value.getTwitterImage() %}
             <div class="twitter-image-wrap">
-                {% if value.getTwitterImage() %}
-                    <img src="{{ value.getTwitterImage().url }}" width="500" height="261">
-                {% endif %}
+                <img src="{{ value.getTwitterImage().url }}" width="500" height="261">
             </div>
+            {% endif %}
             <div class="twitter-text-wrap">
                 <div class="twitter-url">
                     {{ element.getUrl()|replace("https://", "") }}

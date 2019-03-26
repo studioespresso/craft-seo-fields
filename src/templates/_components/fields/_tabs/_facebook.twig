@@ -1,15 +1,15 @@
 {% import "_includes/forms" as forms %}
 
-<input type="radio" name="tabs" id="facebook-tab" class="seofields-tab">
+<input type="radio" name="tabs" id="facebook-tab" class="seofields-tab" {% if tabSelected %}checked="checked"{% endif %}>
 <label for="facebook-tab" class="label">{{ "Facebook"|t("seo-fields") }}</label>
 <div class="seofields-tab-content">
     <div class="fb-preview-container">
         <div class="fb-preview">
+            {% if value.getOgImage() %}
             <div class="fb-image-wrap">
-                {% if value.getOgImage() %}
-                    <img src="{{ value.getOgImage().url }}" width="500" height="261">
-                {% endif %}
+                <img src="{{ value.getOgImage().url }}" width="500" height="261">
             </div>
+            {% endif %}
             <div class="fb-text-wrap">
                 <div class="fb-url">
                     {{ element.getUrl()|replace("https://", "") }}
