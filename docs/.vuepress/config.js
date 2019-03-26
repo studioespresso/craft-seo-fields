@@ -25,15 +25,13 @@ module.exports = {
             '/sitemap',
         ],
         nav: [
-            // {
-            //     text: 'Plugins',
-            //     items: [
-            //         {text: 'SEO Fields', link: '/'}
-            //     ]
-            // },
+            {
+                text: 'Issues?',
+                link: 'https://github.com/studioespresso/craft-seo-fields/issues'
+            },
             {
                 text: 'Questions? Get in touch!',
-                link: 'mailto:info@studioespresso.co',
+                link: 'https://www.studioespresso.co/en/contact',
             }
         ]
     }
