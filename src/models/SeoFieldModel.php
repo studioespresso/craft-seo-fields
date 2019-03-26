@@ -37,8 +37,10 @@ class SeoFieldModel extends Model
         }
         if ($this->siteName) {
             $siteName = $this->siteName;
-        } else {
+        } elseif($this->siteDefault->defaultSiteTitle) {
             $siteName = $this->siteDefault->defaultSiteTitle;
+        } else {
+            $siteName = Craft::$app->getSystemName();
         }
 
         $seperator = $this->siteDefault->titleSeperator ? $this->siteDefault->titleSeperator : '-';
