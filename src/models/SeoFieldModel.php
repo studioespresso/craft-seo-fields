@@ -89,7 +89,7 @@ class SeoFieldModel extends Model
         } elseif ($this->siteDefault->defaultImage) {
             $asset = Craft::$app->getAssets()->getAssetById($this->siteDefault->defaultImage[0]);
         }
-        if (!$asset) {
+        if (!isset($asset)) {
             return false;
         }
 
@@ -109,7 +109,7 @@ class SeoFieldModel extends Model
         } elseif ($this->siteDefault->defaultImage) {
             $asset = Craft::$app->getAssets()->getAssetById($this->siteDefault->defaultImage[0]);
         }
-        if (!$asset) {
+        if (!isset($asset)) {
             return false;
         }
 

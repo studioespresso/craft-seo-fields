@@ -103,7 +103,7 @@ class SeoField extends Field
     /**
      * Normalizes the field’s value for use.
      *
-     * @param mixed                 $value   The raw field value
+     * @param mixed $value The raw field value
      * @param ElementInterface|null $element The element the field is associated with, if there is one
      *
      * @return mixed The prepared field value
@@ -111,9 +111,11 @@ class SeoField extends Field
     public function normalizeValue($value, ElementInterface $element = null)
     {
         $model = new SeoFieldModel();
-        if(is_array($value)) {
+        if (is_array($value)) {
             $model->setAttributes($value);
-        } elseif($value) {
+        } elseif ($value instanceof SeoFieldModel) {
+            $model = $value;
+        } elseif ($value) {
             $model->setAttributes(Json::decodeIfJson($value));
         }
         return $model;
@@ -149,9 +151,9 @@ class SeoField extends Field
 
     /**
      *
-     * @param mixed                 $value           The field’s value. This will either be the [[normalizeValue() normalized value]],
+     * @param mixed $value The field’s value. This will either be the [[normalizeValue() normalized value]],
      *                                               raw POST data (i.e. if there was a validation error), or null
-     * @param ElementInterface|null $element         The element the field is associated with, if there is one
+     * @param ElementInterface|null $element The element the field is associated with, if there is one
      *
      * @return string The input HTML.
      */
