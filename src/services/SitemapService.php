@@ -8,6 +8,7 @@ use craft\commerce\elements\Product;
 use craft\commerce\models\ProductTypeSite;
 use craft\commerce\Plugin as Commerce;
 use craft\commerce\services\ProductTypes;
+use craft\elements\Category;
 use craft\elements\Entry;
 use craft\events\RegisterUrlRulesEvent;
 use craft\helpers\Json;
@@ -42,6 +43,7 @@ class SitemapService extends Component
 
         $shouldRenderProducts = false;
         $shouldRenderSections = false;
+        $shouldRenderCategories = false;
 
         if (isset($sitemapSettings['sections'])) {
             $shouldRenderSections = array_filter($sitemapSettings['sections'], function ($section) use ($sitemapSettings) {
@@ -49,6 +51,20 @@ class SitemapService extends Component
                     $site = Craft::$app->getSites()->getCurrentSite();
                     $sectionSites = Craft::$app->getSections()->getSectionById($section)->siteSettings;
                     if (isset($sectionSites[$site->id]) && $sectionSites[$site->id]->hasUrls) {
+                        return true;
+                    }
+                } else {
+                    return false;
+                }
+            }, ARRAY_FILTER_USE_KEY);
+        }
+
+        if (isset($sitemapSettings['categories'])) {
+            $shouldRenderCategories = array_filter($sitemapSettings['categories'], function ($group) use ($sitemapSettings) {
+                if (isset($sitemapSettings['categories'][$group]['enabled'])) {
+                    $site = Craft::$app->getSites()->getCurrentSite();
+                    $groupSites = Craft::$app->getCategories()->getGroupById($group)->siteSettings;
+                    if (isset($groupSites[$site->id]) && $groupSites[$site->id]->hasUrls) {
                         return true;
                     }
                 } else {
@@ -74,10 +90,11 @@ class SitemapService extends Component
             }, ARRAY_FILTER_USE_KEY);
         }
 
-        if ($shouldRenderSections || $shouldRenderProducts) {
+        if ($shouldRenderSections || $shouldRenderProducts || $shouldRenderCategories) {
             return [
                 'products' => $shouldRenderProducts,
-                'sections' => $shouldRenderSections
+                'sections' => $shouldRenderSections,
+                'categories' => $shouldRenderCategories
             ];
         } else {
             return false;
@@ -102,6 +119,9 @@ class SitemapService extends Component
                 $xml[] = '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
                 if (isset($data['sections'])) {
                     $xml[] = $this->_addSectionsToIndex($data['sections'], $currentSite);
+                }
+                if (isset($data['categories'])) {
+                    $xml[] = $this->_addCategoriesToIndex($data['categories'], $currentSite);
                 }
                 if (isset($data['products'])) {
                     $xml[] = $this->_addProductsToIndex($data['products'], $currentSite);
@@ -217,12 +237,30 @@ class SitemapService extends Component
             $sectionEntry = Entry::findOne(['sectionId' => $id]);
             if ($sectionEntry) {
                 $data[] = '<sitemap><loc>';
-                $data[] = Craft::$app->getRequest()->getHostInfo() . htmlentities('/sitemap_' . $site->id . '_sections_' . $section->id . '_' . $section->handle . '.xml');
+                $data[] = Craft::$app->getRequest()->getHostInfo() . htmlentities('/sitemap_' . $site->id . '_sections_' . $section->id . '_' . strtolower($section->handle) . '.xml');
                 $data[] = '</loc><lastmod>';
                 $data[] = $sectionEntry->dateUpdated->format('Y-m-d h:m:s');
                 $data[] = '</lastmod></sitemap>';
             }
         }
+        return $data = implode('', $data);
+    }
+
+    private function _addCategoriesToIndex($groups, $site)
+    {
+        $data = [];
+        foreach ($groups as $id => $settings) {
+            $group = Craft::$app->getCategories()->getGroupById($id);
+            $groupEntry = Category::findOne(['groupId' => $group->id]);
+            if ($groupEntry) {
+                $data[] = '<sitemap><loc>';
+                $data[] = Craft::$app->getRequest()->getHostInfo() . htmlentities('/sitemap_' . $site->id . '_category_' . $group->id . '_' . strtolower($group->handle) . '.xml');
+                $data[] = '</loc><lastmod>';
+                $data[] = $groupEntry->dateUpdated->format('Y-m-d h:m:s');
+                $data[] = '</lastmod></sitemap>';
+            }
+        }
+
         return $data = implode('', $data);
     }
 
@@ -234,7 +272,7 @@ class SitemapService extends Component
             $typeEntry = Product::findOne(['typeId' => $type->id]);
             if ($typeEntry) {
                 $data[] = '<sitemap><loc>';
-                $data[] = Craft::$app->getRequest()->getHostInfo() . htmlentities('/sitemap_' . $site->id . '_products_' . $type->id . '_' . $type->handle . '.xml');
+                $data[] = Craft::$app->getRequest()->getHostInfo() . htmlentities('/sitemap_' . $site->id . '_products_' . $type->id . '_' . strtolower($type->handle) . '.xml');
                 $data[] = '</loc><lastmod>';
                 $data[] = $typeEntry->dateUpdated->format('Y-m-d h:m:s');
                 $data[] = '</lastmod></sitemap>';
