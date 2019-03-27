@@ -44,6 +44,7 @@ class SitemapController extends Controller
         $data['siteId'] = Craft::$app->getRequest()->getBodyParam('siteId', Craft::$app->getSites()->getPrimarySite()->id);
         $model->setAttributes($data);
         SeoFields::$plugin->defaultsService->saveDefaults($model, Craft::$app->sites->currentSite->id);
+        SeoFields::$plugin->sitemapSerivce->clearCaches();
     }
 
     public function actionRender()
