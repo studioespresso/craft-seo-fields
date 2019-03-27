@@ -234,7 +234,7 @@ class SitemapService extends Component
             $typeEntry = Product::findOne(['typeId' => $type->id]);
             if ($typeEntry) {
                 $data[] = '<sitemap><loc>';
-                $data[] = Craft::$app->getRequest()->getBaseUrl() . htmlentities('/sitemap_' . $site->id . '_products_' . $type->id . '_' . $type->handle . '.xml');
+                $data[] = Craft::$app->getRequest()->getHostInfo() . htmlentities('/sitemap_' . $site->id . '_products_' . $type->id . '_' . $type->handle . '.xml');
                 $data[] = '</loc><lastmod>';
                 $data[] = $typeEntry->dateUpdated->format('Y-m-d h:m:s');
                 $data[] = '</lastmod></sitemap>';
