@@ -178,7 +178,10 @@ class SitemapService extends Component
         }
 
         if($id) {
-            $this->clearCaches(self::SITEMAP_CACHE_KEY . "_" .$element->siteId . "_" . $id);
+            $this->clearCaches([
+                self::SITEMAP_CACHE_KEY . '_index_site' . $element->siteId,
+                self::SITEMAP_CACHE_KEY . "_" .$element->siteId . "_" . $id
+            ]);
         }
     }
 
