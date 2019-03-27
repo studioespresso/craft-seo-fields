@@ -26,19 +26,18 @@ class SeoFieldModel extends Model
      */
     public $siteDefault;
 
-    public function init()
-    {
+    public function getDefaults() {
         if($this->siteId) {
             $site = Craft::$app->getSites()->getSiteById($this->siteId);
         } else {
             $site = Craft::$app->getSites()->getCurrentSite();
         }
-        
         $this->siteDefault = SeoFields::getInstance()->defaultsService->getDataBySite($site);
     }
 
     public function getSiteNameWithSeperator()
     {
+        $this->getDefaults();
         if ($this->hideSiteName) {
             return false;
         }
