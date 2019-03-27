@@ -159,7 +159,7 @@ class SeoField extends Field
      */
     public function getInputHtml($value, ElementInterface $element = null): string
     {
-        // Register our asset bundle
+        $value->siteId = $element->siteId;
 
         // Get our id and namespace
         $id = Craft::$app->getView()->formatInputId($this->handle);

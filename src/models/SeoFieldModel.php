@@ -19,6 +19,7 @@ class SeoFieldModel extends Model
     public $twitterImage;
     public $siteName;
     public $hideSiteName;
+    public $siteId;
 
     /**
      * @var SeoDefaultsModel
@@ -27,7 +28,13 @@ class SeoFieldModel extends Model
 
     public function init()
     {
-        $this->siteDefault = SeoFields::getInstance()->defaultsService->getDataBySite(Craft::$app->getSites()->getCurrentSite());
+        if($this->siteId) {
+            $site = Craft::$app->getSites()->getSiteById($this->siteId);
+        } else {
+            $site = Craft::$app->getSites()->getCurrentSite();
+        }
+        
+        $this->siteDefault = SeoFields::getInstance()->defaultsService->getDataBySite($site);
     }
 
     public function getSiteNameWithSeperator()
