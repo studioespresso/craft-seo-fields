@@ -147,6 +147,12 @@ class SitemapService extends Component
                     'typeId' => $sectionId,
                 ]);
                 break;
+            case 'categories':
+                $data = Category::findAll([
+                    'siteId' => $siteId,
+                    'groupId' => $sectionId,
+                ]);
+                break;
             case 'sections':
                 $data = Entry::findAll([
                     'siteId' => $siteId,
@@ -254,7 +260,7 @@ class SitemapService extends Component
             $groupEntry = Category::findOne(['groupId' => $group->id]);
             if ($groupEntry) {
                 $data[] = '<sitemap><loc>';
-                $data[] = Craft::$app->getRequest()->getHostInfo() . htmlentities('/sitemap_' . $site->id . '_category_' . $group->id . '_' . strtolower($group->handle) . '.xml');
+                $data[] = Craft::$app->getRequest()->getHostInfo() . htmlentities('/sitemap_' . $site->id . '_categories_' . $group->id . '_' . strtolower($group->handle) . '.xml');
                 $data[] = '</loc><lastmod>';
                 $data[] = $groupEntry->dateUpdated->format('Y-m-d h:m:s');
                 $data[] = '</lastmod></sitemap>';
