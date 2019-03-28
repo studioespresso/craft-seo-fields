@@ -25,6 +25,7 @@ class RenderService extends Component
     public function renderMeta($context, $handle = 'seo')
     {
         $meta = false;
+        $element = null;
         $handle = SeoFields::$plugin->getSettings()->fieldHandle;
         Craft::beginProfile('renderMeta', __METHOD__);
         $elements = [Entry::class];
