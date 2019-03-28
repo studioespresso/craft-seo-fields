@@ -37,10 +37,10 @@ class RenderService extends Component
         Event::trigger(SeoFields::class, SeoFields::EVENT_SEOFIELDS_REGISTER_ELEMENT, $event);
         $registeredElements = array_filter($event->elements);
 
-        foreach($registeredElements as $item) {
+        foreach ($registeredElements as $item) {
             $class = explode('\\', $item);
             $elementName = strtolower(end($class));
-            if(isset($context[$elementName])) {
+            if (isset($context[$elementName])) {
                 if (isset($context[$elementName][$handle])) {
                     $meta = $context[$elementName][$handle];
                 } else {
@@ -50,16 +50,17 @@ class RenderService extends Component
             }
         }
 
-        if(!$meta) {
+        if (!$meta) {
             $meta = new SeoFieldModel();
         }
 
         Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_CP);
-        Craft::endProfile('renderMeta', __METHOD__);
-        return Craft::$app->getView()->renderTemplate(
+        $template = Craft::$app->getView()->renderTemplate(
             'seo-fields/_meta',
             ['meta' => $meta, 'entry' => $element]
         );
+        Craft::endProfile('renderMeta', __METHOD__);
+        return $template;
     }
 
 }
