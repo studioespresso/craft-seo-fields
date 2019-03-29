@@ -20,7 +20,8 @@ module.exports = {
         sidebar: [
             '/',
             '/general',
-            ['/field', 'Field & templating'],
+            ['/field', 'Field & settings'],
+            'templating',
             '/robots',
             '/sitemap',
         ],
