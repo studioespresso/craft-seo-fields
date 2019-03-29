@@ -15,6 +15,8 @@
 
 {% import "_includes/forms" as forms %}
 
+<p>{{ "Note that if your field handle is not SEO, you will have to add <a href="{link}">this</a> config settings to tell it about your field "|t('seo-fields', {link: 'https://studioespresso.github.io/craft-seo-fields/field.html#your-field'}) }}</p>
+
  {{ forms.lightswitchField({
      label: "Show general Tab"|t("seo-fields"),
      id: "showGeneralTab",
