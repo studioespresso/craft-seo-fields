@@ -26,5 +26,6 @@ deploy:
   repo: studioespresso/craft-seo-fields
   keep-history: true
   target-branch: gh-pages
-  on:
-    branch: develop
+branches:
+  only:
+    - master
