@@ -27,7 +27,7 @@
 
     {% set sitemapSettings = data.sitemap|json_decode %}
     {% for productType in craft.commerce.productTypes.getAllProductTypes %}
-        {% set settings = attribute(sitemapSettings.products, productType.id) ?? [] %}
+        {% set settings = attribute(sitemapSettings.product, productType.id) ?? [] %}
         <tr>
             <th>{{ productType.name }}</th>
             <td>

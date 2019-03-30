@@ -28,7 +28,7 @@
 
         {% set sitemapSettings = data.sitemap|json_decode %}
         {% for category in categories %}
-            {% set settings = attribute(sitemapSettings.categories, category.id) ?? [] %}
+            {% set settings = attribute(sitemapSettings.category, category.id) ?? [] %}
             <tr>
                 <th>{{ category.name }}</th>
                 <td>

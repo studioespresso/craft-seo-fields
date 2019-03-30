@@ -27,7 +27,7 @@
 
         {% set sitemapSettings = data.sitemap|json_decode %}
         {% for section in allSections %}
-            {% set settings = attribute(sitemapSettings.sections, section.id) ?? [] %}
+            {% set settings = attribute(sitemapSettings.entry, section.id) ?? [] %}
             <tr>
                 <th>{{ section.name }}</th>
                 <td>
