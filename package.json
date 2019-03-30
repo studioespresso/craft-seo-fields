@@ -27,5 +27,8 @@
     "vuepress": "^1.0.0-alpha.44",
     "webpack": "^4.29.5",
     "webpack-cli": "^3.2.3"
+  },
+  "dependencies": {
+    "vue-carousel": "^0.18.0"
   }
 }
