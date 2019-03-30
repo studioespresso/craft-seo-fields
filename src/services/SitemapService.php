@@ -203,10 +203,10 @@ class SitemapService extends Component
                 break;
         }
 
-        if($id) {
+        if ($id) {
             $this->clearCaches([
                 self::SITEMAP_CACHE_KEY . '_index_site' . $element->siteId,
-                self::SITEMAP_CACHE_KEY . "_" .$element->siteId . "_" . $id
+                self::SITEMAP_CACHE_KEY . "_" . $element->siteId . "_" . $id
             ]);
         }
     }
@@ -275,13 +275,14 @@ class SitemapService extends Component
         return $data = implode('', $data);
     }
 
-    private function _addItemToIndex($site, $type, $entry) {
-            $data = [];
-            $data[] = '<sitemap><loc>';
-            $data[] = Craft::$app->getRequest()->getHostInfo() . htmlentities('/sitemap_' . $site->id . '_sections_' . $type->id . '_' . strtolower($type->handle) . '.xml');
-            $data[] = '</loc><lastmod>';
-            $data[] = $entry->dateUpdated->format('Y-m-d h:m:s');
-            $data[] = '</lastmod></sitemap>';
-            return $data;
+    private function _addItemToIndex($site, $type, $entry)
+    {
+        $data = [];
+        $data[] = '<sitemap><loc>';
+        $data[] = Craft::$app->getRequest()->getHostInfo() . htmlentities('/sitemap_' . $site->id . '_sections_' . $type->id . '_' . strtolower($type->handle) . '.xml');
+        $data[] = '</loc><lastmod>';
+        $data[] = $entry->dateUpdated->format('Y-m-d h:m:s');
+        $data[] = '</lastmod></sitemap>';
+        return $data;
     }
 }
