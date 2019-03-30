@@ -11,5 +11,8 @@
  */
 
 return [
-    'fieldHandle' => 'seo'
+    "titleSeperator" => "-",
+    "robotsPerSite" => false,
+    "sitemapPerSite" => false,
+    "fieldHandle" => "seo",
 ];

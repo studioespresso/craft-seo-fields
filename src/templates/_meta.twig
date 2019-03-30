@@ -3,7 +3,7 @@
     <title>{{ meta.getPageTitle(entry) }}</title>
 
     <meta name="description" content="{{ meta.metaDescription }}">
-    <meta property="og:url" content="{{ entry.getUrl() }}"/>
+    <meta property="og:url" content="{{ craft.app.request.absoluteUrl }}"/>
     <meta property="og:type" content="website"/>
     <meta property="og:title" content="{{ meta.getOgTitle(entry) }}"/>
     {% if meta.getOgImage() %}
@@ -18,7 +18,7 @@
     {# Twitter #}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="" />
-    <meta name="twitter:url" content="{{ craft.app.request.url }}" />
+    <meta name="twitter:url" content="{{ craft.app.request.absoluteUrl }}" />
     <meta name="twitter:title" content="{{ meta.getTwitterTitle(entry) }}" />
     <meta name="twitter:description" content="{{ meta.getTwitterDescription() }}" />
     <meta name="twitter:image" content="{{ meta.getTwitterImage().url }}" />
