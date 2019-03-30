@@ -239,14 +239,10 @@ class SitemapService extends Component
     {
         $data = [];
         foreach ($sections as $id => $settings) {
-            $section = Craft::$app->getSections()->getSectionById($id);
-            $sectionEntry = Entry::findOne(['sectionId' => $id]);
-            if ($sectionEntry) {
-                $data[] = '<sitemap><loc>';
-                $data[] = Craft::$app->getRequest()->getHostInfo() . htmlentities('/sitemap_' . $site->id . '_sections_' . $section->id . '_' . strtolower($section->handle) . '.xml');
-                $data[] = '</loc><lastmod>';
-                $data[] = $sectionEntry->dateUpdated->format('Y-m-d h:m:s');
-                $data[] = '</lastmod></sitemap>';
+            $type = Craft::$app->getSections()->getSectionById($id);
+            $entry = Entry::findOne(['sectionId' => $id]);
+            if ($entry) {
+                $data = $this->_addItemToIndex($site, $type, $entry);
             }
         }
         return $data = implode('', $data);
@@ -256,14 +252,10 @@ class SitemapService extends Component
     {
         $data = [];
         foreach ($groups as $id => $settings) {
-            $group = Craft::$app->getCategories()->getGroupById($id);
-            $groupEntry = Category::findOne(['groupId' => $group->id]);
-            if ($groupEntry) {
-                $data[] = '<sitemap><loc>';
-                $data[] = Craft::$app->getRequest()->getHostInfo() . htmlentities('/sitemap_' . $site->id . '_categories_' . $group->id . '_' . strtolower($group->handle) . '.xml');
-                $data[] = '</loc><lastmod>';
-                $data[] = $groupEntry->dateUpdated->format('Y-m-d h:m:s');
-                $data[] = '</lastmod></sitemap>';
+            $type = Craft::$app->getCategories()->getGroupById($id);
+            $entry = Category::findOne(['groupId' => $type->id]);
+            if ($entry) {
+                $data = $this->_addItemToIndex($site, $type, $entry);
             }
         }
 
@@ -275,15 +267,21 @@ class SitemapService extends Component
         $data = [];
         foreach ($productTypes as $id => $settings) {
             $type = Commerce::getInstance()->productTypes->getProductTypeById($id);
-            $typeEntry = Product::findOne(['typeId' => $type->id]);
-            if ($typeEntry) {
-                $data[] = '<sitemap><loc>';
-                $data[] = Craft::$app->getRequest()->getHostInfo() . htmlentities('/sitemap_' . $site->id . '_products_' . $type->id . '_' . strtolower($type->handle) . '.xml');
-                $data[] = '</loc><lastmod>';
-                $data[] = $typeEntry->dateUpdated->format('Y-m-d h:m:s');
-                $data[] = '</lastmod></sitemap>';
+            $entry = Product::findOne(['typeId' => $type->id]);
+            if ($entry) {
+                $data = $this->_addItemToIndex($site, $type, $entry);
             }
         }
         return $data = implode('', $data);
+    }
+
+    private function _addItemToIndex($site, $type, $entry) {
+            $data = [];
+            $data[] = '<sitemap><loc>';
+            $data[] = Craft::$app->getRequest()->getHostInfo() . htmlentities('/sitemap_' . $site->id . '_sections_' . $type->id . '_' . strtolower($type->handle) . '.xml');
+            $data[] = '</loc><lastmod>';
+            $data[] = $entry->dateUpdated->format('Y-m-d h:m:s');
+            $data[] = '</lastmod></sitemap>';
+            return $data;
     }
 }
