@@ -210,12 +210,12 @@
 }
 
 @media only screen and (min-width: 770px) and (max-width: 1200px), (min-width: 1330px) {
-    .seo-fields-facebook-text {
-        width: 65%;
+    .seo-fields-facebook-text, .seo-fields-twitter-text {
+        width: 75%;
         float: left;
     }
-    .seo-fields-facebook-image {
-        width: 25%;
+    .seo-fields-facebook-image, .seo-fields-twitter-image {
+        width: 20%;
         margin-left: 24px;
         float: left;
     }
