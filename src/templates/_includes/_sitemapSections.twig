@@ -34,7 +34,7 @@
                     <div class="field">
                         <div class="input ltr">
                             <div class="select">
-                                <select name="data[sections][{{ section.id }}][changefreq]" id="">
+                                <select name="data[entry][{{ section.id }}][changefreq]" id="">
                                     <option value="always"
                                             {% if settings|length and settings.changefreq == 'always' %}selected{% endif %}>
                                         {{ 'always'|t('seo-fields') }}
@@ -72,7 +72,7 @@
                     <div class="field">
                         <div class="input ltr">
                             <div class="select">
-                                <select name="data[sections][{{ section.id }}][priority]">
+                                <select name="data[entry][{{ section.id }}][priority]">
                                     <option value="1.0"
                                             {% if settings|length and settings.priority == '1.0' %}selected{% endif %}>
                                         {{ '1.0 (High)'|t('seo-fields') }}
@@ -125,7 +125,7 @@
                 <td>
                     <label for="section-{{ section.id }}-enabled">
                         <input type="checkbox" id="section-{{ section.id }}-enabled"
-                               name="data[sections][{{ section.id }}][enabled]"
+                               name="data[entry][{{ section.id }}][enabled]"
                                {% if settings.enabled is defined %}checked{% endif %}>
                         {{ 'Enabled?'|t('seo-fields') }}
                     </label>

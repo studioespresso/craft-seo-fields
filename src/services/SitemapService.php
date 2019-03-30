@@ -45,9 +45,9 @@ class SitemapService extends Component
         $shouldRenderSections = false;
         $shouldRenderCategories = false;
 
-        if (isset($sitemapSettings['sections'])) {
-            $shouldRenderSections = array_filter($sitemapSettings['sections'], function ($section) use ($sitemapSettings) {
-                if (isset($sitemapSettings['sections'][$section]['enabled'])) {
+        if (isset($sitemapSettings['entry'])) {
+            $shouldRenderSections = array_filter($sitemapSettings['entry'], function ($section) use ($sitemapSettings) {
+                if (isset($sitemapSettings['entry'][$section]['enabled'])) {
                     $site = Craft::$app->getSites()->getCurrentSite();
                     $sectionSites = Craft::$app->getSections()->getSectionById($section)->siteSettings;
                     if (isset($sectionSites[$site->id]) && $sectionSites[$site->id]->hasUrls) {
@@ -59,9 +59,9 @@ class SitemapService extends Component
             }, ARRAY_FILTER_USE_KEY);
         }
 
-        if (isset($sitemapSettings['categories'])) {
-            $shouldRenderCategories = array_filter($sitemapSettings['categories'], function ($group) use ($sitemapSettings) {
-                if (isset($sitemapSettings['categories'][$group]['enabled'])) {
+        if (isset($sitemapSettings['category'])) {
+            $shouldRenderCategories = array_filter($sitemapSettings['category'], function ($group) use ($sitemapSettings) {
+                if (isset($sitemapSettings['category'][$group]['enabled'])) {
                     $site = Craft::$app->getSites()->getCurrentSite();
                     $groupSites = Craft::$app->getCategories()->getGroupById($group)->siteSettings;
                     if (isset($groupSites[$site->id]) && $groupSites[$site->id]->hasUrls) {
@@ -73,9 +73,9 @@ class SitemapService extends Component
             }, ARRAY_FILTER_USE_KEY);
         }
 
-        if (isset($sitemapSettings['products'])) {
-            $shouldRenderProducts = array_filter($sitemapSettings['products'], function ($productType) use ($sitemapSettings) {
-                if (isset($sitemapSettings['products'][$productType]['enabled'])) {
+        if (isset($sitemapSettings['product'])) {
+            $shouldRenderProducts = array_filter($sitemapSettings['product'], function ($productType) use ($sitemapSettings) {
+                if (isset($sitemapSettings['product'][$productType]['enabled'])) {
                     $productTypeService = new ProductTypes();
                     $site = Craft::$app->getSites()->getCurrentSite();
                     foreach ($productTypeService->getProductTypeSites($productType) as $productTypeSite) {
@@ -111,6 +111,11 @@ class SitemapService extends Component
                 self::SITEMAP_CACHE_KEY . '_index_site' . $currentSite->id
             ]
         ]);
+        if(!Craft::$app->getConfig()->general->devMode) {
+            $duration = null;
+        } else {
+            $duration = 1;
+        }
 
         $xml = Craft::$app->getCache()->getOrSet(
             self::SITEMAP_CACHE_KEY . '_index_site' . $currentSite->id,
@@ -131,7 +136,7 @@ class SitemapService extends Component
                 $xml = implode('', $xml);
                 return $xml;
             },
-            null,
+            $duration,
             $cacheDependency
         );
         return $xml;
@@ -141,19 +146,19 @@ class SitemapService extends Component
     {
         $settings = $this->getSettingsBySiteId($siteId);
         switch ($type) {
-            case 'products':
+            case 'product':
                 $data = Product::findAll([
                     'siteId' => $siteId,
                     'typeId' => $sectionId,
                 ]);
                 break;
-            case 'categories':
+            case 'category':
                 $data = Category::findAll([
                     'siteId' => $siteId,
                     'groupId' => $sectionId,
                 ]);
                 break;
-            case 'sections':
+            case 'entry':
                 $data = Entry::findAll([
                     'siteId' => $siteId,
                     'sectionId' => $sectionId
@@ -167,15 +172,19 @@ class SitemapService extends Component
                 self::SITEMAP_CACHE_KEY . "_" . $siteId . "_" . $sectionId
             ]
         ]);
+        if(!Craft::$app->getConfig()->general->devMode) {
 
-        $data = Craft::$app->getCache()->getOrSet(
-            '',
-            function () use ($data, $type, $settings, $sectionId) {
-                return $this->_addEntriesToSitemap($data, $settings[$type][$sectionId]);
-            },
-            null,
-            $cacheDependency
-        );
+            $data = Craft::$app->getCache()->getOrSet(
+                '',
+                function () use ($data, $type, $settings, $sectionId) {
+                    return $this->_addElementsToSitemap($data, $settings[$type][$sectionId]);
+                },
+                null,
+                $cacheDependency
+            );
+        } else {
+            $data = $this->_addElementsToSitemap($data, $settings[$type][$sectionId]);
+        }
 
         return $data;
     }
@@ -217,7 +226,7 @@ class SitemapService extends Component
         return Json::decodeIfJson($settings->sitemap);
     }
 
-    private function _addEntriesToSitemap($entries, $settings)
+    private function _addElementsToSitemap($entries, $settings)
     {
         $data = [];
         $data[] = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
@@ -278,8 +287,10 @@ class SitemapService extends Component
     private function _addItemToIndex($site, $type, $entry)
     {
         $data = [];
+        $class = explode('\\', get_class($entry));
+        $elementName = strtolower(end($class));
         $data[] = '<sitemap><loc>';
-        $data[] = Craft::$app->getRequest()->getHostInfo() . htmlentities('/sitemap_' . $site->id . '_sections_' . $type->id . '_' . strtolower($type->handle) . '.xml');
+        $data[] = Craft::$app->getRequest()->getHostInfo() . htmlentities('/sitemap_' . $site->id . '_' . $elementName .'_' . $type->id . '_' . strtolower($type->handle) . '.xml');
         $data[] = '</loc><lastmod>';
         $data[] = $entry->dateUpdated->format('Y-m-d h:m:s');
         $data[] = '</lastmod></sitemap>';
