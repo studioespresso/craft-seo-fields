@@ -77,6 +77,11 @@ class DefaultsService extends Component
         }
     }
 
+    public function getDataBySiteHandle($handle) {
+        $site = Craft::$app->sites->getSiteByHandle($handle);
+        return $this->getDataBySiteId($site->id);
+    }
+
     public function getDataBySite(Site $site)
     {
         return $this->getDataBySiteId($site->id);

@@ -23,9 +23,7 @@ class SitemapController extends Controller
 
     public function actionSettings($siteHandle = null)
     {
-        $currentSite = Craft::$app->sites->getSiteByHandle($siteHandle);
-        Craft::$app->sites->setCurrentSite($currentSite);
-        $data = SeoFields::$plugin->defaultsService->getDataBySite($currentSite);
+        $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($siteHandle);
         return $this->renderTemplate('seo-fields/_sitemap', [
             'data' => $data,
             'sitemapPerSite' => SeoFields::$plugin->getSettings()->sitemapPerSite
