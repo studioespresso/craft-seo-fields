@@ -316,7 +316,7 @@ class SitemapService extends Component
         $class = explode('\\', get_class($entry));
         $elementName = strtolower(end($class));
         $data[] = '<sitemap><loc>';
-        $data[] = Craft::$app->getRequest()->getHostInfo() . htmlentities('/sitemap_' . $site->id . '_' . $elementName .'_' . $type->id . '_' . strtolower($type->handle) . '.xml');
+        $data[] = UrlHelper::siteUrl(htmlentities('/sitemap_' . $site->id . '_' . $elementName .'_' . $type->id . '_' . strtolower($type->handle) . '.xml'), null, null, $site->id);
         $data[] = '</loc><lastmod>';
         $data[] = $entry->dateUpdated->format('Y-m-d h:m:s');
         $data[] = '</lastmod></sitemap>';
