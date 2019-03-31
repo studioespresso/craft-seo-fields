@@ -11,7 +11,7 @@ If you use a different handle for your field, simply copy [this file](src/config
 
 <carousel 
     :per-page="1" 
-    :speed="800"
+    :speed="1200"
     :loop="true"
     :center-mode="true"
     :mouse-drag="true"

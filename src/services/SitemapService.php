@@ -8,10 +8,13 @@ use craft\commerce\elements\Product;
 use craft\commerce\models\ProductTypeSite;
 use craft\commerce\Plugin as Commerce;
 use craft\commerce\services\ProductTypes;
+use craft\db\Query;
 use craft\elements\Category;
+use craft\elements\db\ElementQuery;
 use craft\elements\Entry;
 use craft\events\RegisterUrlRulesEvent;
 use craft\helpers\Json;
+use craft\helpers\UrlHelper;
 use craft\models\Site;
 use craft\web\UrlManager;
 use studioespresso\seofields\models\SeoDefaultsModel;
@@ -229,14 +232,37 @@ class SitemapService extends Component
     private function _addElementsToSitemap($entries, $settings)
     {
         $data = [];
-        $data[] = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        $data[] = '<?xml version="1.0" encoding="UTF-8"?>';
+        $data[] = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xhtml="http://www.w3.org/1999/xhtml" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        $currentSite = Craft::$app->getSites()->getCurrentSite();
+        /** @var $entry Element */
         foreach ($entries as $entry) {
+            $siteEntries =
+                (new Query())->select(['siteId', 'uri', 'language'])
+                    ->from('{{%elements_sites}}')
+                    ->leftJoin('{{sites}}', 'sites.id = elements_sites.siteId')
+                    ->where('[[elementId]] = ' . $entry->id)
+                    ->andWhere('enabled = true')
+                    ->all();
+            $sites = array_filter($siteEntries, function($item) use ($currentSite) {
+                if($item['siteId'] != $currentSite->id) {
+                    return true;
+                }
+                return false;
+            });
+
             if ($entry->getUrl()) {
                 $data[] = "<url>";
                 $data[] = "<loc>" . $entry->getUrl() . "</loc>";
                 $data[] = "<lastmod>" . $entry->dateUpdated->format('Y-m-d h:m:s') . "</lastmod>";
                 $data[] = "<changefreq>" . $settings['changefreq'] . "</changefreq>";
                 $data[] = "<priority>" . $settings['priority'] . "</priority>";
+                if($sites) {
+                    foreach($sites as $site) {
+                        $url = UrlHelper::siteUrl($site['uri'], null, null, $site['siteId']);
+                        $data[] = "<xhtml:link rel='alternate' hreflang='{$site['language']}' href='{$url}'/>";
+                    }
+                }
                 $data[] = "</url>";
             }
         }
