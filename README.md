@@ -35,5 +35,11 @@ Additionally, you can configure your robots.txt and your sitemaps as well.
 
 | 📑 [More information & documentation is available here](https://studioespresso.github.io/craft-seo-fields/) |
 | --- |
+
+## Roadmap
+
+- [ ] Custom sitemap urls
+- [ ] Redirects?
+- [ ]  
 ---
 Brought to you by [Studio Espresso](https://studioespresso.co)

@@ -17,6 +17,8 @@ use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use craft\models\Site;
 use craft\web\UrlManager;
+use studioespresso\seofields\events\RegisterSeoElementEvent;
+use studioespresso\seofields\events\RegisterSeoSitemapEvent;
 use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\records\DefaultsRecord;
 use studioespresso\seofields\SeoFields;
@@ -47,6 +49,7 @@ class SitemapService extends Component
         $shouldRenderProducts = false;
         $shouldRenderSections = false;
         $shouldRenderCategories = false;
+        $shouldRenderCustom = false;
 
         if (isset($sitemapSettings['entry'])) {
             $shouldRenderSections = array_filter($sitemapSettings['entry'], function ($section) use ($sitemapSettings) {
@@ -93,11 +96,13 @@ class SitemapService extends Component
             }, ARRAY_FILTER_USE_KEY);
         }
 
-        if ($shouldRenderSections || $shouldRenderProducts || $shouldRenderCategories) {
+
+        if ($shouldRenderSections || $shouldRenderProducts || $shouldRenderCategories || $shouldRenderCustom) {
             return [
                 'products' => $shouldRenderProducts,
                 'sections' => $shouldRenderSections,
-                'categories' => $shouldRenderCategories
+                'categories' => $shouldRenderCategories,
+                'custom' => $shouldRenderCustom,
             ];
         } else {
             return false;

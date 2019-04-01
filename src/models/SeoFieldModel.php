@@ -4,6 +4,8 @@ namespace studioespresso\seofields\models;
 
 use Craft;
 use craft\base\Model;
+use craft\db\Query;
+use craft\helpers\UrlHelper;
 use craft\models\AssetTransform;
 use studioespresso\seofields\SeoFields;
 
@@ -26,8 +28,9 @@ class SeoFieldModel extends Model
      */
     public $siteDefault;
 
-    public function getDefaults() {
-        if($this->siteId) {
+    public function getDefaults()
+    {
+        if ($this->siteId) {
             $site = Craft::$app->getSites()->getSiteById($this->siteId);
         } else {
             $site = Craft::$app->getSites()->getCurrentSite();
@@ -43,7 +46,7 @@ class SeoFieldModel extends Model
         }
         if ($this->siteName) {
             $siteName = $this->siteName;
-        } elseif($this->siteDefault->defaultSiteTitle) {
+        } elseif ($this->siteDefault->defaultSiteTitle) {
             $siteName = $this->siteDefault->defaultSiteTitle;
         } else {
             $siteName = Craft::$app->getSystemName();
@@ -128,6 +131,37 @@ class SeoFieldModel extends Model
             'width' => $asset->getWidth($transform),
             'url' => $asset->getUrl($transform),
         ];
+    }
+
+    public function getAlternate($element)
+    {
+        $siteEntries =
+            (new Query())->select(['siteId', 'uri', 'language'])
+                ->from('{{%elements_sites}}')
+                ->leftJoin('{{sites}}', 'sites.id = elements_sites.siteId')
+                ->where('[[elementId]] = ' . $element->id)
+                ->andWhere('enabled = true')
+                ->all();
+        $currentSite = Craft::$app->getSites()->getCurrentSite()->id;
+        $sites = array_filter($siteEntries, function ($item) use ($currentSite) {
+            if ($item['siteId'] != $currentSite) {
+                return true;
+            }
+            return false;
+        });
+        if (empty($sites)) {
+            return false;
+        }
+
+        $data = [];
+        foreach ($sites as $site) {
+            $data[] = [
+                'url' => UrlHelper::siteUrl($site['uri'], null, null, $site['siteId']),
+                'language' => $site['language']
+            ];
+        }
+
+        return $data;
     }
 
     /**
