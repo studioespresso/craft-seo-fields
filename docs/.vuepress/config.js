@@ -14,7 +14,7 @@ module.exports = {
         docsDir: 'docs',
         docsBranch: 'develop',
         editLinks: true,
-        editLinkText: 'Help us improve this page!',
+        editLinkText: 'See something wrong? Let us know!',
         sidebarDepth: 1,
         displayAllHeaders: true,
         sidebar: [
