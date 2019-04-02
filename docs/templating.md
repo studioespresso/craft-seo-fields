@@ -2,8 +2,12 @@
 
 ## Template hook
 To put SEO Fields on your html, just add `{% hook 'seo-fields' %}` within the `<head>` tag in your layout.
- If you want more control over what the plugin output, you can include your own snippet instead of the templat hook. Have a look at the [default template](src/templates/_meta.twig) to get you started.
 
+If you want more control over what the plugin output, you can include your own snippet instead of the templat hook. Have a look at the [default template](src/templates/_meta.twig) to get you started.
+
+Note that the field looks for a field called `seo`. If it doesn't find that, it will not output anymore. 
+
+[More information on that here.](/craft-seo-fields/field.html#field)
 
 ## Support for custom elements
 

@@ -4,18 +4,22 @@ prev: false
 next: false
 ---
 # Field
-
+---
+### ⚠️ Important ⚠️ 
 The plugin assumes that the handle of the `SEO Fields` field will be simply: __`seo`__. If it can't find that field, it won't output anything.
 
 If you use a different handle for your field, simply copy [this file](src/config.php) to the `config` directory of your project and change the fieldhandle to your own. 
 
+---
+Here's what the field looks like the CP: 
+
 <carousel 
     :per-page="1" 
-    :speed="1200"
-    :loop="true"
+    :speed="100"
+    :loop="false"
     :center-mode="true"
     :mouse-drag="true"
-    :autoplay="true"
+    :autoplay="false"
     paginationColor="#efefef"
     paginationActiveColor="#3b68b5"
     >
