@@ -290,11 +290,9 @@ class SeoFields extends Plugin
         }
 
         if ($elements) {
-            Event::on(
-                __CLASS__,
-                self::EVENT_SEOFIELDS_REGISTER_ELEMENT,
+            Event::on(SeoFields::class, SeoFields::EVENT_SEOFIELDS_REGISTER_ELEMENT,
                 function (RegisterSeoElementEvent $event) use ($elements) {
-                    $event->elements = array_merge($event->elements, $elements);
+                    $event->elements = array_merge($event->elements,$elements);
                 }
             );
         }
