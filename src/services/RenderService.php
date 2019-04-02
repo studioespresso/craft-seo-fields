@@ -4,6 +4,7 @@ namespace studioespresso\seofields\services;
 
 use Craft;
 use craft\base\Component;
+use craft\elements\Category;
 use craft\elements\Entry;
 use craft\web\View;
 use studioespresso\seofields\events\RegisterSeoElementEvent;
@@ -28,7 +29,7 @@ class RenderService extends Component
         $element = null;
         $handle = SeoFields::$plugin->getSettings()->fieldHandle;
         Craft::beginProfile('renderMeta', __METHOD__);
-        $elements = [Entry::class];
+        $elements = [];
 
         $event = new RegisterSeoElementEvent([
             'elements' => $elements,
@@ -36,6 +37,9 @@ class RenderService extends Component
 
         Event::trigger(SeoFields::class, SeoFields::EVENT_SEOFIELDS_REGISTER_ELEMENT, $event);
         $registeredElements = array_filter($event->elements);
+
+        array_push($registeredElements, Entry::class);
+        array_push($registeredElements, Category::class);
 
         foreach ($registeredElements as $item) {
             $class = explode('\\', $item);
