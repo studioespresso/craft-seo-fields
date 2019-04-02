@@ -135,6 +135,9 @@ class SeoFieldModel extends Model
 
     public function getAlternate($element)
     {
+        if(!$element) {
+            return false;
+        }
         $siteEntries =
             (new Query())->select(['siteId', 'uri', 'language'])
                 ->from('{{%elements_sites}}')
