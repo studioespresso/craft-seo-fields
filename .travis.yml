@@ -28,4 +28,4 @@ deploy:
   target-branch: gh-pages
 branches:
   only:
-    - master
+    - develop
