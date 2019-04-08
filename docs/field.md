@@ -12,7 +12,7 @@ If you use a different handle for your field, simply copy [this file](src/config
 
 ---
 Here's what the field looks like the CP: 
-
+<ClientOnly>
 <carousel 
     :per-page="1" 
     :speed="100"
@@ -33,6 +33,7 @@ Here's what the field looks like the CP:
         <img src="./images/field-twitter.png">
     </slide>
 </carousel>
+</ClientOnly>
 
 ### Field settings
 In the field settings you can enable or disable the following:
