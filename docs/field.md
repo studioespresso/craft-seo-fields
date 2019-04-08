@@ -12,28 +12,8 @@ If you use a different handle for your field, simply copy [this file](src/config
 
 ---
 Here's what the field looks like the CP: 
-<ClientOnly>
-<carousel 
-    :per-page="1" 
-    :speed="100"
-    :loop="false"
-    :center-mode="true"
-    :mouse-drag="true"
-    :autoplay="false"
-    paginationColor="#efefef"
-    paginationActiveColor="#3b68b5"
-    >
-    <slide>
-        <img src="./images/field-general.png">
-    </slide>
-    <slide>
-        <img src="./images/field-facebook.png">
-    </slide>
-    <slide>
-        <img src="./images/field-twitter.png">
-    </slide>
-</carousel>
-</ClientOnly>
+
+<img src="./images/field-facebook.png">
 
 ### Field settings
 In the field settings you can enable or disable the following:
