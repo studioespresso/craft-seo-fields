@@ -64,6 +64,7 @@ class RenderService extends Component
             ['meta' => $meta, 'entry' => $element]
         );
         Craft::endProfile('renderMeta', __METHOD__);
+        Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_SITE);
         return $template;
     }
 
