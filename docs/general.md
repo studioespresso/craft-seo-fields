@@ -33,7 +33,7 @@ You can set:
 If you have multiple sites in your install, you can specify different defaults for each site.
 
 ## 3. The field
-Next up, you create an `SEO Fields` field and add it to your section's layout. More about the field and it's options can be found [here](/craft-seo-fields/field.html#field).
+Next up, you create an `SEO Fields` field and add it to your section's layout. More about the field and it's options can be found [here](field.html#field).
 
 ## 4. Rendering
 
