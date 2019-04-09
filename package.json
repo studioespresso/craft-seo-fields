@@ -7,7 +7,7 @@
     "build": "webpack --config webpack.config.js --progress --hide-modules",
     "watch": "webpack --watch --config webpack.config.js --progress --hide-modules",
     "docs": "vuepress dev docs",
-    "docs:build": "vuepress build docs"
+    "docs:build": "vuepress build docs NODE_ENV=production"
   },
   "repository": {
     "type": "git",
