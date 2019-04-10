@@ -19,11 +19,11 @@ module.exports = {
         displayAllHeaders: true,
         sidebar: [
             '/',
-            '/general',
+            ['/general', 'General'],
             ['/field', 'Field & settings'],
-            'templating',
-            '/robots',
-            '/sitemap',
+            ['/templating', 'Templating'],
+            ['/robots', 'Robots.txt'],
+            ['/sitemap', 'Sitemap.xml'],
         ],
         nav: [
             {

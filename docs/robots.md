@@ -18,4 +18,4 @@ You can modify the template with your own enviroments, conditions and settings i
 
 By default, each site in your Craft install will get the same `robots.txt`. If you need the option to change these per site, you can add `"robotsPerSite" => true` to `config/seo-fields.php`.
 
-With that set, refresh the robots settings page and you'll see a sites dropdown at the top so you can switch sites and save a sitemap for each.
+With that set, refresh the robots settings page and you'll see a sites dropdown at the top so you can switch sites and save a robots.txt for each.
