@@ -1,3 +1,9 @@
+---
+title: Robots.txt - SEO Fields
+prev: false
+next: false
+---
+
 # Robots.txt
 ### Default
 When you install the plugin, it enabled the robots.txt by default, using [this template](https://github.com/studioespresso/craft-seo-fields/blob/master/src/templates/_placeholder/_robots.twig).

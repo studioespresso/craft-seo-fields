@@ -1,3 +1,8 @@
+---
+title: General - SEO Fields
+prev: false
+next: false
+---
 # General
 
 ## 0. Requirements

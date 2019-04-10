@@ -1,3 +1,9 @@
+---
+title: Templating - SEO Fields
+prev: false
+next: false
+---
+
 # Templating
 
 ## Template hook
