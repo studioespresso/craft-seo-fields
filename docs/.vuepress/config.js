@@ -35,5 +35,13 @@ module.exports = {
                 link: 'https://www.studioespresso.co/en/contact',
             }
         ]
-    }
+    },
+    plugins: [
+    [
+        '@vuepress/google-analytics',
+        {
+            'ga': 'UA-79200406-2'
+        }
+    ]
+]
 }
