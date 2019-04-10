@@ -282,7 +282,7 @@ class SitemapService extends Component
             $type = Craft::$app->getSections()->getSectionById($id);
             $entry = Entry::findOne(['sectionId' => $id]);
             if ($entry) {
-                $data = $this->_addItemToIndex($site, $type, $entry);
+                $data[] = implode('',$this->_addItemToIndex($site, $type, $entry));
             }
         }
         return $data = implode('', $data);
@@ -295,7 +295,7 @@ class SitemapService extends Component
             $type = Craft::$app->getCategories()->getGroupById($id);
             $entry = Category::findOne(['groupId' => $type->id]);
             if ($entry) {
-                $data = $this->_addItemToIndex($site, $type, $entry);
+                $data[] = implode('', $this->_addItemToIndex($site, $type, $entry));
             }
         }
 
@@ -309,7 +309,7 @@ class SitemapService extends Component
             $type = Commerce::getInstance()->productTypes->getProductTypeById($id);
             $entry = Product::findOne(['typeId' => $type->id]);
             if ($entry) {
-                $data = $this->_addItemToIndex($site, $type, $entry);
+                $data[] = implode('',$this->_addItemToIndex($site, $type, $entry));
             }
         }
         return $data = implode('', $data);
