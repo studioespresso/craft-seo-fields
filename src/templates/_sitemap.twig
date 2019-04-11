@@ -1,0 +1,56 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{% extends "_layouts/cp" %}
+
+{% set fullPageForm = true %}
+
+{% block header %}
+    {{ block('pageTitle') }}
+    {{ block('contextMenu') }}
+    <div class="flex-grow"></div>
+    <a href="{{ parseEnv(currentSite.baseUrl) }}/sitemap.xml" class="btn sharebtn" rel="noopener" target="_blank" style="margin-right: 10px;">{{ 'View sitemap.xml'|t('seo-fields') }}</a>
+    {{ block('actionButton') }}
+{% endblock %}
+
+{% import "_includes/forms" as forms %}
+
+{% set selectedSubnavItem = 'sitemap' %}
+{% set title = 'Sitemap.xml' %}
+
+{% block contextMenu %}
+    {% if selectedSubnavItem == 'defaults' or sitemapPerSite %}
+        {% include 'seo-fields/_includes/_sites' %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {{ actionInput('seo-fields/sitemap/save') }}
+    {% if sitemapPerSite %}
+        <input type="hidden" name="siteId" value="{{ currentSite.id }}">
+    {% endif %}
+
+    {% if data.id is defined %}
+        {{ forms.hidden({
+            name: 'id',
+            value: data.id
+        }) }}
+    {% endif %}
+
+    <div class="field">
+        <div class="heading">
+            <h2>{{ 'What is a sitemap?'|t('seo-fields') }}</h2>
+            <div class="instructions">
+                A sitemap is a file where you provide information about the pages, videos, and other files on your site,
+                and the relationships between them. Search engines like Google read this file to more intelligently
+                crawl your site. A sitemap tells the crawler which files you think are important in your site, and also
+                provides valuable information about these files: for example, for pages, when the page was last updated,
+                how often the page is changed, and any alternate language versions of a page.
+            </div>
+        </div>
+    </div>
+    {% include 'seo-fields/_includes/_sitemapSections' %}
+    {% include 'seo-fields/_includes/_sitemapCategories' %}
+    {% if craft.app.plugins.isPluginEnabled('commerce') %}
+        {% include 'seo-fields/_includes/_sitemapProducts' %}
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "_layouts/cp" %}
+
+{% set fullPageForm = true %}
+
+{% block header %}
+    {{ block('pageTitle') }}
+    {{ block('contextMenu') }}
+    <div class="flex-grow"></div>
+    {{ block('actionButton') }}
+{% endblock %}

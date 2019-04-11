@@ -1,0 +1,138 @@
+{% set categories = craft.app.categories.getAllGroups() %}
+{% if categories|length %}
+    <hr>
+    <div class="field">
+        <div class="heading">
+            <h2>{{ 'Category groups'|t('seo-fields') }}</h2>
+        </div>
+    </div>
+
+    <table class="data fullwidth collapsible">
+        <thead>
+        <tr>
+            <th>{{ 'Category group'|t('seo-fields') }}</th>
+            <th>{{ 'Update frequency'|t('seo-fields') }}
+                <span class="info">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                    </span>
+            </th>
+            <th>Priority
+                <span class="info">
+                        {{ 'The priority of this URL relative to other URLs on your site. Valid values range from 0.0 to 1.0. This value does not affect how your pages are compared to pages on other sites—it only lets the search engines know which pages you deem most important for the crawlers.'|t('seo-fields') }}
+                    </span>
+            </th>
+            <th>{{ 'Enabled?'|t('seo-fields') }}</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% set sitemapSettings = data.sitemap|json_decode %}
+        {% for category in categories %}
+            {% set settings = attribute(sitemapSettings.category, category.id) ?? [] %}
+            <tr>
+                <th>{{ category.name }}</th>
+                <td>
+                    <div class="field">
+                        <div class="input ltr">
+                            <div class="select">
+                                <select name="data[category][{{ category.id }}][changefreq]" id="">
+                                    <option value="always"
+                                            {% if settings|length and settings.changefreq == 'always' %}selected{% endif %}>
+                                        {{ 'always'|t('seo-fields') }}
+                                    </option>
+                                    <option value="hourly"
+                                            {% if settings|length and settings.changefreq == 'hourly' %}selected{% endif %}>
+                                        {{ 'hourly'|t('seo-fields') }}
+                                    </option>
+                                    <option value="daily"
+                                            {% if settings|length and settings.changefreq == 'daily' %}selected{% endif %}>
+                                        {{ 'daily'|t('seo-fields') }}
+                                    </option>
+                                    <option value="weekly"
+                                            {% if settings|length and settings.changefreq == 'weekly' %}selected{% endif %}>
+                                        {{ 'weekly'|t('seo-fields') }}
+                                    </option>
+                                    <option value="monthly"
+                                            {% if settings|length and settings.changefreq == 'monthly' %}selected{% endif %}>
+                                        {{ 'monthly'|t('seo-fields') }}
+                                    </option>
+                                    <option value="yearly"
+                                            {% if settings|length and settings.changefreq == 'yearly' %}selected{% endif %}>
+                                        {{ 'yearly'|t('seo-fields') }}
+                                    </option>
+                                    <option value="never"
+                                            {% if settings|length and settings.changefreq == 'never' %}selected{% endif %}>
+                                        {{ 'never'|t('seo-fields') }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="field">
+                        <div class="input ltr">
+                            <div class="select">
+                                <select name="data[category][{{ category.id }}][priority]">
+                                    <option value="1.0"
+                                            {% if settings|length and settings.priority == '1.0' %}selected{% endif %}>
+                                        {{ '1.0 (High)'|t('seo-fields') }}
+                                    </option>
+                                    <option value="0.9"
+                                            {% if settings|length and settings.priority == '0.9' %}selected{% endif %}>
+                                        0.9
+                                    </option>
+                                    <option value="0.8"
+                                            {% if settings|length and settings.priority == '0.8' %}selected{% endif %}>
+                                        0.8
+                                    </option>
+                                    <option value="0.7"
+                                            {% if settings|length and settings.priority == '0.7' %}selected{% endif %}>
+                                        0.7
+                                    </option>
+                                    <option value="0.6"
+                                            {% if settings|length and settings.priority == '0.6' %}selected{% endif %}>
+                                        0.6
+                                    </option>
+                                    <option value="0.5"
+                                            {% if settings|length and settings.priority == '0.5' %}selected{% endif %}
+                                            >{{ '0.5 (Default)'|t('seo-fields') }}
+                                    </option>
+                                    <option value="0.4"
+                                            {% if settings|length and settings.priority == '0.4' %}selected{% endif %}>
+                                        0.4
+                                    </option>
+                                    <option value="0.3"
+                                            {% if settings|length and settings.priority == '0.3' %}selected{% endif %}>
+                                        0.3
+                                    </option>
+                                    <option value="0.2"
+                                            {% if settings|length and settings.priority == '0.2' %}selected{% endif %}>
+                                        0.2
+                                    </option>
+                                    <option value="0.1"
+                                            {% if settings|length and settings.priority == '0.1' %}selected{% endif %}>
+                                        0.1
+                                    </option>
+                                    <option value="0.0"
+                                            {% if settings|length and settings.priority == '0.0' %}selected{% endif %}>
+                                        {{ '0.0 (Low)'|t('seo-fields') }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <label for="section-{{ category.id }}-enabled">
+                        <input type="checkbox" id="section-{{ category.id }}-enabled"
+                               name="data[category][{{ category.id }}][enabled]"
+                               {% if settings.enabled is defined %}checked{% endif %}>
+                        {{ 'Enabled?'|t('seo-fields') }}
+                    </label>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

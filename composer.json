@@ -1,0 +1,40 @@
+{
+    "name": "studioespresso/craft-seo-fields",
+    "description": "Fields for your SEO & OG meta data",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "seo fields"
+    ],
+    "support": {
+        "docs": "https://github.com/studioespresso/craft-seo-fields/blob/master/README.md",
+        "issues": "https://github.com/studioespresso/craft-seo-fields/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Studio Espresso",
+            "homepage": "https://studioespresso.co"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.1.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "studioespresso\\seofields\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "SEO Fields",
+        "handle": "seo-fields",
+        "hasCpSettings": true,
+        "hasCpSection": true,
+        "changelogUrl": "https://raw.githubusercontent.com/studioespresso/craft-seo-fields/master/CHANGELOG.md",
+        "class": "studioespresso\\seofields\\SeoFields"
+    }
+}

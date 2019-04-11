@@ -1,0 +1,26 @@
+# robots.txt for {{ siteUrl }}
+
+{% switch getenv('ENVIRONMENT') %}
+
+{% case "live" %}
+
+User-agent: *
+Disallow: /cpresources/
+Disallow: /vendor/
+Disallow: /.env
+
+{% case "local" %}
+
+# local - disallow all
+
+User-agent: *
+Disallow: /
+
+{% default %}
+
+User-agent: *
+Disallow: /cpresources/
+Disallow: /vendor/
+Disallow: /.env
+
+{% endswitch %}

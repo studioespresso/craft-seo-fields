@@ -1,0 +1,46 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{% extends 'seo-fields/_includes/_header' %}
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("studioespresso\\seofields\\assetbundles\\RobotsAsset", 3) %}
+
+{% set selectedSubnavItem = 'robots' %}
+{% set title = 'Robots.txt' %}
+
+{% block contextMenu %}
+    {% if selectedSubnavItem == 'defaults' or robotsPerSite %}
+        {% include 'seo-fields/_includes/_sites' %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {% if robotsPerSite %}
+        <input type="hidden" name="siteId" value="{{ currentSite.id }}">
+    {% endif %}
+
+    {{ actionInput('seo-fields/robots/save') }}
+    {% if data.id is defined %}
+        {{ forms.hidden({
+            name: 'id',
+            value: data.id
+        }) }}
+    {% endif %}
+
+    {{ forms.lightswitchField({
+        label: 'Enable robots.txt'|t('seo-fields'),
+        instructions: 'Let the plugin handle your robots.txt'|t('seo-fields'),
+        id: 'enableRobots',
+        name: 'enableRobots',
+        value: 1,
+        on: data.enableRobots is not null ? data.enableRobots,
+    }) }}
+
+    {{ forms.textareaField({
+        label: 'Robots.txt content'|t('seo-fields'),
+        id: 'robots',
+        name: 'robots',
+        value: data.robots,
+        rows: 25,
+    }) }}
+
+{% endblock %}

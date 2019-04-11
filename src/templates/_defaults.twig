@@ -1,0 +1,76 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{% extends 'seo-fields/_includes/_header' %}
+
+{% set title = "SEO Fields" %}
+{% set selectedSubnavItem = 'defaults' %}
+
+{% import "_includes/forms" as forms %}
+
+{% block contextMenu %}
+    {% if selectedSubnavItem == 'defaults' %}
+        {% include 'seo-fields/_includes/_sites' %}
+    {% endif %}
+
+{% endblock %}
+
+{% block content %}
+    {{ actionInput('seo-fields/defaults/save') }}
+
+    <input type="hidden" name="siteId" value="{{ currentSite.id }}">
+
+    {{ forms.textField({
+        label: 'Default site title'|t('seo-fields'),
+        id: 'defaultSiteTitle',
+        name: 'defaultSiteTitle',
+        size: 80,
+        value: data['defaultSiteTitle']})
+    }}
+    <div class="field" id="defaultMetaDescription">
+        <div class="heading">
+            <label id="defaultMetaDescription"
+                   for="defaultMetaDescription">{{ "Default meta description"|t("seo-fields") }}</label>
+        </div>
+        <div class="input ltr">
+            {{ forms.textArea({
+                id: "defaultMetaDescription",
+                name: "defaultMetaDescription",
+                value: data["defaultMetaDescription"],
+                class: "nicetext",
+                maxlength: 300,
+                showCharsLeft: true,
+                warning: false,
+            }) }}
+        </div>
+    </div>
+
+    {{ forms.textField({
+        label: 'Title seperator'|t('seo-fields'),
+        instructions: 'A character used to seperate your entry title from the site name'|t('seo-fields'),
+        id: 'titleSeperator',
+        name: 'titleSeperator',
+        size: 3,
+        value: data['titleSeperator']})
+    }}
+
+
+    {% if craft.app.volumes.getAllVolumes()|length %}
+        {{ forms.elementSelectField({
+            label: "Default Meta image"|t('seo-fields'),
+            id: "defaultImage",
+            name: "defaultImage",
+            elements: [data['defaultImage']|length ? craft.assets.id(data['defaultImage'][0]).one() : null],
+            elementType: "craft\\elements\\Asset",
+            viewMode: "large",
+            criteria: {
+                kind: ["image"],
+            },
+            limit: 1,
+            selectionLabel: "Select an image"|t('seo-fields'),
+        }) }}
+    {% else %}
+        <div class="field">
+            <h3>{{ "Default Meta image"|t("seo-fields") }}</h3>
+            <p class="warning">{{ "No asset volumes defined"|t("seo-fields") }}.</p>
+        </div>
+    {% endif %}
+{% endblock %}

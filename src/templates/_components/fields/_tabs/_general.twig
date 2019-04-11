@@ -1,0 +1,59 @@
+{% import "_includes/forms" as forms %}
+
+<input type="radio" name="tabs" id="general-tab" checked="checked" class="seofields-tab">
+<label for="general-tab" class="label">{{ "General meta"|t("seo-fields") }}</label>
+<div class="seofields-tab-content">
+    <div class="seofields-google-result">
+        <div class="seofields-google-result__headline">
+            {{ value.getPageTitle(element) }}
+        </div>
+        <div class="seofields-google-result__link">
+            {{ element.getUrl() }}
+        </div>
+        <div class="seofields-google-result__description">
+            {{ value.metaDescription|length ? value.metaDescription : '' }}
+        </div>
+    </div>
+
+    {{ forms.textField({
+        label: "Meta title"|t("seo-fields"),
+        id: name ~ "-metaTitle",
+        name: name ~ "[metaTitle]",
+        value: value.metaTitle,
+    }) }}
+
+    {% if field.allowSitenameOverwrite %}
+        {{ forms.textField({
+            label: "Site name"|t("seo-fields"),
+            id: name ~ "-siteName",
+            name: name ~ "[siteName]",
+            value: value.siteName,
+        }) }}
+
+        {{ forms.checkboxField({
+            label: "Hide site name"|t("seo-fields"),
+            id: name ~ "-hideSiteName",
+            name: name ~ "[hideSiteName]",
+            checked: value.hideSiteName,
+        }) }}
+    {% endif %}
+
+    <div class="field" id="{{ name ~ "-metaDescription" }}-field">
+        <div class="heading">
+            <label id="{{ name ~ "[metaDescription]" }}-label"
+                   for="{{ name ~ "-metaDescription" }}">{{ "Meta description"|t("seo-fields") }}</label>
+        </div>
+        <div class="input ltr">
+            {{ forms.textArea({
+                id: name ~ "-metaDescription",
+                name: name ~ "[metaDescription]",
+                value: value.metaDescription,
+                class: "nicetext",
+                maxlength: 300,
+                showCharsLeft: true,
+                warning: false,
+                errors: value.getErrors("metaDescription"),
+            }) }}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,33 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * SEO Fields plugin for Craft CMS 3.x
+ *
+ * SeoField Field Input
+ *
+ * @author    Studio Espresso
+ * @copyright Copyright (c) 2019 Studio Espresso
+ * @link      https://studioespresso.co
+ * @package   SeoFields
+ * @since     1.0.0
+ */
+#}
+
+{% do view.registerAssetBundle("studioespresso\\seofields\\assetbundles\\SeoFieldAsset") %}
+
+<div class="seofields-tabs">
+    {% if field.tabs.general %}
+        {% set tabSelected = false %}
+        {% include 'seo-fields/_components/fields/_tabs/_general.twig'  %}
+    {% endif %}
+    {% if field.tabs.facebook %}
+        {% set tabSelected = false %}
+        {% include 'seo-fields/_components/fields/_tabs/_facebook.twig' with { tabSelected : tabSelected}  %}
+    {% endif %}
+    {% if field.tabs.twitter %}
+        {% set tabSelected = false %}
+        {% include 'seo-fields/_components/fields/_tabs/_twitter.twig' with { tabSelected : tabSelected}  %}
+    {% endif %}
+</div>
+
+
