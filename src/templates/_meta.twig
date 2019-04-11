@@ -2,7 +2,7 @@
 {% if meta %}
     <title>{{ meta.getPageTitle(entry) }}</title>
 
-    <meta name="description" content="{{ meta.metaDescription }}">
+    <meta name="description" content="{{ meta.getMetaDescription() }}">
     {# Facebook #}
     <meta property="og:url" content="{{ craft.app.request.absoluteUrl }}"/>
     <meta property="og:type" content="website"/>

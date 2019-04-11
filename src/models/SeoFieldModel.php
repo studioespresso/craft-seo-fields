@@ -83,14 +83,19 @@ class SeoFieldModel extends Model
         }
     }
 
+    public function getMetaDescription() {
+        return $this->metaDescription ? $this->metaDescription : $this->siteDefault->defaultMetaDescription;
+
+    }
+
     public function getOgDescription()
     {
-        return $this->facebookDescription ? $this->facebookDescription : $this->metaDescription;
+        return $this->facebookDescription ? $this->facebookDescription : $this->getMetaDescription();
     }
 
     public function getTwitterDescription()
     {
-        return $this->twitterDescription ? $this->twitterDescription : $this->metaDescription;
+        return $this->twitterDescription ? $this->twitterDescription : $this->getMetaDescription();
     }
 
     public function getOgImage()
