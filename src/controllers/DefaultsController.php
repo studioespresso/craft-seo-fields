@@ -34,6 +34,7 @@ class DefaultsController extends Controller
         $data['siteId'] = Craft::$app->getRequest()->getBodyParam('siteId');
         $data['titleSeperator'] = Craft::$app->getRequest()->getBodyParam('titleSeperator');
         $data['defaultSiteTitle'] = Craft::$app->getRequest()->getBodyParam('defaultSiteTitle');
+        $data['defaultMetaDescription'] = Craft::$app->getRequest()->getBodyParam('defaultMetaDescription');
         $data['defaultImage'] = Craft::$app->getRequest()->getBodyParam('defaultImage');
 
         $defaultsModel = SeoFields::$plugin->defaultsService->getDataBySiteId($data['siteId']);

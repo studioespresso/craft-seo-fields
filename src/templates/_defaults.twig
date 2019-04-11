@@ -25,10 +25,27 @@
         size: 80,
         value: data['defaultSiteTitle']})
     }}
+    <div class="field" id="defaultMetaDescription">
+        <div class="heading">
+            <label id="defaultMetaDescription"
+                   for="defaultMetaDescription">{{ "Default meta description"|t("seo-fields") }}</label>
+        </div>
+        <div class="input ltr">
+            {{ forms.textArea({
+                id: "defaultMetaDescription",
+                name: "defaultMetaDescription",
+                value: data["defaultMetaDescription"],
+                class: "nicetext",
+                maxlength: 300,
+                showCharsLeft: true,
+                warning: false,
+            }) }}
+        </div>
+    </div>
 
     {{ forms.textField({
         label: 'Title seperator'|t('seo-fields'),
-        instructions: 'A character used to seperate your `<title>` from the site name'|t('seo-fields'),
+        instructions: 'A character used to seperate your entry title from the site name'|t('seo-fields'),
         id: 'titleSeperator',
         name: 'titleSeperator',
         size: 3,
