@@ -21,7 +21,9 @@
     <meta name="twitter:url" content="{{ craft.app.request.absoluteUrl }}" />
     <meta name="twitter:title" content="{{ meta.getTwitterTitle(entry) }}" />
     <meta name="twitter:description" content="{{ meta.getTwitterDescription() }}" />
+{% if meta.getOgImage() %}
     <meta name="twitter:image" content="{{ meta.getTwitterImage().url }}" />
+{% endif %}
 
     <link rel="canonical" href="{{ craft.app.request.absoluteUrl }}" />
 {% for alt in meta.getAlternate(entry) %}
