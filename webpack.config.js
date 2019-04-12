@@ -1,4 +1,5 @@
 const path = require("path");
+var webpack = require('webpack');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 var ExtractCSS = new ExtractTextPlugin('[name]');
