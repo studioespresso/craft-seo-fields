@@ -13,7 +13,7 @@ If you want more control over what the plugin output, you can include your own s
 
 Note that the field looks for a field called `seo`. If it doesn't find that, it will not output anymore. 
 
-[More information on that here.](/craft-seo-fields/field.html#field)
+[More information on that here.](field.html#field)
 
 ## Support for custom elements
 
