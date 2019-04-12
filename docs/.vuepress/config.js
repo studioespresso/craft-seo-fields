@@ -18,7 +18,7 @@ module.exports = {
         sidebarDepth: 1,
         displayAllHeaders: true,
         sidebar: [
-            '/',
+            ['/', 'Introduction'],
             ['/general', 'General'],
             ['/field', 'Field & settings'],
             ['/templating', 'Templating'],
