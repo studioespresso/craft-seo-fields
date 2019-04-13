@@ -115,6 +115,7 @@ class SeoFieldModel extends Model
             'height' => $asset->getHeight($transform),
             'width' => $asset->getWidth($transform),
             'url' => $asset->getUrl($transform),
+            'alt' => $asset->title,
         ];
     }
 
@@ -135,6 +136,7 @@ class SeoFieldModel extends Model
             'height' => $asset->getHeight($transform),
             'width' => $asset->getWidth($transform),
             'url' => $asset->getUrl($transform),
+            'alt' => $asset->title,
         ];
     }
 
