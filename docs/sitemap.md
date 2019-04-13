@@ -13,7 +13,7 @@ Support for custom urls and for registeren custom urls in code will be added in 
 
 <img src="./images/sitemap.png">
 
-## Multisite
+### Multisite
 
 By default, each site in your Craft install will get the same sitemap.xml, depending on wether the sections you've enabled in the sitemap are enabled for that site and when the section has entries that are enabled for that site. If you need the option to change enable/disable section in the sitemap per site, you can add "sitemapPerSite" => true to config/seo-fields.php.
 
