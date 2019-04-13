@@ -38,6 +38,7 @@ Additionally, you can configure your robots.txt and your sitemaps as well.
 
 ## Roadmap
 
+- [ ] Keywords
 - [ ] Custom sitemap urls
 - [ ] Redirects?
 
