@@ -27,6 +27,10 @@ module.exports = {
         ],
         nav: [
             {
+                text: 'Buy now',
+                link: 'https://plugins.craftcms.com/seo-fields',
+            },
+            {
                 text: 'Issues?',
                 link: 'https://github.com/studioespresso/craft-seo-fields/issues'
             },

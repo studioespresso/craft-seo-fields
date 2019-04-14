@@ -25,6 +25,23 @@ class RenderService extends Component
     // =========================================================================
     public function renderMeta($context, $handle = 'seo')
     {
+
+        Craft::beginProfile('renderMeta', __METHOD__);
+        $data = $this->getSeoFromContent($context, $handle);
+        Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_CP);
+
+        $template = Craft::$app->getView()->renderTemplate(
+            'seo-fields/_meta',
+            ['meta' => $data['meta'], 'entry' => $data['entry']]
+        );
+
+        Craft::endProfile('renderMeta', __METHOD__);
+        Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_SITE);
+        return $template;
+    }
+
+    public function getSeoFromContent($context, $handle)
+    {
         $meta = false;
         $element = null;
         $handle = SeoFields::$plugin->getSettings()->fieldHandle;
@@ -58,14 +75,7 @@ class RenderService extends Component
             $meta = new SeoFieldModel();
         }
 
-        Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_CP);
-        $template = Craft::$app->getView()->renderTemplate(
-            'seo-fields/_meta',
-            ['meta' => $meta, 'entry' => $element]
-        );
-        Craft::endProfile('renderMeta', __METHOD__);
-        Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_SITE);
-        return $template;
+        return ['meta' => $meta, 'entry' => $element];
     }
 
 }

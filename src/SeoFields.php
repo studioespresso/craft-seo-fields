@@ -30,6 +30,7 @@ use craft\utilities\ClearCaches;
 use craft\web\UrlManager;
 use craft\web\View;
 use studioespresso\seofields\events\RegisterSeoElementEvent;
+use studioespresso\seofields\extensions\SeoFieldsExtension;
 use studioespresso\seofields\fields\SeoField;
 use studioespresso\seofields\models\Settings;
 use studioespresso\seofields\services\DefaultsService;
@@ -92,6 +93,7 @@ class SeoFields extends Plugin
         $this->_registerCpRoutes();
         $this->_registerFrontendRoutes();
         $this->_registerPermissions();
+        $this->_registerTwigExtension();
         $this->_registerListeners();
         $this->_registerCacheOptions();
         $this->_registerCustomElements();
@@ -186,6 +188,14 @@ class SeoFields extends Plugin
                 ];
             }
         );
+    }
+
+    private function _registerTwigExtension() {
+        $request = Craft::$app->getRequest();
+        if(!$request->isConsoleRequest) {
+            Craft::$app->getView()->registerTwigExtension(new SeoFieldsExtension());
+        }
+
     }
 
     private function _registerFrontendRoutes()
