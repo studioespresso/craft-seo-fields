@@ -9,7 +9,7 @@
     <meta property="og:url" content="{{ craft.app.request.absoluteUrl }}"/>
     <meta property="og:type" content="website"/>
     <meta property="og:title" content="{{ meta.getOgTitle(entry) }}"/>
-{% set ogImage = meta.getOgImage(entry.overviewImage.one()) %}
+{% set ogImage = meta.getOgImage() %}
 {% if ogImage %}
     <meta property="og:image" content="{{ ogImage.url }}"/>
     <meta property="og:image:width" content="{{ ogImage.width }}"/>
