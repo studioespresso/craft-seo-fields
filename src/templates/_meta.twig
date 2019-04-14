@@ -1,4 +1,6 @@
 {# SEO Fields meta fields start #}
+{% set meta = getSeoFields() %}
+
 {% if meta %}
     <title>{{ meta.getPageTitle(entry) }}</title>
 
