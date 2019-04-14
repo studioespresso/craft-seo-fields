@@ -5,6 +5,7 @@ namespace studioespresso\seofields\models;
 use Craft;
 use craft\base\Model;
 use craft\db\Query;
+use craft\elements\Asset;
 use craft\helpers\UrlHelper;
 use craft\models\AssetTransform;
 use studioespresso\seofields\SeoFields;
@@ -98,9 +99,11 @@ class SeoFieldModel extends Model
         return $this->twitterDescription ? $this->twitterDescription : $this->getMetaDescription();
     }
 
-    public function getOgImage()
+    public function getOgImage(Asset $asset = null)
     {
-        if ($this->facebookImage) {
+        if($asset) {
+            $asset = $asset;
+        } elseif($this->facebookImage) {
             $asset = Craft::$app->getAssets()->getAssetById($this->facebookImage[0]);
         } elseif ($this->siteDefault->defaultImage) {
             $asset = Craft::$app->getAssets()->getAssetById($this->siteDefault->defaultImage[0]);
@@ -119,9 +122,11 @@ class SeoFieldModel extends Model
         ];
     }
 
-    public function getTwitterImage()
+    public function getTwitterImage(Asset $asset = null)
     {
-        if ($this->twitterImage) {
+        if($asset) {
+            $asset = $asset;
+        } elseif($this->twitterImage) {
             $asset = Craft::$app->getAssets()->getAssetById($this->twitterImage[0]);
         } elseif ($this->siteDefault->defaultImage) {
             $asset = Craft::$app->getAssets()->getAssetById($this->siteDefault->defaultImage[0]);
