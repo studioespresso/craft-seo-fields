@@ -51,49 +51,17 @@ class SitemapService extends Component
         $shouldRenderCategories = false;
         $shouldRenderCustom = false;
 
+
         if (isset($sitemapSettings['entry'])) {
-            $shouldRenderSections = array_filter($sitemapSettings['entry'], function ($section) use ($sitemapSettings) {
-                if (isset($sitemapSettings['entry'][$section]['enabled'])) {
-                    $site = Craft::$app->getSites()->getCurrentSite();
-                    $sectionSites = Craft::$app->getSections()->getSectionById($section)->siteSettings;
-                    if (isset($sectionSites[$site->id]) && $sectionSites[$site->id]->hasUrls) {
-                        return true;
-                    }
-                } else {
-                    return false;
-                }
-            }, ARRAY_FILTER_USE_KEY);
+            $shouldRenderSections = $this->_shouldRenderEntries($sitemapSettings);
         }
 
         if (isset($sitemapSettings['category'])) {
-            $shouldRenderCategories = array_filter($sitemapSettings['category'], function ($group) use ($sitemapSettings) {
-                if (isset($sitemapSettings['category'][$group]['enabled'])) {
-                    $site = Craft::$app->getSites()->getCurrentSite();
-                    $groupSites = Craft::$app->getCategories()->getGroupById($group)->siteSettings;
-                    if (isset($groupSites[$site->id]) && $groupSites[$site->id]->hasUrls) {
-                        return true;
-                    }
-                } else {
-                    return false;
-                }
-            }, ARRAY_FILTER_USE_KEY);
+            $shouldRenderCategories = $this->_shouldRenderCategories($sitemapSettings);
         }
 
         if (isset($sitemapSettings['product'])) {
-            $shouldRenderProducts = array_filter($sitemapSettings['product'], function ($productType) use ($sitemapSettings) {
-                if (isset($sitemapSettings['product'][$productType]['enabled'])) {
-                    $productTypeService = new ProductTypes();
-                    $site = Craft::$app->getSites()->getCurrentSite();
-                    foreach ($productTypeService->getProductTypeSites($productType) as $productTypeSite) {
-                        if ($productTypeSite->siteId == $site->id && $productTypeSite->hasUrls) {
-                            return true;
-                        }
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            }, ARRAY_FILTER_USE_KEY);
+            $shouldRenderProducts = $this->_shouldRenderProducts($sitemapSettings);
         }
 
 
@@ -119,7 +87,7 @@ class SitemapService extends Component
                 self::SITEMAP_CACHE_KEY . '_index_site' . $currentSite->id
             ]
         ]);
-        if(!Craft::$app->getConfig()->general->devMode) {
+        if (!Craft::$app->getConfig()->general->devMode) {
             $duration = null;
         } else {
             $duration = 1;
@@ -180,7 +148,7 @@ class SitemapService extends Component
                 self::SITEMAP_CACHE_KEY . "_" . $siteId . "_" . $sectionId
             ]
         ]);
-        if(!Craft::$app->getConfig()->general->devMode) {
+        if (!Craft::$app->getConfig()->general->devMode) {
 
             $data = Craft::$app->getCache()->getOrSet(
                 '',
@@ -249,8 +217,8 @@ class SitemapService extends Component
                     ->where('[[elementId]] = ' . $entry->id)
                     ->andWhere('enabled = true')
                     ->all();
-            $sites = array_filter($siteEntries, function($item) use ($currentSite) {
-                if($item['siteId'] != $currentSite->id) {
+            $sites = array_filter($siteEntries, function ($item) use ($currentSite) {
+                if ($item['siteId'] != $currentSite->id) {
                     return true;
                 }
                 return false;
@@ -262,8 +230,8 @@ class SitemapService extends Component
                 $data[] = "<lastmod>" . $entry->dateUpdated->format('Y-m-d h:m:s') . "</lastmod>";
                 $data[] = "<changefreq>" . $settings['changefreq'] . "</changefreq>";
                 $data[] = "<priority>" . $settings['priority'] . "</priority>";
-                if($sites) {
-                    foreach($sites as $site) {
+                if ($sites) {
+                    foreach ($sites as $site) {
                         $url = UrlHelper::siteUrl($site['uri'], null, null, $site['siteId']);
                         $data[] = "<xhtml:link rel='alternate' hreflang='{$site['language']}' href='{$url}'/>";
                     }
@@ -282,7 +250,7 @@ class SitemapService extends Component
             $type = Craft::$app->getSections()->getSectionById($id);
             $entry = Entry::findOne(['sectionId' => $id]);
             if ($entry) {
-                $data[] = implode('',$this->_addItemToIndex($site, $type, $entry));
+                $data[] = implode('', $this->_addItemToIndex($site, $type, $entry));
             }
         }
         return $data = implode('', $data);
@@ -309,7 +277,7 @@ class SitemapService extends Component
             $type = Commerce::getInstance()->productTypes->getProductTypeById($id);
             $entry = Product::findOne(['typeId' => $type->id]);
             if ($entry) {
-                $data[] = implode('',$this->_addItemToIndex($site, $type, $entry));
+                $data[] = implode('', $this->_addItemToIndex($site, $type, $entry));
             }
         }
         return $data = implode('', $data);
@@ -321,10 +289,62 @@ class SitemapService extends Component
         $class = explode('\\', get_class($entry));
         $elementName = strtolower(end($class));
         $data[] = '<sitemap><loc>';
-        $data[] = UrlHelper::siteUrl(htmlentities('/sitemap_' . $site->id . '_' . $elementName .'_' . $type->id . '_' . strtolower($type->handle) . '.xml'), null, null, $site->id);
+        $data[] = UrlHelper::siteUrl(htmlentities('/sitemap_' . $site->id . '_' . $elementName . '_' . $type->id . '_' . strtolower($type->handle) . '.xml'), null, null, $site->id);
         $data[] = '</loc><lastmod>';
         $data[] = $entry->dateUpdated->format('Y-m-d h:m:s');
         $data[] = '</lastmod></sitemap>';
         return $data;
+    }
+
+    private function _shouldRenderEntries($sitemapSettings)
+    {
+        $shouldRenderSections = array_filter($sitemapSettings['entry'], function ($section) use ($sitemapSettings) {
+            if (isset($sitemapSettings['entry'][$section]['enabled'])) {
+                $site = Craft::$app->getSites()->getCurrentSite();
+                $sectionSites = Craft::$app->getSections()->getSectionById($section)->siteSettings;
+                if (isset($sectionSites[$site->id]) && $sectionSites[$site->id]->hasUrls) {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        }, ARRAY_FILTER_USE_KEY);
+
+        return $shouldRenderSections;
+    }
+
+    private function _shouldRenderCategories($sitemapSettings)
+    {
+        $shouldRenderCategories = array_filter($sitemapSettings['category'], function ($group) use ($sitemapSettings) {
+            if (isset($sitemapSettings['category'][$group]['enabled'])) {
+                $site = Craft::$app->getSites()->getCurrentSite();
+                $groupSites = Craft::$app->getCategories()->getGroupById($group)->siteSettings;
+                if (isset($groupSites[$site->id]) && $groupSites[$site->id]->hasUrls) {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        }, ARRAY_FILTER_USE_KEY);
+        return $shouldRenderCategories;
+    }
+
+    private function _shouldRenderProducts($sitemapSettings)
+    {
+        $shouldRenderProducts = array_filter($sitemapSettings['product'], function ($productType) use ($sitemapSettings) {
+            if (isset($sitemapSettings['product'][$productType]['enabled'])) {
+                $productTypeService = new ProductTypes();
+                $site = Craft::$app->getSites()->getCurrentSite();
+                foreach ($productTypeService->getProductTypeSites($productType) as $productTypeSite) {
+                    if ($productTypeSite->siteId == $site->id && $productTypeSite->hasUrls) {
+                        return true;
+                    }
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }, ARRAY_FILTER_USE_KEY);
+        return $shouldRenderProducts;
     }
 }
