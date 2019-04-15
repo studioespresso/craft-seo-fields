@@ -1,9 +1,11 @@
 {# SEO Fields meta fields start #}
-{% set meta = getSeoFields() %}
+
+{# Uncomment these lines when copying the template to your site templates #}
+{#{% set seoFields = getSeoFields() %}#}
+{#{% set meta = seoFields.meta %}#}
 
 {% if meta %}
     <title>{{ meta.getPageTitle(entry) }}</title>
-
     <meta name="description" content="{{ meta.getMetaDescription() }}">
     {# Facebook #}
     <meta property="og:url" content="{{ craft.app.request.absoluteUrl }}"/>
