@@ -29,7 +29,7 @@ class SeoFieldsExtension extends \Twig_Extension
     public function getSeoFields($context)
     {
         $data =  SeoFields::getInstance()->renderService->getSeoFromContent($context, SeoFields::getInstance()->getSettings()->fieldHandle);
-        return $data['meta'];
+        return $data;
     }
 
 }

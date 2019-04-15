@@ -1,5 +1,7 @@
 # SEO Fields for Craft CMS 3.1
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/4830460a89c377da75ed/maintainability)](https://codeclimate.com/github/studioespresso/craft-seo-fields/maintainability)
+
 Fields for your meta & OG data, sitemaps & robots.txt
 
 ![Screenshot](https://www.studioespresso.co/resources/seofields/banner.png)
