@@ -42,21 +42,13 @@ class RenderService extends Component
 
     public function getSeoFromContent($context, $handle)
     {
-        $meta = false;
+        $meta = null;
         $element = null;
         $handle = SeoFields::$plugin->getSettings()->fieldHandle;
+
         Craft::beginProfile('renderMeta', __METHOD__);
-        $elements = [];
 
-        $event = new RegisterSeoElementEvent([
-            'elements' => $elements,
-        ]);
-
-        Event::trigger(SeoFields::class, SeoFields::EVENT_SEOFIELDS_REGISTER_ELEMENT, $event);
-        $registeredElements = array_filter($event->elements);
-
-        array_push($registeredElements, Entry::class);
-        array_push($registeredElements, Category::class);
+        $registeredElements = $this->_registerElementsEvent();
 
         foreach ($registeredElements as $item) {
             $class = explode('\\', $item);
@@ -76,6 +68,22 @@ class RenderService extends Component
         }
 
         return ['meta' => $meta, 'entry' => $element];
+    }
+
+    private function _registerElementsEvent()
+    {
+        $elements = [];
+        $event = new RegisterSeoElementEvent([
+            'elements' => $elements,
+        ]);
+
+        Event::trigger(SeoFields::class, SeoFields::EVENT_SEOFIELDS_REGISTER_ELEMENT, $event);
+        $registeredElements = array_filter($event->elements);
+
+        array_push($registeredElements, Entry::class);
+        array_push($registeredElements, Category::class);
+
+        return $registeredElements;
     }
 
 }

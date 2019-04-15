@@ -190,9 +190,10 @@ class SeoFields extends Plugin
         );
     }
 
-    private function _registerTwigExtension() {
+    private function _registerTwigExtension()
+    {
         $request = Craft::$app->getRequest();
-        if(!$request->isConsoleRequest) {
+        if (!$request->isConsoleRequest) {
             Craft::$app->getView()->registerTwigExtension(new SeoFieldsExtension());
         }
 
@@ -302,7 +303,7 @@ class SeoFields extends Plugin
         if ($elements) {
             Event::on(SeoFields::class, SeoFields::EVENT_SEOFIELDS_REGISTER_ELEMENT,
                 function (RegisterSeoElementEvent $event) use ($elements) {
-                    $event->elements = array_merge($event->elements,$elements);
+                    $event->elements = array_merge($event->elements, $elements);
                 }
             );
         }
