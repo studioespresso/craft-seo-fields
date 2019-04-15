@@ -19,7 +19,7 @@ Note that the field looks for a field called `seo`. If it doesn't find that, it 
 
 Next to the site defaults and the field, you might also want to use text and images from another fields.
 
-To do this, you copy the plugin's meta [snippet](https://github.com/studioespresso/craft-seo-fields/blob/master/src/templates/_meta.twig) to the site templates and make changes to it there.
+To do this, you copy the plugin's meta [snippet](https://github.com/studioespresso/craft-seo-fields/blob/master/src/templates/_meta.twig) to the site templates and make changes to it there. Make sure you follow the changes commented at the top of the template.
 
 This is a normal Twig template so the usual conditionals and operators work here. You can use these for the fields that need a text value. For the OG and Twitter images, you can pass an ``Asset`` to ``meta.getOgImage()``, eg: ```{% set ogImage = meta.getOgImage(entry.overviewImage.one()) %}```.
 
