@@ -28,16 +28,22 @@ class RenderService extends Component
 
         Craft::beginProfile('renderMeta', __METHOD__);
         $data = $this->getSeoFromContent($context, $handle);
-        Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_CP);
 
-        $template = Craft::$app->getView()->renderTemplate(
-            'seo-fields/_meta',
-            ['meta' => $data['meta'], 'entry' => $data['entry']]
-        );
+        try {
+            Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_CP);
 
-        Craft::endProfile('renderMeta', __METHOD__);
-        Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_SITE);
-        return $template;
+            $template = Craft::$app->getView()->renderTemplate(
+                'seo-fields/_meta',
+                ['meta' => $data['meta'], 'entry' => $data['entry']]
+            );
+
+            Craft::endProfile('renderMeta', __METHOD__);
+            Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_SITE);
+            return $template;
+
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     public function getSeoFromContent($context, $handle)
@@ -50,24 +56,29 @@ class RenderService extends Component
 
         $registeredElements = $this->_registerElementsEvent();
 
-        foreach ($registeredElements as $item) {
-            $class = explode('\\', $item);
-            $elementName = strtolower(end($class));
-            if (isset($context[$elementName])) {
-                if (isset($context[$elementName][$handle])) {
-                    $meta = $context[$elementName][$handle];
-                } else {
-                    $meta = new SeoFieldModel();
+        try {
+            foreach ($registeredElements as $item) {
+                $class = explode('\\', $item);
+                $elementName = strtolower(end($class));
+                if (isset($context[$elementName])) {
+                    if (isset($context[$elementName][$handle])) {
+                        $meta = $context[$elementName][$handle];
+                    } else {
+                        $meta = new SeoFieldModel();
+                    }
+                    $element = $context[$elementName];
                 }
-                $element = $context[$elementName];
             }
-        }
 
-        if (!$meta) {
-            $meta = new SeoFieldModel();
-        }
+            if (!$meta) {
+                $meta = new SeoFieldModel();
+            }
 
-        return ['meta' => $meta, 'entry' => $element];
+            return ['meta' => $meta, 'entry' => $element];
+
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     private function _registerElementsEvent()
