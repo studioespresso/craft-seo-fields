@@ -19,7 +19,7 @@ Fields for your meta & OG data, sitemaps & robots.txt. _**Fast to set up, easy t
 SEO Fields aims to be a solid but basic solution for your SEO needs. With technical SEO, there are tons of things you can add to your site and this plugin is missing some of those (JSON structured data, assets in sitemaps, submitting sitemaps automatically).
 
 If your SEO needs go beyond what this plugin can do, have a look at these alternatives
-- [SEOmatic](https://nystudio107.com/plugins/seomatic) by nystuio107
+- [SEOmatic](https://nystudio107.com/plugins/seomatic) by nystudio107
 - [Sprout SEO](https://plugins.craftcms.com/sprout-seo) by Barrel Strength Design
 
 ### Support & issues
