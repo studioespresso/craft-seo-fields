@@ -11,7 +11,7 @@
         "seo fields"
     ],
     "support": {
-        "docs": "https://github.com/studioespresso/craft-seo-fields/blob/master/README.md",
+        "docs": "https://studioespresso.github.io/craft-seo-fields/",
         "issues": "https://github.com/studioespresso/craft-seo-fields/issues"
     },
     "license": "MIT",
@@ -34,7 +34,6 @@
         "handle": "seo-fields",
         "hasCpSettings": true,
         "hasCpSection": true,
-        "changelogUrl": "https://raw.githubusercontent.com/studioespresso/craft-seo-fields/master/CHANGELOG.md",
         "class": "studioespresso\\seofields\\SeoFields"
     }
 }
