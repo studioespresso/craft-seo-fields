@@ -152,7 +152,7 @@ class SeoFields extends Plugin
     {
         if (!Craft::$app->getRequest()->isConsoleRequest) {
             parent::afterInstall();
-            Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('seo-fields'))->send();
+            Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('seo-fields', ['showIntroduction' => true]))->send();
         }
     }
 
