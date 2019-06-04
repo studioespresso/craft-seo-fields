@@ -18,13 +18,30 @@
 
     <input type="hidden" name="siteId" value="{{ currentSite.id }}">
 
+    <style>
+        .seo-introduction {
+            border-radius: .25rem;
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: .95rem 1rem;
+        }
+    </style>
+    {% set showIntroduction = craft.app.request.getParam('showIntroduction') %}
+    {% if showIntroduction %}
+        <div class="seo-introduction">
+            <h2>{{ "Thanks for trying out SEO Fields"|t }}</h2>
+            <p>{{ "Set default meta data for your site(s) here and you're good to go. For further install instruction, make sure you check the documentation <a href='https://studioespresso.github.io/craft-seo-fields/general.html' target='_blank'>here</a>."|t|raw }}</p>
+            <p>{{ "If you run into any problems you can create an issue <a href='https://github.com/studioespresso/craft-seo-fields/issues' target='_blank'>here</a> or contact me <a href='mailto:jan@studioespresso.co' target='_blank'>directly</a>."|t|raw }}</p>
+        </div>
+    {% endif %}
+
     {{ forms.textField({
         label: 'Default site title'|t('seo-fields'),
         id: 'defaultSiteTitle',
         name: 'defaultSiteTitle',
         size: 80,
-        value: data['defaultSiteTitle']})
-    }}
+        value: data['defaultSiteTitle']}) }}
     <div class="field" id="defaultMetaDescription">
         <div class="heading">
             <label id="defaultMetaDescription"
@@ -49,8 +66,7 @@
         id: 'titleSeperator',
         name: 'titleSeperator',
         size: 3,
-        value: data['titleSeperator']})
-    }}
+        value: data['titleSeperator']}) }}
 
 
     {% if craft.app.volumes.getAllVolumes()|length %}
