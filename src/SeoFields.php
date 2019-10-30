@@ -32,6 +32,7 @@ use craft\web\View;
 use studioespresso\seofields\events\RegisterSeoElementEvent;
 use studioespresso\seofields\extensions\SeoFieldsExtension;
 use studioespresso\seofields\fields\SeoField;
+use studioespresso\seofields\models\SeoFieldModel;
 use studioespresso\seofields\models\Settings;
 use studioespresso\seofields\services\DefaultsService;
 use studioespresso\seofields\services\RenderService;
@@ -152,7 +153,7 @@ class SeoFields extends Plugin
     {
         if (!Craft::$app->getRequest()->isConsoleRequest) {
             parent::afterInstall();
-            Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('seo-fields'))->send();
+            Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('seo-fields', ['showIntroduction' => true]))->send();
         }
     }
 
@@ -269,6 +270,15 @@ class SeoFields extends Plugin
                 SeoFields::$plugin->sitemapSerivce->clearCacheForElement($event->element);
             }
         );
+
+        //show feelings on articles
+        Craft::$app->getView()->hook('cp.entries.edit.details', function (array &$context) {
+            $handle = $this->getSettings()->fieldHandle;
+            if ($context['entryId']) {
+                if($context['entry']->$handle instanceof SeoFieldModel) {
+                }
+            }
+        });
     }
 
     private function _registerCacheOptions()

@@ -28,9 +28,10 @@ class RenderService extends Component
 
         Craft::beginProfile('renderMeta', __METHOD__);
         $data = $this->getSeoFromContent($context, $handle);
+        $oldTemplateMode = Craft::$app->getView()->getTemplateMode();
 
         try {
-            $oldTemplateMode = Craft::$app->getView()->getTemplateMode();
+            
             Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_CP);
             $template = Craft::$app->getView()->renderTemplate(
                 'seo-fields/_meta',
@@ -42,6 +43,7 @@ class RenderService extends Component
             return $template;
 
         } catch (\Exception $e) {
+            Craft::$app->getView()->setTemplateMode($oldTemplateMode);
             return null;
         }
     }

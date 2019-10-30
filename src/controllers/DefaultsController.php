@@ -3,6 +3,7 @@
 namespace studioespresso\seofields\controllers;
 
 use Craft;
+use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\records\DefaultsRecord;
@@ -13,8 +14,10 @@ class DefaultsController extends Controller
 
     public function actionIndex()
     {
+        $params = Craft::$app->getRequest()->getQueryParams();
+        unset($params['p']);
         $primarySite = Craft::$app->sites->getPrimarySite();
-        $this->redirect("seo-fields/defaults/$primarySite->handle");
+        $this->redirect(UrlHelper::cpUrl("seo-fields/defaults/$primarySite->handle", $params));
     }
 
     public function actionSettings($siteHandle = null)
