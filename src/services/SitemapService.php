@@ -151,7 +151,7 @@ class SitemapService extends Component
         if (!Craft::$app->getConfig()->general->devMode) {
 
             $data = Craft::$app->getCache()->getOrSet(
-                '',
+                self::SITEMAP_CACHE_KEY . "_" . $siteId . "_" . $sectionId,
                 function () use ($data, $type, $settings, $sectionId) {
                     return $this->_addElementsToSitemap($data, $settings[$type][$sectionId]);
                 },
