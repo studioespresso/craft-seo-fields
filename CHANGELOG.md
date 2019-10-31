@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.0.3 - 2019-10-31
+### Fixed
+- Fixed a an issue with sitemap detail routing ([#15](https://github.com/studioespresso/craft-seo-fields/issues/15))
+- Fixed a crash when viewing entries ([#16](https://github.com/studioespresso/craft-seo-fields/issues/16))
+
 ## 1.0.2 - 2019-10-30
 ### Fixed
 - Fixed an issue where sitemaps for section were not being cached correctly. ([#14](https://github.com/studioespresso/craft-seo-fields/issues/14))
