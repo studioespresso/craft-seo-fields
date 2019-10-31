@@ -271,14 +271,6 @@ class SeoFields extends Plugin
             }
         );
 
-        //show feelings on articles
-        Craft::$app->getView()->hook('cp.entries.edit.details', function (array &$context) {
-            $handle = $this->getSettings()->fieldHandle;
-            if ($context['entryId']) {
-                if($context['entry']->$handle instanceof SeoFieldModel) {
-                }
-            }
-        });
     }
 
     private function _registerCacheOptions()
