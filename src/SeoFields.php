@@ -220,7 +220,7 @@ class SeoFields extends Plugin
                 if ($shouldRender) {
                     $event->rules = array_merge($event->rules, [
                         'sitemap.xml' => 'seo-fields/sitemap/render',
-                        'sitemap_<siteId:\d>_<type:(entry|product|category)>_<sectionId:\d>_<handle:.*>.xml' => 'seo-fields/sitemap/detail'
+                        'sitemap_<siteId:\d+>_<type:(entry|product|category)>_<sectionId:\d+>_<handle:.*>.xml' => 'seo-fields/sitemap/detail'
                     ]);
                 }
             }
