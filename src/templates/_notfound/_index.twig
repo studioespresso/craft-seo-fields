@@ -1,0 +1,34 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{% extends "_layouts/cp" %}
+
+{% import "_includes/forms" as forms %}
+
+{% set selectedSubnavItem = 'notfound' %}
+{% set title = "404's" %}
+
+{% block contextMenu %}
+
+{% endblock %}
+
+{% block content %}
+    <table class="data fullwidth collapsible">
+        <thead>
+        <tr>
+            <th>{{ "URL"|t('seo-fields') }}</th>
+            <th>{{ "Hits"|t('seo-fields') }}</th>
+            <th>{{ "Last hit at"|t('seo-fields') }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in data %}
+        <tr>
+            <th class="light">
+                {{ row.url }}
+            </th>
+            <td>{{ row.counter }}</td>
+            <td>{{ row.dateLastHit|date('d/m/Y h:i') }}</td>
+        </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+{% endblock %}

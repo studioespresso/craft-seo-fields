@@ -37,6 +37,7 @@ use studioespresso\seofields\fields\SeoField;
 use studioespresso\seofields\models\SeoFieldModel;
 use studioespresso\seofields\models\Settings;
 use studioespresso\seofields\services\DefaultsService;
+use studioespresso\seofields\services\NotFoundService;
 use studioespresso\seofields\services\RedirectService;
 use studioespresso\seofields\services\RenderService;
 use studioespresso\seofields\services\SitemapService;
@@ -56,6 +57,7 @@ use yii\web\HttpException;
  * @property  DefaultsService $defaultsService
  * @property RenderService $renderService
  * @property RedirectService $redirectService
+ * @property NotFoundService $notFoundService
  * @method    Settings getSettings()
  */
 class SeoFields extends Plugin
@@ -90,6 +92,7 @@ class SeoFields extends Plugin
             "sitemapSerivce" => SitemapService::class,
             "renderService" => RenderService::class,
             "redirectService" => RedirectService::class,
+            "notFoundService" => NotFoundService::class,
         ]);
 
         Craft::$app->view->hook('seo-fields', function (array &$context) {
@@ -117,6 +120,12 @@ class SeoFields extends Plugin
             $subNavs['defaults'] = [
                 'label' => 'Defaults',
                 'url' => 'seo-fields/defaults',
+            ];
+        }
+        if ($currentUser->can('seo-fields:notfound')) {
+            $subNavs['notfound'] = [
+                'label' => "404's",
+                'url' => 'seo-fields/not-found',
             ];
         }
         if ($currentUser->can('seo-fields:robots')) {
@@ -187,6 +196,9 @@ class SeoFields extends Plugin
                     'seo-fields:default' => [
                         'label' => Craft::t('seo-fields', 'Defaults'),
                     ],
+                    'seo-fields:notfound' => [
+                        'label' => Craft::t('seo-fields', "404's"),
+                    ],
                     'seo-fields:robots' => [
                         'label' => Craft::t('seo-fields', 'Robots'),
                     ],
@@ -243,7 +255,7 @@ class SeoFields extends Plugin
                 // Register our Control Panel routes
                 $event->rules = array_merge($event->rules, [
                     'seo-fields' => 'seo-fields/defaults/index',
-                    'seo-fields/<controller:(defaults|robots|sitemap)>' => 'seo-fields/<controller>/index',
+                    'seo-fields/<controller:(defaults|robots|sitemap|not-found)>' => 'seo-fields/<controller>/index',
                     'seo-fields/<controller:(defaults|robots|sitemap)>/<siteHandle:{handle}>' => 'seo-fields/<controller>/settings',
                 ]);
             }
@@ -303,7 +315,7 @@ class SeoFields extends Plugin
             ErrorHandler::EVENT_BEFORE_HANDLE_EXCEPTION,
             function (ExceptionEvent $event) {
                 if ($event->exception instanceof HttpException && $event->exception->statusCode === 404 && Craft::$app->getRequest()->getIsSiteRequest()) {
-                    SeoFields::getInstance()->redirectService->handleNotFoundException();
+                    SeoFields::getInstance()->notFoundService->handleNotFoundException();
                 }
             }
         );
