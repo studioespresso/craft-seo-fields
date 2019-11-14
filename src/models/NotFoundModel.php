@@ -22,15 +22,24 @@ class NotFoundModel extends Model
 {
     // Public Properties
     // =========================================================================
+    public $id;
+
     public $url;
 
-    public $counter = '0';
+    public $siteId;
+
+    public $counter = 0;
 
     public $dateLastHit;
 
     public $handled = false;
 
-    public $siteId;
+
+    public $dateCreated;
+
+    public $dateUpdated;
+
+    public $uid;
 
     // Public Methods
     // =========================================================================
@@ -51,10 +60,9 @@ class NotFoundModel extends Model
             [
                 ['counter', 'url', 'dateLastHit', 'handled', 'siteId'], 'required'
             ],
-            ['counter, siteId', 'numerical'],
+            [ ['counter', 'siteId'], 'integer'],
             ['handled', 'boolean'],
             ['dateLastHit', DateTimeValidator::class],
-            ['url', 'unique', ]
         ];
     }
 }
