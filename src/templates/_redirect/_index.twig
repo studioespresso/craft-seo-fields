@@ -1,0 +1,42 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{% extends "_layouts/cp" %}
+
+{% import "_includes/forms" as forms %}
+
+{% set selectedSubnavItem = 'redirects' %}
+{% set title = "Redirects" %}
+
+{% block header %}
+    {{ block('pageTitle') }}
+    {{ block('contextMenu') }}
+    <div class="flex-grow"></div>
+    <a href="{{ cpUrl('seo-fields/redirects/add') }}" class="btn submit"><span data-icon="plus"></span> {{ 'New redirect'|t('seo-fields') }}</a>
+{% endblock %}
+
+{% block content %}
+    <table class="data fullwidth collapsible">
+        <thead>
+        <tr>
+            <th>{{ "Pattern / URL"|t('seo-fields') }}</th>
+            <th>{{ "Redirect to"|t('seo-fields') }}</th>
+            <th>{{ "Hits"|t('seo-fields') }}</th>
+            <th>{{ "Last hit at"|t('seo-fields') }}</th>
+            <th>{{ "Method"|t('seo-fields') }}</th>
+            <th>{{ "Remove"|t('seo-fields') }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in redirects %}
+        <tr>
+            <th class="light">
+                {{ row.pattern }}
+            </th>
+            <td>{{ row.redirect }}</td>
+            <td>{{ row.counter }}</td>
+            <td>{{ row.dateLastHit|date('d/m/Y h:i') }}</td>
+            <td><a href=""><span data-icon="delete"></span></a></td>
+        </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+{% endblock %}

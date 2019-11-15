@@ -128,6 +128,12 @@ class SeoFields extends Plugin
                 'url' => 'seo-fields/not-found',
             ];
         }
+        if ($currentUser->can('seo-fields:redirects')) {
+            $subNavs['redirects'] = [
+                'label' => "Redirects",
+                'url' => 'seo-fields/redirects',
+            ];
+        }
         if ($currentUser->can('seo-fields:robots')) {
             $subNavs['robots'] = [
                 'label' => 'Robots.txt',
@@ -199,6 +205,9 @@ class SeoFields extends Plugin
                     'seo-fields:notfound' => [
                         'label' => Craft::t('seo-fields', "404's"),
                     ],
+                    'seo-fields:redirects' => [
+                        'label' => Craft::t('seo-fields', "redirects"),
+                    ],
                     'seo-fields:robots' => [
                         'label' => Craft::t('seo-fields', 'Robots'),
                     ],
@@ -255,7 +264,8 @@ class SeoFields extends Plugin
                 // Register our Control Panel routes
                 $event->rules = array_merge($event->rules, [
                     'seo-fields' => 'seo-fields/defaults/index',
-                    'seo-fields/<controller:(defaults|robots|sitemap|not-found)>' => 'seo-fields/<controller>/index',
+                    'seo-fields/<controller:(defaults|robots|sitemap|not-found|redirects)>' => 'seo-fields/<controller>/index',
+                    'seo-fields/<controller:(redirects)>/<action>' => 'seo-fields/<controller>/<action>',
                     'seo-fields/<controller:(defaults|robots|sitemap)>/<siteHandle:{handle}>' => 'seo-fields/<controller>/settings',
                 ]);
             }

@@ -11,6 +11,7 @@ use craft\web\Request;
 use studioespresso\seofields\events\RegisterSeoSitemapEvent;
 use studioespresso\seofields\models\NotFoundModel;
 use studioespresso\seofields\records\NotFoundRecord;
+use studioespresso\seofields\records\RedirectRecord;
 
 /**
  * @author    Studio Espresso
@@ -20,4 +21,8 @@ use studioespresso\seofields\records\NotFoundRecord;
 class RedirectService extends Component
 {
 
+    public function getAllRedirects()
+    {
+        return RedirectRecord::find()->all();
+    }
 }
