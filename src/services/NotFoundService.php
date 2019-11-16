@@ -36,14 +36,14 @@ class NotFoundService extends Component
 
     public function notFoundHandle(Request $request, Site $site)
     {
-        $notFoundRecord = NotFoundRecord::findOne(['url' => $request->getFullPath(), 'siteId' => $site->id]);
+        $notFoundRecord = NotFoundRecord::findOne(['url' => $request->getAbsoluteUrl(), 'siteId' => $site->id]);
         if ($notFoundRecord) {
             $notFoundModel = new NotFoundModel($notFoundRecord->getAttributes());
             $notFoundModel->counter++;
         } else {
             $notFoundModel = new NotFoundModel();
             $notFoundModel->setAttributes([
-                'url' => $request->getFullPath(),
+                'url' => $request->getAbsoluteUrl(),
                 'siteId' => $site->id,
                 'handled' => false,
                 'counter' => 1,

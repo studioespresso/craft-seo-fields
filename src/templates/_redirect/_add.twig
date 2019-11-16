@@ -1,0 +1,51 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{% extends "_layouts/cp" %}
+
+
+{% set selectedSubnavItem = 'redirects' %}
+{% set title = "New redirect" %}
+{% set fullPageForm = true %}
+
+{% import "_includes/forms" as forms %}
+
+{% block content %}
+    {{ actionInput('seo-fields/redirects/save') }}
+    {{ redirectInput('seo-fields/redirects') }}
+    <input type="hidden" name="fields[siteId]" value="{{ currentSite.id }}">
+    <input type="hidden" name="redirectId" value="{{ redirect.id ?? '' }}">
+
+    {% if errors is defined %}
+        {{ d(errors) }}
+    {% endif %}
+
+    {{ forms.textField({
+        label: 'Pattern or url to redirect'|t('seo-fields'),
+        id: 'pattern',
+        required: true,
+        name: 'fields[pattern]',
+        showCharsLeft: true,
+        maxlength: 10,
+        value: data.pattern ?? pattern ?? '',
+        errors: data is defined ? data.getErrors('pattern') : ''
+    }) }}
+
+    {{ forms.textField({
+        label: 'URL to redirect to'|t('seo-fields'),
+        id: 'redirect',
+        required: true,
+        name: 'fields[redirect]',
+        showCharsLeft: true,
+        maxlength: 10,
+        value: data.redirect ?? '',
+        errors: data is defined ? data.getErrors('redirect') : ''
+    }) }}
+
+    {{ forms.selectField({
+        label: 'Method'|t('seo-fields'),
+        id: 'method',
+        name: 'fields[method]',
+        options: { 302: '302', 301: '301'},
+        errors: data is defined ? data.getErrors('method') : ''
+    }) }}
+
+{% endblock %}
