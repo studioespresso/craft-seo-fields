@@ -21,14 +21,20 @@
         </tr>
         </thead>
         <tbody>
+
         {% for row in data %}
         <tr>
             <th class="light">
                 {{ row.url }}
             </th>
             <td>{{ row.counter }}</td>
-            <td>{{ row.dateLastHit|date('d/m/Y h:i') }}</td>
-            <td><a href="{{ cpUrl('seo-fields/redirects/add', {pattern : row.url})}}"><span data-icon="plus"></span></a></td>
+            <td>{{ row.dateLastHit|date('d/m/Y h:i:s') }}</td>
+            <td>
+                {% if row.getRedirect() %}
+                {% else %}
+                    <a href="{{ cpUrl('seo-fields/redirects/add', {pattern : row.url})}}"><span data-icon="plus"></span></a>
+                {% endif %}
+            </td>
         </tr>
         </tbody>
         {% endfor %}

@@ -12,6 +12,7 @@ namespace studioespresso\seofields\models;
 
 use craft\base\Model;
 use craft\validators\DateTimeValidator;
+use studioespresso\seofields\records\RedirectRecord;
 
 /**
  * @author    Studio Espresso
@@ -34,6 +35,7 @@ class NotFoundModel extends Model
 
     public $handled = false;
 
+    public $redirect;
 
     public $dateCreated;
 
@@ -60,9 +62,24 @@ class NotFoundModel extends Model
             [
                 ['counter', 'url', 'dateLastHit', 'handled', 'siteId'], 'required'
             ],
-            [ ['counter', 'siteId'], 'integer'],
+            [
+                ['id','counter', 'url', 'dateLastHit', 'handled', 'siteId', 'redirect', 'dateLastHit','dateCreated', 'dateUpdated'], 'safe'
+            ],
+            [['counter', 'siteId'], 'integer'],
             ['handled', 'boolean'],
             ['dateLastHit', DateTimeValidator::class],
         ];
+    }
+
+    public function getRedirect()
+    {
+        if (!$this->redirect) {
+            return false;
+        } else {
+            $redirect = RedirectRecord::find(['id' => $this->redirect])->one();
+            $redirectModel = new RedirectModel();
+            $redirectModel->setAttributes($redirect->getAttributes());
+            return $redirectModel;
+        }
     }
 }
