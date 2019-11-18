@@ -29,7 +29,6 @@ class RedirectService extends Component
     {
         $model = new RedirectModel($redirect->getAttributes());
         $this->updateOnRedirect($model);
-
         $this->redirect($model);
 
         try {
@@ -63,6 +62,8 @@ class RedirectService extends Component
         $record->setAttribute('siteId', $model->siteId);
         $record->setAttribute('pattern', $model->pattern);
         $record->setAttribute('redirect', $model->redirect);
+        $record->setAttribute('counter', $model->counter);
+        $record->setAttribute('dateLastHit', $model->dateLastHit);
         $record->setAttribute('method', $model->method);
 
         if ($record->save()) {
@@ -85,6 +86,6 @@ class RedirectService extends Component
         } catch (yii\base\Exception $e) {
         }
         $response = Craft::$app->response;
-        $response->redirect($url, 301)->send();
+        $response->redirect($url, $redirectModel->method)->send();
     }
 }
