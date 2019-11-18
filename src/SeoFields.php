@@ -266,6 +266,7 @@ class SeoFields extends Plugin
                     'seo-fields' => 'seo-fields/defaults/index',
                     'seo-fields/<controller:(defaults|robots|sitemap|not-found|redirects)>' => 'seo-fields/<controller>/index',
                     'seo-fields/<controller:(redirects)>/<action>' => 'seo-fields/<controller>/<action>',
+                    'seo-fields/<controller:(redirects)>/<action>/<id:\d+>' => 'seo-fields/<controller>/<action>',
                     'seo-fields/<controller:(defaults|robots|sitemap)>/<siteHandle:{handle}>' => 'seo-fields/<controller>/settings',
                 ]);
             }
