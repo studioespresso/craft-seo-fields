@@ -28,7 +28,7 @@
                 {{ row.url }}
             </th>
             <td>{{ row.counter }}</td>
-            <td>{{ row.dateLastHit|date('d/m/Y h:i:s') }}</td>
+            <td>{{ row.dateLastHit|date('d/m/Y H:i:s') }}</td>
             <td>
                 {% if row.getRedirect() %}
                     <a href="{{ cpUrl('seo-fields/redirects/edit/' ~ row.getRedirect().id)}}"><span data-icon="check"></span></a>
