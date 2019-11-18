@@ -59,6 +59,9 @@ class RedirectModel extends Model
     {
         return [
             [['pattern', 'redirect', 'method', 'siteId'], 'required'],
+            [
+                ['id', 'pattern', 'redirect', 'method', 'siteId', 'counter', 'dateLastHit', 'dateLastHit', 'dateCreated', 'dateUpdated'], 'safe'
+            ],
         ];
     }
 }

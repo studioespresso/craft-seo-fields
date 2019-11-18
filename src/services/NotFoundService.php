@@ -13,6 +13,7 @@ use studioespresso\seofields\models\NotFoundModel;
 use studioespresso\seofields\models\RedirectModel;
 use studioespresso\seofields\records\NotFoundRecord;
 use studioespresso\seofields\records\RedirectRecord;
+use studioespresso\seofields\SeoFields;
 
 /**
  * @author    Studio Espresso
@@ -68,8 +69,10 @@ class NotFoundService extends Component
             $notFoundModel->handled = true;
             $notFoundModel->redirect = $redirect->id;
         }
-
         $this->saveNotFound($notFoundModel);
+        if ($redirect) {
+            SeoFields::getInstance()->redirectService->handleRedirect($redirect);
+        }
 
     }
 
@@ -83,7 +86,6 @@ class NotFoundService extends Component
         if ($redirect) {
             return $redirect;
         }
-
         return false;
     }
 
