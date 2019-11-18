@@ -82,7 +82,7 @@ class NotFoundService extends Component
      */
     public function getMatchingRedirect(NotFoundModel $model)
     {
-        $redirect = RedirectRecord::find(['pattern' => $model->url])->one();
+        $redirect = RedirectRecord::findOne(['pattern' => $model->url]);
         if ($redirect) {
             return $redirect;
         }
