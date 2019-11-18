@@ -18,6 +18,15 @@
         {{ d(errors) }}
     {% endif %}
 
+   {{ forms.selectField({
+       label: 'Enable for site'|t('seo-fields'),
+       description: 'For which site should this redirect be active?'|t('seo-fields'),
+       id: 'siteId',
+       name: 'fields[siteId]',
+       value: data.siteId ?? '',
+       options: sites
+   }) }}
+
     {{ forms.textField({
         label: 'Pattern or url to redirect'|t('seo-fields'),
         id: 'pattern',

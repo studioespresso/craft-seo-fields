@@ -5,6 +5,7 @@ namespace studioespresso\seofields\controllers;
 use Craft;
 use craft\helpers\Template;
 use craft\helpers\UrlHelper;
+use craft\models\Site;
 use craft\web\Controller;
 use studioespresso\seofields\models\RedirectModel;
 use studioespresso\seofields\models\SeoDefaultsModel;
@@ -22,7 +23,11 @@ class RedirectsController extends Controller
 
     public function actionAdd()
     {
-        return $this->renderTemplate('seo-fields/_redirect/_add', ['pattern' => Craft::$app->getRequest()->getParam('pattern') ?? null]);
+        $siteData = [];
+        return $this->renderTemplate('seo-fields/_redirect/_add', [
+            'pattern' => Craft::$app->getRequest()->getParam('pattern') ?? null,
+            'sites' => $this->getSitesMenu()
+            ]);
     }
 
     public function actionSave()
@@ -54,9 +59,31 @@ class RedirectsController extends Controller
 
     public function actionDelete($id)
     {
-        if(SeoFields::getInstance()->redirectService->deleteRedirectById($id)) {
+        if (SeoFields::getInstance()->redirectService->deleteRedirectById($id)) {
             Craft::$app->getSession()->setNotice(Craft::t('seo-fields', 'Redirect removed'));
             $this->redirect(UrlHelper::cpUrl('seo-fields/redirects'));
         }
+    }
+
+    private function getSitesMenu()
+    {
+        $sites = [
+            0 => Craft::t('seo-fields', 'All Sites'),
+        ];
+
+        if (Craft::$app->getIsMultiSite()) {
+            $editableSites = Craft::$app->getSites()->getEditableSiteIds();
+            foreach (Craft::$app->getSites()->getAllGroups() as $group) {
+                $groupSites = Craft::$app->getSites()->getSitesByGroupId($group->id);
+                $sites[$group->name]
+                    = ['optgroup' => $group->name];
+                foreach ($groupSites as $groupSite) {
+                    if (in_array($groupSite->id, $editableSites, false)) {
+                        $sites[$groupSite->id] = $groupSite->name;
+                    }
+                }
+            }
+        }
+        return $sites;
     }
 }
