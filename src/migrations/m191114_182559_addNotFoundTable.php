@@ -28,6 +28,7 @@ class m191114_182559_addNotFoundTable extends Migration
                     'url' => $this->text(),
                     'handled' => $this->boolean()->defaultValue(0),
                     'counter' => $this->bigInteger(),
+                    'redirect' => $this->integer(11),
                     'dateLastHit' => $this->dateTime()->notNull(),
                     'dateCreated' => $this->dateTime()->notNull(),
                     'dateUpdated' => $this->dateTime()->notNull(),
@@ -44,6 +45,14 @@ class m191114_182559_addNotFoundTable extends Migration
                 '{{%sites}}',
                 'id',
                 'CASCADE'
+            );
+            $this->addForeignKey(
+                $this->db->getForeignKeyName(NotFoundRecord::tableName(), 'redirect'),
+                NotFoundRecord::tableName(),
+                'redirect',
+                '{{%seofields_redirect}}',
+                'id',
+                'SET NULL'
             );
         }
     }
