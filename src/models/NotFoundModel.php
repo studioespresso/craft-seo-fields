@@ -35,7 +35,7 @@ class NotFoundModel extends Model
 
     public $handled = false;
 
-    public $redirect;
+    public $redirect = null;
 
     public $dateCreated;
 
@@ -63,7 +63,7 @@ class NotFoundModel extends Model
                 ['counter', 'url', 'dateLastHit', 'handled', 'siteId'], 'required'
             ],
             [
-                ['id','counter', 'url', 'dateLastHit', 'handled', 'siteId', 'redirect', 'dateLastHit','dateCreated', 'dateUpdated'], 'safe'
+                ['id', 'counter', 'url', 'dateLastHit', 'handled', 'siteId','redirect', 'dateLastHit', 'dateCreated', 'dateUpdated'], 'safe'
             ],
             [['counter', 'siteId'], 'integer'],
             ['handled', 'boolean'],
@@ -77,9 +77,7 @@ class NotFoundModel extends Model
             return false;
         } else {
             $redirect = RedirectRecord::find(['id' => $this->redirect])->one();
-            $redirectModel = new RedirectModel();
-            $redirectModel->setAttributes($redirect->getAttributes());
-            return $redirectModel;
+            return $redirect;
         }
     }
 }

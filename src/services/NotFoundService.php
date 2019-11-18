@@ -35,7 +35,7 @@ class NotFoundService extends Component
     {
         $data = [];
         $records = NotFoundRecord::find()->orderBy("$orderBy DESC")->all();
-        foreach($records as $record) {
+        foreach ($records as $record) {
             $model = new NotFoundModel();
             $model->setAttributes($record->getAttributes());
             $data[] = $model;
@@ -62,8 +62,10 @@ class NotFoundService extends Component
             ]);
         }
 
+
         $redirect = $this->getMatchingRedirect($notFoundModel);
         if ($redirect) {
+            $notFoundModel->handled = true;
             $notFoundModel->redirect = $redirect->id;
         }
 
@@ -79,9 +81,7 @@ class NotFoundService extends Component
     {
         $redirect = RedirectRecord::find(['pattern' => $model->url])->one();
         if ($redirect) {
-            $redirectModel = new RedirectModel();
-            $redirectModel->setAttributes($redirect->getAttributes());
-            return $redirectModel;
+            return $redirect;
         }
 
         return false;
@@ -105,6 +105,8 @@ class NotFoundService extends Component
         $record->setAttribute('siteId', $model->siteId);
         $record->setAttribute('url', $model->url);
         $record->setAttribute('counter', $model->counter);
+        $record->setAttribute('redirect', $model->redirect);
+        $record->setAttribute('handled', $model->handled);
         $record->setAttribute('dateLastHit', $model->dateLastHit);
         $record->setAttribute('handled', $model->handled);
         if ($record->save()) {
