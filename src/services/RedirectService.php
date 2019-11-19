@@ -59,7 +59,8 @@ class RedirectService extends Component
             $record = new RedirectRecord();
         }
 
-        $record->setAttribute('siteId', $model->siteId);
+
+        $record->setAttribute('siteId', $model->siteId === "0" ? null : $model->siteId);
         $record->setAttribute('pattern', $model->pattern);
         $record->setAttribute('redirect', $model->redirect);
         $record->setAttribute('counter', $model->counter);

@@ -27,7 +27,7 @@ class RedirectsController extends Controller
         return $this->renderTemplate('seo-fields/_redirect/_add', [
             'pattern' => Craft::$app->getRequest()->getParam('pattern') ?? null,
             'sites' => $this->getSitesMenu()
-            ]);
+        ]);
     }
 
     public function actionSave()
@@ -52,7 +52,8 @@ class RedirectsController extends Controller
 
         Craft::$app->getSession()->setError(Craft::t('app', 'Couldn’t save redirect.'));
         return $this->renderTemplate('seo-fields/_redirect/_add', [
-            'data' => $model
+            'data' => $model,
+            'sites' => $this->getSitesMenu()
         ]);
 
     }
