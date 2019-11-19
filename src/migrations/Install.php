@@ -83,7 +83,7 @@ class Install extends Migration
                 RedirectRecord::tableName(),
                 [
                     'id' => $this->primaryKey(),
-                    'siteId' => $this->integer(11)->notNull(),
+                    'siteId' => $this->integer(11)->defaultValue(null),
                     'pattern' => $this->text(255)->notNull(),
                     'redirect' => $this->text(255)->notNull(),
                     'counter' => $this->bigInteger(),
