@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.0.4 - 2019-11-27
+### Fixed lastmod date format in sitemaps ([#17](https://github.com/studioespresso/craft-seo-fields/issues/17))
+
 ## 1.0.3 - 2019-10-31
 ### Fixed
 - Fixed a an issue with sitemap detail routing ([#15](https://github.com/studioespresso/craft-seo-fields/issues/15))

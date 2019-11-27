@@ -227,7 +227,7 @@ class SitemapService extends Component
             if ($entry->getUrl()) {
                 $data[] = "<url>";
                 $data[] = "<loc>" . $entry->getUrl() . "</loc>";
-                $data[] = "<lastmod>" . $entry->dateUpdated->format('Y-m-d h:m:s') . "</lastmod>";
+                $data[] = "<lastmod>" . $entry->dateUpdated->format(\DateTime::W3C) . "</lastmod>";
                 $data[] = "<changefreq>" . $settings['changefreq'] . "</changefreq>";
                 $data[] = "<priority>" . $settings['priority'] . "</priority>";
                 if ($sites) {
