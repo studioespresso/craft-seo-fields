@@ -51,7 +51,7 @@ class m191114_201532_addRedirectsTable extends Migration
                 $this->db->getForeignKeyName(NotFoundRecord::tableName(), 'redirect'),
                 NotFoundRecord::tableName(),
                 'redirect',
-                '{{%seofields_redirect}}',
+                '{{%seofields_redirects}}',
                 'id',
                 'SET NULL'
             );
