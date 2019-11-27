@@ -25,7 +25,9 @@ class m191114_182559_addNotFoundTable extends Migration
                 [
                     'id' => $this->primaryKey(),
                     'siteId' => $this->integer(11)->notNull(),
-                    'url' => $this->text(),
+                    'fullUrl' => $this->text(),
+                    'urlPath' => $this->text(),
+                    'urlParams' => $this->text(),
                     'handled' => $this->boolean()->defaultValue(0),
                     'counter' => $this->bigInteger(),
                     'redirect' => $this->integer(11),
