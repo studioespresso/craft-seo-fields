@@ -4,6 +4,7 @@ namespace studioespresso\seofields\migrations;
 
 use Craft;
 use craft\db\Migration;
+use studioespresso\seofields\records\NotFoundRecord;
 use studioespresso\seofields\records\RedirectRecord;
 
 /**
@@ -45,6 +46,14 @@ class m191114_201532_addRedirectsTable extends Migration
                 '{{%sites}}',
                 'id',
                 'CASCADE'
+            );
+            $this->addForeignKey(
+                $this->db->getForeignKeyName(NotFoundRecord::tableName(), 'redirect'),
+                NotFoundRecord::tableName(),
+                'redirect',
+                '{{%seofields_redirect}}',
+                'id',
+                'SET NULL'
             );
         }
     }

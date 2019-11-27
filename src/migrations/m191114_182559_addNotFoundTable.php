@@ -48,14 +48,6 @@ class m191114_182559_addNotFoundTable extends Migration
                 'id',
                 'CASCADE'
             );
-            $this->addForeignKey(
-                $this->db->getForeignKeyName(NotFoundRecord::tableName(), 'redirect'),
-                NotFoundRecord::tableName(),
-                'redirect',
-                '{{%seofields_redirect}}',
-                'id',
-                'SET NULL'
-            );
         }
     }
 
