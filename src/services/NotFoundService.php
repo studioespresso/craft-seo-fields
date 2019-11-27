@@ -29,7 +29,7 @@ class NotFoundService extends Component
             return;
         }
         $site = Craft::$app->getSites()->getCurrentSite();
-        $this->notFoundHandle($request, $site);
+        $this->handleNotFound($request, $site);
     }
 
     public function getAllNotFound($orderBy)
@@ -45,9 +45,9 @@ class NotFoundService extends Component
         return $data;
     }
 
-    public function notFoundHandle(Request $request, Site $site)
+    public function handleNotFound(Request $request, Site $site)
     {
-        $notFoundRecord = NotFoundRecord::findOne(['url' => $request->getAbsoluteUrl(), 'siteId' => $site->id]);
+        $notFoundRecord = NotFoundRecord::findOne(['fullUrl' => $request->getAbsoluteUrl(), 'urlPath' => $request->getUrl(), 'siteId' => $site->id]);
         if ($notFoundRecord) {
             $notFoundModel = new NotFoundModel($notFoundRecord->getAttributes());
             $notFoundModel->counter++;
@@ -55,14 +55,14 @@ class NotFoundService extends Component
         } else {
             $notFoundModel = new NotFoundModel();
             $notFoundModel->setAttributes([
-                'url' => $request->getAbsoluteUrl(),
+                'fullUrl' => $request->getAbsoluteUrl(),
+                'urlPath' => $request->getUrl(),
                 'siteId' => $site->id,
                 'handled' => false,
                 'counter' => 1,
                 'dateLastHit' => DateTimeHelper::toIso8601(time()),
             ]);
         }
-
 
         $redirect = $this->getMatchingRedirect($notFoundModel);
         if ($redirect) {
@@ -82,7 +82,7 @@ class NotFoundService extends Component
      */
     public function getMatchingRedirect(NotFoundModel $model)
     {
-        $redirect = RedirectRecord::findOne(['pattern' => $model->url]);
+        $redirect = RedirectRecord::findOne(['pattern' => $model->fullUrl]);
         if ($redirect) {
             return $redirect;
         }
@@ -105,7 +105,8 @@ class NotFoundService extends Component
         }
 
         $record->setAttribute('siteId', $model->siteId);
-        $record->setAttribute('url', $model->url);
+        $record->setAttribute('fullUrl', $model->fullUrl);
+        $record->setAttribute('urlPath', $model->urlPath);
         $record->setAttribute('counter', $model->counter);
         $record->setAttribute('redirect', $model->redirect);
         $record->setAttribute('handled', $model->handled);

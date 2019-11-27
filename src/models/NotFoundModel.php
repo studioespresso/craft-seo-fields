@@ -25,7 +25,11 @@ class NotFoundModel extends Model
     // =========================================================================
     public $id;
 
-    public $url;
+    public $fullUrl;
+
+    public $urlPath;
+
+    public $urlParams;
 
     public $siteId;
 
@@ -63,7 +67,7 @@ class NotFoundModel extends Model
                 ['counter', 'url', 'dateLastHit', 'handled', 'siteId'], 'required'
             ],
             [
-                ['id', 'counter', 'url', 'dateLastHit', 'handled', 'siteId','redirect', 'dateLastHit', 'dateCreated', 'dateUpdated'], 'safe'
+                ['id', 'counter', 'fullUrl','urlPath', 'urlParams', 'dateLastHit', 'handled', 'siteId','redirect', 'dateLastHit', 'dateCreated', 'dateUpdated'], 'safe'
             ],
             [['counter', 'siteId'], 'integer'],
             ['handled', 'boolean'],
