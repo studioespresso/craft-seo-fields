@@ -4,9 +4,16 @@
 class NotFoundCest
 {
 
-    public function testNotFound(AcceptanceTester $I)
+    /**
+     * @internal blaaa
+     * @param AcceptanceTester $I
+     */
+    public function testNotFound302(AcceptanceTester $I)
     {
-        $I->amOnPage('/foo');
-        $I->verifyRedirect('/foo','http://testing.local.statik.be/bar', 302);
+        $I->verifyRedirect('/temp-redirect','http://testing.local.statik.be/bar', 302);
+    }
+
+    public function testNotFound301(AcceptanceTester $I) {
+        $I->verifyRedirect('/permanent-redirect','http://testing.local.statik.be/bar', 301);
     }
 }
