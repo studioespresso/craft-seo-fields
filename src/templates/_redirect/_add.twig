@@ -33,7 +33,6 @@
         required: true,
         name: 'fields[pattern]',
         showCharsLeft: true,
-        maxlength: 10,
         value: data.pattern ?? pattern ?? '',
         errors: data is defined ? data.getErrors('pattern') : ''
     }) }}
@@ -44,7 +43,6 @@
         required: true,
         name: 'fields[redirect]',
         showCharsLeft: true,
-        maxlength: 10,
         value: data.redirect ?? '',
         errors: data is defined ? data.getErrors('redirect') : ''
     }) }}
