@@ -31,7 +31,7 @@
             <td>{{ row.dateLastHit|date('d/m/Y H:i:s') }}</td>
             <td>
                 {% if row.redirect %}
-                    <a href="{{ cpUrl('seo-fields/redirects/edit/' ~ row.redirect)}}"><span data-icon="check"></span></a>
+                    <a href="{{ cpUrl('seo-fields/redirects/edit/' ~ row.redirect)}}"><span data-icon="check" style="color: green;"></span></a>
                 {% else %}
                     <a href="{{ cpUrl('seo-fields/redirects/add', {pattern : row.urlPath})}}"><span data-icon="plus"></span></a>
                 {% endif %}

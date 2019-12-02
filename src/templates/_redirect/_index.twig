@@ -19,6 +19,7 @@
         <tr>
             <th>{{ "Pattern / URL"|t('seo-fields') }}</th>
             <th>{{ "Redirect to"|t('seo-fields') }}</th>
+            <th>{{ "Site"|t('seo-fields') }}</th>
             <th>{{ "Hits"|t('seo-fields') }}</th>
             <th>{{ "Last hit at"|t('seo-fields') }}</th>
             <th>{{ "Method"|t('seo-fields') }}</th>
@@ -30,6 +31,13 @@
         <tr>
             <td>{{ row.pattern }}</td>
             <td>{{ row.redirect }}</td>
+            {% if row.siteId %}
+                {% set site = craft.app.sites.getSiteById(row.siteId) %}
+                {% set site = site.name %}
+            {% else %}
+                {% set site = 'All sites'|t('seo-fields') %}
+            {% endif %}
+            <td>{{ site  }}</td>
             <td class="light">{{ row.counter ?? 0 }}</td>
             <td class="light">{{ row.dateLastHit|length ? row.dateLastHit|date('d/m/Y H:i') : '' }}</td>
             <td class="light">{{ row.method }}</td>
