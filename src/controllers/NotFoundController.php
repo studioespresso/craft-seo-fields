@@ -4,6 +4,7 @@ namespace studioespresso\seofields\controllers;
 
 use Craft;
 use craft\helpers\Template;
+use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\records\DefaultsRecord;
@@ -18,4 +19,13 @@ class NotFoundController extends Controller
         $data = SeoFields::getInstance()->notFoundService->getAllNotFound('dateLastHit');
         return $this->renderTemplate('seo-fields/_notfound/_index', ['data' => $data]);
     }
+
+    public function actionDelete($id)
+    {
+        if (SeoFields::getInstance()->notFoundService->deletetById($id)) {
+            Craft::$app->getSession()->setNotice(Craft::t('seo-fields', '404 removed'));
+            $this->redirect(UrlHelper::cpUrl('seo-fields/not-found'));
+        }
+    }
+
 }

@@ -18,6 +18,7 @@
             <th>{{ "Hits"|t('seo-fields') }}</th>
             <th>{{ "Last hit at"|t('seo-fields') }}</th>
             <th>{{ "Redirect?"|t('seo-fields') }}</th>
+            <th>{{ "Clear"|t('seo-fields') }}</th>
         </tr>
         </thead>
         <tbody>
@@ -31,10 +32,15 @@
             <td>{{ row.dateLastHit|date('d/m/Y H:i:s') }}</td>
             <td>
                 {% if row.redirect %}
-                    <a href="{{ cpUrl('seo-fields/redirects/edit/' ~ row.redirect)}}"><span data-icon="check" style="color: green;"></span></a>
+                    <a href="{{ cpUrl('seo-fields/redirects/edit/' ~ row.redirect) }}"><span data-icon="check"
+                                                                                             style="color: green;"></span></a>
                 {% else %}
-                    <a href="{{ cpUrl('seo-fields/redirects/add', {pattern : row.urlPath})}}"><span data-icon="plus"></span></a>
+                    <a href="{{ cpUrl('seo-fields/redirects/add', {pattern : row.urlPath}) }}"><span
+                                data-icon="plus"></span></a>
                 {% endif %}
+            </td>
+            <td>
+                <a href="{{ cpUrl('seo-fields/not-found/delete/' ~ row.id) }}" class="delete icon" title="Delete"></a>
             </td>
         </tr>
         </tbody>

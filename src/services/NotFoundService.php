@@ -116,4 +116,12 @@ class NotFoundService extends Component
             return true;
         }
     }
+
+    public function deletetById($id)
+    {
+        $record = NotFoundRecord::findOne(['id' => $id]);
+        if ($record->delete()) {
+            return true;
+        }
+    }
 }
