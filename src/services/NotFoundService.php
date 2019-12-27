@@ -26,7 +26,7 @@ class NotFoundService extends Component
     public function handleNotFoundException()
     {
         $request = Craft::$app->getRequest();
-        if ($request->isLivePreview || $request->isCpRequest || $request->isConsoleRequest) {
+        if ($request->isLivePreview || $request->isCpRequest || $request->isConsoleRequest || substr($request->getFullPath(), 0, 11) === 'cpresources') {
             return;
         }
         $site = Craft::$app->getSites()->getCurrentSite();
