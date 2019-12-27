@@ -8,7 +8,7 @@
 
 {% block contextMenu %}
     {% if craft.app.sites.getEditableSites()|length > 1 %}
-        <div id="revision-btn" class="btn menubtn" data-icon="world">{{ "All sites"|t('seo-fields') }}</div>
+        <div id="revision-btn" class="btn menubtn" data-icon="world">{% if craft.app.request.getSegment(-1) == 'not-found' %}{{ "All sites"|t('seo-fields') }}{% else %}{{ currentSite.name }}{% endif %}</div>
         <div class="menu">
             <ul class="padded">
                 <li>

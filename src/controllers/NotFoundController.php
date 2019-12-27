@@ -16,6 +16,10 @@ class NotFoundController extends Controller
 {
     public function actionIndex($siteHandle = null)
     {
+        if($siteHandle) {
+            $site = Craft::$app->getSites()->getSiteByHandle($siteHandle);
+            Craft::$app->getSites()->setCurrentSite($site);
+        }
         $data = SeoFields::getInstance()->notFoundService->getAllNotFound('dateLastHit', $siteHandle);
         return $this->renderTemplate('seo-fields/_notfound/_index', ['data' => $data]);
     }
