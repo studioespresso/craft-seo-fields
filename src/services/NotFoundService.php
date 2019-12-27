@@ -5,6 +5,7 @@ namespace studioespresso\seofields\services;
 use Craft;
 use craft\base\Component;
 use craft\helpers\DateTimeHelper;
+use craft\helpers\Db;
 use craft\helpers\StringHelper;
 use craft\models\Site;
 use craft\web\Request;
@@ -87,11 +88,11 @@ class NotFoundService extends Component
      */
     public function getMatchingRedirect(NotFoundModel $model)
     {
-        $redirect = RedirectRecord::findOne(['pattern' => $model->urlPath]);
-        if ($redirect) {
-            return $redirect;
-        }
-        return false;
+        $redirect = RedirectRecord::find();
+        $redirect->where(['pattern' => $model->urlPath]);
+
+        $redirect->andWhere(Db::parseParam('siteId', [null, $model->siteId], 'in'));
+        return $redirect->one() ?? false;
     }
 
 

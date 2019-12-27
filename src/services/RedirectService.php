@@ -47,6 +47,7 @@ class RedirectService extends Component
     {
         $model->counter++;
         $model->dateLastHit = DateTimeHelper::toIso8601(time());
+        $model->validate();
         $this->saveRedirect($model);
     }
 

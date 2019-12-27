@@ -58,7 +58,7 @@ class RedirectModel extends Model
     public function rules()
     {
         return [
-            [['pattern', 'redirect', 'method', 'siteId'], 'required'],
+            [['pattern', 'redirect', 'method'], 'required'],
             [
                 ['id', 'pattern', 'redirect', 'method', 'siteId', 'counter', 'dateLastHit', 'dateLastHit', 'dateCreated', 'dateUpdated'], 'safe'
             ],
