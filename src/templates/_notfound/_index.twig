@@ -7,7 +7,28 @@
 {% set title = "404's" %}
 
 {% block contextMenu %}
-
+    {% if craft.app.sites.getEditableSites()|length > 1 %}
+        <div id="revision-btn" class="btn menubtn" data-icon="world">{{ "All sites"|t('seo-fields') }}</div>
+        <div class="menu">
+            <ul class="padded">
+                <li>
+                    <a href="{{ url('seo-fields/not-found' ) }}"
+                       {% if craft.app.request.getSegment(-1) == 'not-found' %}class="sel" {% endif %}>
+                        {{ "All sites"|t('seo-fields') }}
+                    </a>
+                </li>
+                {% for site in craft.app.sites.getAllSites() %}
+                    <li>
+                        <a href="{{ url('seo-fields/not-found/' ~ site.handle ) }}"
+                           {% if site.handle == craft.app.request.getSegment(-1) %}class="sel"{% endif %}>
+                            {{ site.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <input type="hidden" name="siteId" value="{{ currentSite.id }}">
+    {% endif %}
 {% endblock %}
 
 {% block content %}

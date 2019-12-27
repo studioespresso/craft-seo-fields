@@ -14,9 +14,9 @@ use yii\web\NotFoundHttpException;
 
 class NotFoundController extends Controller
 {
-    public function actionIndex()
+    public function actionIndex($siteHandle = null)
     {
-        $data = SeoFields::getInstance()->notFoundService->getAllNotFound('dateLastHit');
+        $data = SeoFields::getInstance()->notFoundService->getAllNotFound('dateLastHit', $siteHandle);
         return $this->renderTemplate('seo-fields/_notfound/_index', ['data' => $data]);
     }
 
