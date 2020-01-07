@@ -38,10 +38,13 @@ class NotFoundService extends Component
         $data = [];
         $query = NotFoundRecord::find();
         $query->orderBy("$orderBy DESC");
+        $query->where(['in', 'siteId', Craft::$app->getSites()->getEditableSiteIds()]);
+
         if($siteHandle) {
             $site = Craft::$app->getSites()->getSiteByHandle($siteHandle);
             $query->where(['siteId' => $site->id]);
         }
+
         foreach ($query->all() as $record) {
             $model = new NotFoundModel();
             $model->setAttributes($record->getAttributes());

@@ -17,7 +17,7 @@
                         {{ "All sites"|t('seo-fields') }}
                     </a>
                 </li>
-                {% for site in craft.app.sites.getAllSites() %}
+                {% for site in craft.app.sites.getEditableSites() %}
                     <li>
                         <a href="{{ url('seo-fields/not-found/' ~ site.handle ) }}"
                            {% if site.handle == craft.app.request.getSegment(-1) %}class="sel"{% endif %}>
