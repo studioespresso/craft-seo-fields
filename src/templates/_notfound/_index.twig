@@ -37,6 +37,7 @@
         <tr>
             <th>{{ "URL"|t('seo-fields') }}</th>
             <th>{{ "Hits"|t('seo-fields') }}</th>
+            <th>{{ "Last linked from"|t('seo-fields') }}</th>
             <th>{{ "Last hit at"|t('seo-fields') }}</th>
             <th>{{ "Redirect?"|t('seo-fields') }}</th>
             <th>{{ "Clear"|t('seo-fields') }}</th>
@@ -50,6 +51,7 @@
                 {{ row.urlPath }}
             </th>
             <td>{{ row.counter }}</td>
+            <td>{{ row.referrer }}</td>
             <td>{{ row.dateLastHit|date('d/m/Y H:i:s') }}</td>
             <td>
                 {% if row.redirect %}

@@ -66,6 +66,8 @@ class NotFoundService extends Component
             $notFoundModel->setAttributes([
                 'fullUrl' => $request->getAbsoluteUrl(),
                 'urlPath' => $request->getUrl(),
+                'referrer' => $request->referrer,
+                'urlParams' => $request->queryStringWithoutPath,
                 'siteId' => $site->id,
                 'handled' => false,
                 'counter' => 1,
@@ -116,6 +118,7 @@ class NotFoundService extends Component
         $record->setAttribute('siteId', $model->siteId);
         $record->setAttribute('fullUrl', $model->fullUrl);
         $record->setAttribute('urlPath', $model->urlPath);
+        $record->setAttribute('referrer', $model->referrer);
         $record->setAttribute('counter', $model->counter);
         $record->setAttribute('redirect', $model->redirect);
         $record->setAttribute('handled', $model->handled);
