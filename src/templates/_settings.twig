@@ -1,6 +1,14 @@
 {% import "_includes/forms" as forms %}
 
 {{ forms.textField({
+    label: 'Plugin sidebar label'|t('seo-fields'),
+    id: 'pluginLabel',
+    name: 'pluginLabel',
+    size: 25,
+    value: settings['pluginLabel']})
+}}
+
+{{ forms.textField({
     label: 'Title seperator'|t('seo-fields'),
     instructions: 'A character used to seperate your `<title>` from the site name'|t('seo-fields'),
     id: 'titleSeperator',

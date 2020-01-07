@@ -21,6 +21,8 @@ class Settings extends Model
 {
     // Public Properties
     // =========================================================================
+    public $pluginLabel = 'SEO Fields';
+
     public $titleSeperator = '-';
 
     public $robotsPerSite = false;

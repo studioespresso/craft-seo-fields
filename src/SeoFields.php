@@ -114,6 +114,7 @@ class SeoFields extends Plugin
     {
         $subNavs = [];
         $navItem = parent::getCpNavItem();
+        $navItem['label'] = $this->getSettings()->pluginLabel;
         $currentUser = Craft::$app->getUser()->getIdentity();
         // Only show sub-navs the user has permission to view
         if ($currentUser->can('seo-fields:defaults')) {
