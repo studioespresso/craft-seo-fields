@@ -43,6 +43,7 @@ use studioespresso\seofields\services\RenderService;
 use studioespresso\seofields\services\SitemapService;
 use studioespresso\seofields\variables\SeoFieldsVariable;
 use yii\base\Event;
+use yii\base\Exception;
 use yii\web\HttpException;
 
 /**
@@ -327,8 +328,12 @@ class SeoFields extends Plugin
             ErrorHandler::class,
             ErrorHandler::EVENT_BEFORE_HANDLE_EXCEPTION,
             function (ExceptionEvent $event) {
-                if ($event->exception instanceof HttpException && $event->exception->statusCode === 404 && Craft::$app->getRequest()->getIsSiteRequest()) {
-                    SeoFields::getInstance()->notFoundService->handleNotFoundException();
+                try {
+                    if ($event->exception instanceof HttpException && $event->exception->statusCode === 404 && Craft::$app->getRequest()->getIsSiteRequest()) {
+                        SeoFields::getInstance()->notFoundService->handleNotFoundException();
+                    }
+                } catch (Exception $e) {
+                    Craft::error($e->getMessage(), __CLASS__);
                 }
             }
         );
