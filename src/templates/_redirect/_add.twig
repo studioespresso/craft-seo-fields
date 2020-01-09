@@ -20,7 +20,7 @@
 
    {{ forms.selectField({
        label: 'Enable for site'|t('seo-fields'),
-       description: 'For which site should this redirect be active?'|t('seo-fields'),
+       instructions: 'For which site should this redirect be active?'|t('seo-fields'),
        id: 'siteId',
        name: 'fields[siteId]',
        value: data.siteId ?? '',
@@ -28,7 +28,8 @@
    }) }}
 
     {{ forms.textField({
-        label: 'Pattern or url to redirect'|t('seo-fields'),
+        label: 'Old pattern or URL to redirect'|t('seo-fields'),
+        instructions: 'Enter a URL or pattern that should be matched. Depening on the options set below, this will match 1) the path (`/news`) or the full URL (`http://www.example.com/news`) and 2) an exact match (`/news`) or a RegEx match (`/news/[a-zA-Z0-9-]+`).'|t('seo-fields'),
         id: 'pattern',
         required: true,
         name: 'fields[pattern]',
@@ -36,6 +37,16 @@
         value: data.pattern ?? pattern ?? '',
         errors: data is defined ? data.getErrors('pattern') : ''
     }) }}
+
+    {{ forms.selectField({
+        label: 'Which part of the old URL should be matched?'|t('seo-fields'),
+        instructions: 'Path only (`/news/old-press-release)` or the full path (`example.com/news/old-press-release`).'|t('seo-fields'),
+        id: 'fromMatchType',
+        name: 'fields[fromMatchType]',
+        value: data.matchType ?? '',
+        options: { 'path': 'Path only'|t('seo-fields'), 'url' : 'Full URL'|t}
+    }) }}
+
 
     {{ forms.textField({
         label: 'URL to redirect to'|t('seo-fields'),
@@ -45,6 +56,14 @@
         showCharsLeft: true,
         value: data.redirect ?? '',
         errors: data is defined ? data.getErrors('redirect') : ''
+    }) }}
+
+    {{ forms.selectField({
+        label: 'Match type'|t('seo-fields'),
+        id: 'matchType',
+        name: 'fields[matchType]',
+        value: data.matchType ?? '',
+        options: { 'exact': 'Exact match'|t('seo-fields'), 'regex' : 'RegEx match'|t}
     }) }}
 
     {{ forms.selectField({

@@ -84,8 +84,10 @@ class Install extends Migration
                 [
                     'id' => $this->primaryKey(),
                     'siteId' => $this->integer(11)->defaultValue(null),
-                    'pattern' => $this->text(255)->notNull(),
-                    'redirect' => $this->text(255)->notNull(),
+                    'pattern' => $this->string(255)->notNull(),
+                    'fromMatchType' => $this->string(),
+                    'redirect' => $this->string(255)->notNull(),
+                    'matchType' => $this->string(),
                     'counter' => $this->bigInteger(),
                     'method' => $this->string(3)->notNull(),
                     'dateLastHit' => $this->dateTime(),
