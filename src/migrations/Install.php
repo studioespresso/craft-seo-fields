@@ -85,11 +85,11 @@ class Install extends Migration
                     'id' => $this->primaryKey(),
                     'siteId' => $this->integer(11)->defaultValue(null),
                     'pattern' => $this->string(255)->notNull(),
-                    'fromMatchType' => $this->string(),
+                    'sourceMatch' => $this->string(),
                     'redirect' => $this->string(255)->notNull(),
                     'matchType' => $this->string(),
                     'counter' => $this->bigInteger(),
-                    'method' => $this->string(3)->notNull(),
+                    'method' => $this->num(3)->notNull(),
                     'dateLastHit' => $this->dateTime(),
                     'dateCreated' => $this->dateTime()->notNull(),
                     'dateUpdated' => $this->dateTime()->notNull(),
@@ -163,5 +163,7 @@ class Install extends Migration
     protected function removeTables()
     {
         $this->dropTableIfExists(DefaultsRecord::tableName());
+        $this->dropTableIfExists(NotFoundRecord::tableName());
+        $this->dropTableIfExists(RedirectRecord::tableName());
     }
 }

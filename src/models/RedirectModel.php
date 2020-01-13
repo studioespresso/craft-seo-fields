@@ -26,7 +26,11 @@ class RedirectModel extends Model
 
     public $pattern;
 
+    public $sourceMatch;
+
     public $redirect;
+
+    public $matchType;
 
     public $method;
 
@@ -60,7 +64,7 @@ class RedirectModel extends Model
         return [
             [['pattern', 'redirect', 'method'], 'required'],
             [
-                ['id', 'pattern', 'redirect', 'method', 'siteId', 'counter', 'dateLastHit', 'dateLastHit', 'dateCreated', 'dateUpdated'], 'safe'
+                ['id', 'pattern','sourceMatch' , 'redirect', 'matchType', 'method', 'siteId', 'counter', 'dateLastHit', 'dateLastHit', 'dateCreated', 'dateUpdated'], 'safe'
             ],
         ];
     }

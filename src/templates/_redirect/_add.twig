@@ -41,8 +41,8 @@
     {{ forms.selectField({
         label: 'Which part of the old URL should be matched?'|t('seo-fields'),
         instructions: 'Path only (`/news/old-press-release)` or the full path (`example.com/news/old-press-release`).'|t('seo-fields'),
-        id: 'fromMatchType',
-        name: 'fields[fromMatchType]',
+        id: 'sourceMatch',
+        name: 'fields[sourceMatch]',
         value: data.matchType ?? '',
         options: { 'path': 'Path only'|t('seo-fields'), 'url' : 'Full URL'|t}
     }) }}

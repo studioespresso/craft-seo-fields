@@ -27,7 +27,7 @@ class m191114_201532_addRedirectsTable extends Migration
                     'id' => $this->primaryKey(),
                     'siteId' => $this->integer(11)->defaultValue(null),
                     'pattern' => $this->string(255)->notNull(),
-                    'fromMatchType' => $this->string(),
+                    'sourceMatch' => $this->string(),
                     'redirect' => $this->string(255)->notNull(),
                     'matchType' => $this->string(),
                     'counter' => $this->bigInteger(),
