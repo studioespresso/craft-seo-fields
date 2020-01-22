@@ -31,7 +31,7 @@ class m191114_201532_addRedirectsTable extends Migration
                     'redirect' => $this->string(255)->notNull(),
                     'matchType' => $this->string(),
                     'counter' => $this->bigInteger(),
-                    'method' => $this->string(3)->notNull(),
+                    'method' => $this->integer(3)->notNull(),
                     'dateLastHit' => $this->dateTime(),
                     'dateCreated' => $this->dateTime()->notNull(),
                     'dateUpdated' => $this->dateTime()->notNull(),

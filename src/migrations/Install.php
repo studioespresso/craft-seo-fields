@@ -89,7 +89,7 @@ class Install extends Migration
                     'redirect' => $this->string(255)->notNull(),
                     'matchType' => $this->string(),
                     'counter' => $this->bigInteger(),
-                    'method' => $this->num(3)->notNull(),
+                    'method' => $this->integer(3)->notNull(),
                     'dateLastHit' => $this->dateTime(),
                     'dateCreated' => $this->dateTime()->notNull(),
                     'dateUpdated' => $this->dateTime()->notNull(),
