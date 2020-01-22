@@ -64,8 +64,8 @@ class NotFoundService extends Component
         } else {
             $notFoundModel = new NotFoundModel();
             $notFoundModel->setAttributes([
-                'fullUrl' => $request->getAbsoluteUrl(),
-                'urlPath' => $request->getUrl(),
+                'fullUrl' => urldecode($request->getAbsoluteUrl()),
+                'urlPath' => urldecode($request->getUrl()),
                 'referrer' => $request->referrer,
                 'urlParams' => $request->queryStringWithoutPath,
                 'siteId' => $site->id,
@@ -76,7 +76,6 @@ class NotFoundService extends Component
         }
 
         $redirect = $this->getMatchingRedirect($notFoundModel);
-        dd($redirect);
         if ($redirect) {
             $notFoundModel->handled = true;
             $notFoundModel->redirect = $redirect->id;
@@ -96,10 +95,8 @@ class NotFoundService extends Component
     {
         $redirect = RedirectRecord::find();
         $param = Db::parseParam('pattern', $model->urlPath, 'REGEXP');
-        dd($param);
         $redirect->where($param);
         $redirect->andWhere(Db::parseParam('siteId', [null, $model->siteId], 'in'));
-        dd($redirect->one());
 
         return $redirect->one() ?? false;
     }
