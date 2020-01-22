@@ -271,6 +271,22 @@ class SeoFields extends Plugin
             }
         );
 
+        Event::on(
+            Sections::class,
+            Sections::EVENT_AFTER_DELETE_SECTION,
+            function(SectionEvent $event) {
+                SeoFields::$plugin->sitemapSerivce->clearCaches();
+            }
+        );
+
+        Event::on(
+            Sections::class,
+            Sections::EVENT_AFTER_DELETE_ENTRY_TYPE,
+            function(SectionEvent $event) {
+                SeoFields::$plugin->sitemapSerivce->clearCaches();
+            }
+        );
+
     }
 
     private function _registerCacheOptions()
