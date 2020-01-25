@@ -94,7 +94,7 @@ class NotFoundService extends Component
     public function getMatchingRedirect(NotFoundModel $model)
     {
         $redirect = RedirectRecord::find();
-        $param = Db::parseParam('pattern', $model->urlPath, 'REGEXP');
+        $param = Db::parseParam('pattern', $model->urlPath, '=');
         $redirect->where($param);
         $redirect->andWhere(Db::parseParam('siteId', [null, $model->siteId], 'in'));
 

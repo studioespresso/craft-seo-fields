@@ -29,7 +29,7 @@
 
     {{ forms.textField({
         label: 'Old pattern or URL to redirect'|t('seo-fields'),
-        instructions: 'Enter a URL or pattern that should be matched. Depening on the options set below, this will match 1) the path (`/news`) or the full URL (`http://www.example.com/news`) and 2) an exact match (`/news`) or a RegEx match (`/news/[a-zA-Z0-9-]+`).'|t('seo-fields'),
+        instructions: 'Enter a URL or pattern that should be matched. Depening on the options set below, this will match the path (`/news`) or the full URL (`http://www.example.com/news`).'|t('seo-fields'),
         id: 'pattern',
         required: true,
         name: 'fields[pattern]',
@@ -58,12 +58,9 @@
         errors: data is defined ? data.getErrors('redirect') : ''
     }) }}
 
-    {{ forms.selectField({
-        label: 'Match type'|t('seo-fields'),
-        id: 'matchType',
+    {{ forms.hidden({
         name: 'fields[matchType]',
-        value: data.matchType ?? '',
-        options: { 'exact': 'Exact match'|t('seo-fields'), 'regex' : 'RegEx match'|t}
+        value: data.matchType ?? 'exact',
     }) }}
 
     {{ forms.selectField({
