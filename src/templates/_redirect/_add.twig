@@ -18,14 +18,21 @@
         {{ d(errors) }}
     {% endif %}
 
-   {{ forms.selectField({
-       label: 'Enable for site'|t('seo-fields'),
-       instructions: 'For which site should this redirect be active?'|t('seo-fields'),
-       id: 'siteId',
-       name: 'fields[siteId]',
-       value: data.siteId ?? '',
-       options: sites
-   }) }}
+    {% if sites|length > 1 %}
+       {{ forms.selectField({
+           label: 'Enable for site'|t('seo-fields'),
+           instructions: 'For which site should this redirect be active?'|t('seo-fields'),
+           id: 'siteId',
+           name: 'fields[siteId]',
+           value: data.siteId ?? '',
+           options: sites
+       }) }}
+    {% else %}
+        {{ forms.hidden({
+            name: 'fields[matchType]',
+            value: data.siteId ?? craft.app.sites.getPrimarySite().id,
+        }) }}
+    {% endif %}
 
     {{ forms.textField({
         label: 'Old pattern or URL to redirect'|t('seo-fields'),
