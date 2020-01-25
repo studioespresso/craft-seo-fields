@@ -20,7 +20,7 @@ class NotFoundController extends Controller
             $site = Craft::$app->getSites()->getSiteByHandle($siteHandle);
             Craft::$app->getSites()->setCurrentSite($site);
         }
-        $data = SeoFields::getInstance()->notFoundService->getAllNotFound('dateLastHit', $siteHandle);
+        $data = SeoFields::getInstance()->notFoundService->getAllNotFound('counter', $siteHandle);
         return $this->renderTemplate('seo-fields/_notfound/_index', ['data' => $data]);
     }
 
