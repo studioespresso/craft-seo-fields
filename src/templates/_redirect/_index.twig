@@ -30,7 +30,7 @@
         <tbody>
         {% for row in redirects %}
         <tr>
-            <td>{{ row.pattern }}</td>
+            <td><a href="{{ cpUrl('seo-fields/redirects/edit/' ~ row.id) }}">{{ row.pattern }}</a></td>
             <td>{{ row.redirect }}</td>
             {% if row.siteId %}
                 {% set site = craft.app.sites.getSiteById(row.siteId) %}

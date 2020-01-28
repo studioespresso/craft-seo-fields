@@ -38,6 +38,14 @@ class RedirectService extends Component
         }
     }
 
+    public function getRedirectById($id)
+    {
+        $record =  RedirectRecord::findOne(['id' => $id]);
+        $model = new RedirectModel();
+        $model->setAttributes($record->getAttributes());
+        return $model;
+    }
+
     public function getAllRedirects()
     {
         return RedirectRecord::find()->all();

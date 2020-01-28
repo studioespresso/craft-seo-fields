@@ -23,9 +23,17 @@ class RedirectsController extends Controller
 
     public function actionAdd()
     {
-        $siteData = [];
-        return $this->renderTemplate('seo-fields/_redirect/_add', [
+        return $this->renderTemplate('seo-fields/_redirect/_entry', [
             'pattern' => Craft::$app->getRequest()->getParam('pattern') ?? null,
+            'sites' => $this->getSitesMenu()
+        ]);
+    }
+
+    public function actionEdit($id)
+    {
+        $redirect = SeoFields::getInstance()->redirectService->getRedirectById($id);
+        return $this->renderTemplate('seo-fields/_redirect/_entry', [
+            'data' => $redirect,
             'sites' => $this->getSitesMenu()
         ]);
     }
@@ -34,13 +42,12 @@ class RedirectsController extends Controller
     {
         $id = Craft::$app->getRequest()->getBodyParam('redirectId');
         if ($id) {
-            $model = SeoFields::getInstance()->redirectService->getRedirectById();
+            $model = SeoFields::getInstance()->redirectService->getRedirectById($id);
         } else {
             $model = new RedirectModel();
         }
-
+        
         $model->setAttributes(Craft::$app->getRequest()->getBodyParam('fields'));
-
 
         if ($model->validate()) {
             $saved = SeoFields::getInstance()->redirectService->saveRedirect($model);
@@ -51,7 +58,7 @@ class RedirectsController extends Controller
         }
 
         Craft::$app->getSession()->setError(Craft::t('app', 'Couldn’t save redirect.'));
-        return $this->renderTemplate('seo-fields/_redirect/_add', [
+        return $this->renderTemplate('seo-fields/_redirect/_entry', [
             'data' => $model,
             'sites' => $this->getSitesMenu()
         ]);
