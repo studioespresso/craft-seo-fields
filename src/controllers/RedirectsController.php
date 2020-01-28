@@ -46,7 +46,7 @@ class RedirectsController extends Controller
         } else {
             $model = new RedirectModel();
         }
-        
+
         $model->setAttributes(Craft::$app->getRequest()->getBodyParam('fields'));
 
         if ($model->validate()) {
