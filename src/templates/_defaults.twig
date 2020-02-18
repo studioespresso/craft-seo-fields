@@ -71,7 +71,7 @@
 
     {% if craft.app.volumes.getAllVolumes()|length %}
         {{ forms.elementSelectField({
-            label: "Default Meta image"|t('seo-fields'),
+            label: "Default meta image"|t('seo-fields'),
             id: "defaultImage",
             name: "defaultImage",
             elements: [data['defaultImage']|length ? craft.assets.id(data['defaultImage'][0]).one() : null],
