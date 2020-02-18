@@ -14,6 +14,7 @@ use Craft;
 use craft\base\Plugin;
 use craft\commerce\elements\Product;
 use craft\events\ElementEvent;
+use craft\events\ExceptionEvent;
 use craft\events\RegisterCacheOptionsEvent;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
@@ -27,6 +28,7 @@ use craft\services\Sections;
 use craft\services\Sites;
 use craft\services\UserPermissions;
 use craft\utilities\ClearCaches;
+use craft\web\ErrorHandler;
 use craft\web\UrlManager;
 use craft\web\View;
 use studioespresso\seofields\events\RegisterSeoElementEvent;
@@ -35,10 +37,14 @@ use studioespresso\seofields\fields\SeoField;
 use studioespresso\seofields\models\SeoFieldModel;
 use studioespresso\seofields\models\Settings;
 use studioespresso\seofields\services\DefaultsService;
+use studioespresso\seofields\services\NotFoundService;
+use studioespresso\seofields\services\RedirectService;
 use studioespresso\seofields\services\RenderService;
 use studioespresso\seofields\services\SitemapService;
 use studioespresso\seofields\variables\SeoFieldsVariable;
 use yii\base\Event;
+use yii\base\Exception;
+use yii\web\HttpException;
 
 /**
  * https://craftcms.com/docs/plugins/introduction
@@ -51,6 +57,8 @@ use yii\base\Event;
  * @property  SitemapService $sitemapSerivce
  * @property  DefaultsService $defaultsService
  * @property RenderService $renderService
+ * @property RedirectService $redirectService
+ * @property NotFoundService $notFoundService
  * @method    Settings getSettings()
  */
 class SeoFields extends Plugin
@@ -68,7 +76,7 @@ class SeoFields extends Plugin
 
     // Public Properties
     // =========================================================================
-    public $schemaVersion = '1.0.0';
+    public $schemaVersion = '2.0.0';
 
 
     const EVENT_SEOFIELDS_REGISTER_ELEMENT = "registerSeoElement";
@@ -83,7 +91,9 @@ class SeoFields extends Plugin
         $this->setComponents([
             "defaultsService" => DefaultsService::class,
             "sitemapSerivce" => SitemapService::class,
-            "renderService" => RenderService::class
+            "renderService" => RenderService::class,
+            "redirectService" => RedirectService::class,
+            "notFoundService" => NotFoundService::class,
         ]);
 
         Craft::$app->view->hook('seo-fields', function (array &$context) {
@@ -95,7 +105,8 @@ class SeoFields extends Plugin
         $this->_registerFrontendRoutes();
         $this->_registerPermissions();
         $this->_registerTwigExtension();
-        $this->_registerListeners();
+        $this->_registerCpListeners();
+        $this->_registerSiteListeners();
         $this->_registerCacheOptions();
         $this->_registerCustomElements();
     }
@@ -104,12 +115,25 @@ class SeoFields extends Plugin
     {
         $subNavs = [];
         $navItem = parent::getCpNavItem();
+        $navItem['label'] = $this->getSettings()->pluginLabel;
         $currentUser = Craft::$app->getUser()->getIdentity();
         // Only show sub-navs the user has permission to view
         if ($currentUser->can('seo-fields:defaults')) {
             $subNavs['defaults'] = [
                 'label' => 'Defaults',
                 'url' => 'seo-fields/defaults',
+            ];
+        }
+        if ($currentUser->can('seo-fields:notfound')) {
+            $subNavs['notfound'] = [
+                'label' => "404's",
+                'url' => 'seo-fields/not-found',
+            ];
+        }
+        if ($currentUser->can('seo-fields:redirects')) {
+            $subNavs['redirects'] = [
+                'label' => "Redirects",
+                'url' => 'seo-fields/redirects',
             ];
         }
         if ($currentUser->can('seo-fields:robots')) {
@@ -180,6 +204,12 @@ class SeoFields extends Plugin
                     'seo-fields:default' => [
                         'label' => Craft::t('seo-fields', 'Defaults'),
                     ],
+                    'seo-fields:notfound' => [
+                        'label' => Craft::t('seo-fields', "404's"),
+                    ],
+                    'seo-fields:redirects' => [
+                        'label' => Craft::t('seo-fields', "redirects"),
+                    ],
                     'seo-fields:robots' => [
                         'label' => Craft::t('seo-fields', 'Robots'),
                     ],
@@ -236,14 +266,17 @@ class SeoFields extends Plugin
                 // Register our Control Panel routes
                 $event->rules = array_merge($event->rules, [
                     'seo-fields' => 'seo-fields/defaults/index',
-                    'seo-fields/<controller:(defaults|robots|sitemap)>' => 'seo-fields/<controller>/index',
+                    'seo-fields/<controller:(not-found)>/<siteHandle:{handle}>' => 'seo-fields/<controller>/index',
+                    'seo-fields/<controller:(defaults|robots|sitemap|not-found|redirects)>' => 'seo-fields/<controller>/index',
+                    'seo-fields/<controller:(redirects)>/<id:\d+>' => 'seo-fields/<controller>/<action>',
+                    'seo-fields/<controller:(redirects|not-found)>/<action>/<id:\d+>' => 'seo-fields/<controller>/<action>',
                     'seo-fields/<controller:(defaults|robots|sitemap)>/<siteHandle:{handle}>' => 'seo-fields/<controller>/settings',
                 ]);
             }
         );
     }
 
-    private function _registerListeners()
+    private function _registerCpListeners()
     {
         Event::on(
             Sites::class,
@@ -287,6 +320,23 @@ class SeoFields extends Plugin
             }
         );
 
+    }
+
+    private function _registerSiteListeners()
+    {
+        Event::on(
+            ErrorHandler::class,
+            ErrorHandler::EVENT_BEFORE_HANDLE_EXCEPTION,
+            function (ExceptionEvent $event) {
+                try {
+                    if ($event->exception instanceof HttpException && $event->exception->statusCode === 404 && Craft::$app->getRequest()->getIsSiteRequest()) {
+                        SeoFields::getInstance()->notFoundService->handleNotFoundException();
+                    }
+                } catch (Exception $e) {
+                    Craft::error($e->getMessage(), __CLASS__);
+                }
+            }
+        );
     }
 
     private function _registerCacheOptions()

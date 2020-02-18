@@ -11,27 +11,40 @@
 namespace studioespresso\seofields\models;
 
 use craft\base\Model;
+use craft\validators\DateTimeValidator;
 
 /**
  * @author    Studio Espresso
  * @package   SEO Fields
  * @since     1.0.0
  */
-class Settings extends Model
+class RedirectModel extends Model
 {
     // Public Properties
     // =========================================================================
-    public $pluginLabel = 'SEO Fields';
+    public $id;
 
-    public $titleSeperator = '-';
+    public $pattern;
 
-    public $robotsPerSite = false;
+    public $sourceMatch;
 
-    public $sitemapPerSite = false;
+    public $redirect;
 
-    public $fieldHandle = 'seo';
+    public $matchType;
 
-    public $notFoundLimit = 1000;
+    public $method;
+
+    public $siteId;
+
+    public $counter = 0;
+
+    public $dateLastHit;
+
+    public $dateCreated;
+
+    public $dateUpdated;
+
+    public $uid;
 
     // Public Methods
     // =========================================================================
@@ -49,7 +62,10 @@ class Settings extends Model
     public function rules()
     {
         return [
-            ['titleSeperator', 'string']
+            [['pattern', 'redirect', 'method'], 'required'],
+            [
+                ['id', 'pattern','sourceMatch' , 'redirect', 'matchType', 'method', 'siteId', 'counter', 'dateLastHit', 'dateLastHit', 'dateCreated', 'dateUpdated'], 'safe'
+            ],
         ];
     }
 }
