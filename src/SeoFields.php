@@ -120,7 +120,7 @@ class SeoFields extends Plugin
         // Only show sub-navs the user has permission to view
         if ($currentUser->can('seo-fields:defaults')) {
             $subNavs['defaults'] = [
-                'label' => 'Defaults',
+                'label' => 'Meta',
                 'url' => 'seo-fields/defaults',
             ];
         }
@@ -202,7 +202,7 @@ class SeoFields extends Plugin
                 // Register our custom permissions
                 $event->permissions[Craft::t('seo-fields', 'SEO Fields')] = [
                     'seo-fields:default' => [
-                        'label' => Craft::t('seo-fields', 'Defaults'),
+                        'label' => Craft::t('seo-fields', 'Meta'),
                     ],
                     'seo-fields:notfound' => [
                         'label' => Craft::t('seo-fields', "404's"),
