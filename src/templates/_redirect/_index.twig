@@ -19,7 +19,9 @@
         <tr>
             <th>{{ "Pattern / URL"|t('seo-fields') }}</th>
             <th>{{ "Redirect to"|t('seo-fields') }}</th>
-            <th>{{ "Site"|t('seo-fields') }}</th>
+            {% if craft.app.getIsMultiSite() %}
+                <th>{{ "Site"|t('seo-fields') }}</th>
+            {% endif %}
             <th>{{ "Hits"|t('seo-fields') }}</th>
             <th>{{ "Matched by"|t('seo-fields') }}</th>
             <th>{{ "Last hit at"|t('seo-fields') }}</th>
@@ -32,13 +34,15 @@
         <tr>
             <td><a href="{{ cpUrl('seo-fields/redirects/edit/' ~ row.id) }}">{{ row.pattern }}</a></td>
             <td>{{ row.redirect }}</td>
-            {% if row.siteId %}
-                {% set site = craft.app.sites.getSiteById(row.siteId) %}
-                {% set site = site.name %}
-            {% else %}
-                {% set site = 'All sites'|t('seo-fields') %}
+            {% if craft.app.getIsMultiSite() %}
+                {% if row.siteId %}
+                    {% set site = craft.app.sites.getSiteById(row.siteId) %}
+                    {% set site = site.name %}
+                {% else %}
+                    {% set site = 'All sites'|t('seo-fields') %}
+                {% endif %}
+                <td>{{ site  }}</td>
             {% endif %}
-            <td>{{ site  }}</td>
             <td class="light">{{ row.counter ?? 0 }}</td>
             <td class="light">{{ row.sourceMatch == "url" ? 'Full url' : 'Path only' }}</td>
             <td class="light">{{ row.dateLastHit|length ? row.dateLastHit|date('d/m/Y H:i') : '-' }}</td>

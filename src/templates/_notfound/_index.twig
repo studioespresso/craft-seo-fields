@@ -43,7 +43,7 @@
         <tr>
             <th>{{ "URL"|t('seo-fields') }}</th>
             <th>{{ "Hits"|t('seo-fields') }}</th>
-            {% if craft.app.request.getSegment(-1) == 'not-found' %}
+            {% if craft.app.request.getSegment(-1) == 'not-found' and craft.app .getIsMultiSite() %}
                 <th>{{ "Site"|t('seo-fields') }}</th>
             {% endif %}
             <th>{{ "Last linked from"|t('seo-fields') }}</th>
@@ -60,7 +60,7 @@
                 {{ row.urlPath }}
             </th>
             <td>{{ row.counter }}</td>
-            {% if craft.app.request.getSegment(-1) == 'not-found' %}
+            {% if craft.app.request.getSegment(-1) == 'not-found' and craft.app .getIsMultiSite() %}
                 {% set site = craft.app.sites.getSiteById(row.siteId) %}
                 <td>{{ site.name }}</td>
             {% endif %}
