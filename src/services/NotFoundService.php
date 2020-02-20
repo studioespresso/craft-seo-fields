@@ -37,7 +37,7 @@ class NotFoundService extends Component
     {
         $data = [];
         $query = NotFoundRecord::find();
-        $query->orderBy("$orderBy DESC");
+        $query->orderBy("$orderBy DESC, dateLastHIT DESC");
         $query->where(['in', 'siteId', Craft::$app->getSites()->getEditableSiteIds()]);
 
         if($siteHandle) {
