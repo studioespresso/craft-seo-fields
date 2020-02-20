@@ -137,4 +137,12 @@ class NotFoundService extends Component
             return true;
         }
     }
+
+    public function deleteAll() {
+        $records = NotFoundRecord::find();
+        foreach($records->all() as $record) {
+            $record->delete();
+        }
+        return true;
+    }
 }
