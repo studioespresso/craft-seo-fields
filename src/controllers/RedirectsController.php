@@ -17,7 +17,8 @@ class RedirectsController extends Controller
 {
     public function actionIndex()
     {
-        $redirects = SeoFields::getInstance()->redirectService->getAllRedirects();
+        $searchParam = Craft::$app->getRequest()->getParam('search');
+        $redirects = SeoFields::getInstance()->redirectService->getAllRedirects($searchParam);
         return $this->renderTemplate('seo-fields/_redirect/_index', ['redirects' => $redirects]);
     }
 

@@ -9,7 +9,15 @@
 {% block header %}
     {{ block('pageTitle') }}
     {{ block('contextMenu') }}
-    <div class="flex-grow"></div>
+    <div id="toolbar" class="flex flex-nowrap">
+        <form action="" method="get">
+        <div class="flex-grow texticon search icon clearable">
+            <input type="text" class="text" autocomplete="off" placeholder="{{ 'Search'|t }}" name="search"
+            {% if craft.app.request.getParam('search') %}value="{{ craft.app.request.getParam('search') }}"{% endif %}>
+            <div class="clear hidden" title="Verwijderen"></div>
+        </div>
+        </form>
+    </div>
     <a href="{{ cpUrl('seo-fields/redirects/add') }}" class="btn submit"><span data-icon="plus"></span> {{ 'New redirect'|t('seo-fields') }}</a>
 {% endblock %}
 

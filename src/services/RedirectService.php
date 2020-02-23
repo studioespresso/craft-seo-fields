@@ -40,15 +40,19 @@ class RedirectService extends Component
 
     public function getRedirectById($id)
     {
-        $record =  RedirectRecord::findOne(['id' => $id]);
+        $record = RedirectRecord::findOne(['id' => $id]);
         $model = new RedirectModel();
         $model->setAttributes($record->getAttributes());
         return $model;
     }
 
-    public function getAllRedirects()
+    public function getAllRedirects($searchParam = null)
     {
-        return RedirectRecord::find()->all();
+        $query = RedirectRecord::find();
+        if ($searchParam) {
+            $query->where(['like', 'pattern', $searchParam]);
+        }
+        return $query->all();
     }
 
     private function updateOnRedirect(RedirectModel $model)
