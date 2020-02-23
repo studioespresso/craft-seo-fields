@@ -14,6 +14,7 @@ use studioespresso\seofields\models\NotFoundModel;
 use studioespresso\seofields\models\RedirectModel;
 use studioespresso\seofields\records\NotFoundRecord;
 use studioespresso\seofields\records\RedirectRecord;
+use studioespresso\seofields\SeoFields;
 use yii\base\Exception;
 use yii\base\ExitException;
 
@@ -27,6 +28,7 @@ class RedirectService extends Component
 
     public function handleRedirect(RedirectRecord $redirect)
     {
+        Craft::debug("Found a redirect for this 404, redirecting", SeoFields::class);
         $model = new RedirectModel($redirect->getAttributes());
         $this->updateOnRedirect($model);
         $this->redirect($model);
