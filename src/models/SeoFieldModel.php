@@ -112,7 +112,7 @@ class SeoFieldModel extends Model
             return false;
         }
 
-        $transform = $this->_getPreviewTransform();
+        $transform = $this->_getPreviewTransform($asset);
         $transformed = $asset->setTransform($transform);
         return [
             'height' => $asset->getHeight($transform),
@@ -135,7 +135,7 @@ class SeoFieldModel extends Model
             return false;
         }
 
-        $transform = $this->_getPreviewTransform();
+        $transform = $this->_getPreviewTransform($asset);
         $transformed = $asset->setTransform($transform);
         return [
             'height' => $asset->getHeight($transform),
@@ -203,12 +203,15 @@ class SeoFieldModel extends Model
         ];
     }
 
-    private function _getPreviewTransform()
+    private function _getPreviewTransform(Asset $asset)
     {
         $transform = new AssetTransform();
         $transform->width = 1200;
         $transform->height = 590;
         $transform->mode = 'crop';
+        if ($asset->hasFocalPoint) {
+            $transform->position = implode(',', $asset->focalPoint);
+        }
         return $transform;
     }
 }
