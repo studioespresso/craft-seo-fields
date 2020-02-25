@@ -14,6 +14,7 @@ use studioespresso\seofields\models\NotFoundModel;
 use studioespresso\seofields\models\RedirectModel;
 use studioespresso\seofields\records\NotFoundRecord;
 use studioespresso\seofields\records\RedirectRecord;
+use studioespresso\seofields\SeoFields;
 use yii\base\Exception;
 use yii\base\ExitException;
 
@@ -27,6 +28,7 @@ class RedirectService extends Component
 
     public function handleRedirect(RedirectRecord $redirect)
     {
+        Craft::debug("Found a redirect for this 404, redirecting", SeoFields::class);
         $model = new RedirectModel($redirect->getAttributes());
         $this->updateOnRedirect($model);
         $this->redirect($model);
@@ -40,15 +42,19 @@ class RedirectService extends Component
 
     public function getRedirectById($id)
     {
-        $record =  RedirectRecord::findOne(['id' => $id]);
+        $record = RedirectRecord::findOne(['id' => $id]);
         $model = new RedirectModel();
         $model->setAttributes($record->getAttributes());
         return $model;
     }
 
-    public function getAllRedirects()
+    public function getAllRedirects($searchParam = null)
     {
-        return RedirectRecord::find()->all();
+        $query = RedirectRecord::find();
+        if ($searchParam) {
+            $query->where(['like', 'pattern', $searchParam]);
+        }
+        return $query->all();
     }
 
     private function updateOnRedirect(RedirectModel $model)

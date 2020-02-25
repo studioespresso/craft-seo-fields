@@ -331,6 +331,7 @@ class SeoFields extends Plugin
             function (ExceptionEvent $event) {
                 try {
                     if ($event->exception instanceof HttpException && $event->exception->statusCode === 404 && Craft::$app->getRequest()->getIsSiteRequest()) {
+                        Craft::debug("404 exception, processing...", __CLASS__);
                         SeoFields::getInstance()->notFoundService->handleNotFoundException();
                     }
                 } catch (Exception $e) {

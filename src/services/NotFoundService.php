@@ -37,10 +37,10 @@ class NotFoundService extends Component
     {
         $data = [];
         $query = NotFoundRecord::find();
-        $query->orderBy("$orderBy DESC");
+        $query->orderBy("$orderBy DESC, dateLastHIT DESC");
         $query->where(['in', 'siteId', Craft::$app->getSites()->getEditableSiteIds()]);
 
-        if($siteHandle) {
+        if ($siteHandle) {
             $site = Craft::$app->getSites()->getSiteByHandle($siteHandle);
             $query->where(['siteId' => $site->id]);
         }
@@ -58,10 +58,12 @@ class NotFoundService extends Component
     {
         $notFoundRecord = NotFoundRecord::findOne(['fullUrl' => $request->getAbsoluteUrl(), 'urlPath' => $request->getUrl(), 'siteId' => $site->id]);
         if ($notFoundRecord) {
+            Craft::debug("Updating excisting 404", SeoFields::class);
             $notFoundModel = new NotFoundModel($notFoundRecord->getAttributes());
             $notFoundModel->counter++;
             $notFoundModel->dateLastHit = DateTimeHelper::toIso8601(time());
         } else {
+            Craft::debug("First time we see this 404, saving new record", SeoFields::class);
             $notFoundModel = new NotFoundModel();
             $notFoundModel->setAttributes([
                 'fullUrl' => urldecode($request->getAbsoluteUrl()),
@@ -85,6 +87,8 @@ class NotFoundService extends Component
             SeoFields::getInstance()->redirectService->handleRedirect($redirect);
         }
 
+        $this->shouldWeCleanupRedirects();
+
     }
 
     /**
@@ -93,6 +97,7 @@ class NotFoundService extends Component
      */
     public function getMatchingRedirect(NotFoundModel $model)
     {
+        Craft::debug("Check if our 404 is matched to a redirect", SeoFields::class);
         $redirect = RedirectRecord::find();
         $param = Db::parseParam('pattern', $model->urlPath, '=');
         $redirect->where($param);
@@ -136,5 +141,19 @@ class NotFoundService extends Component
         if ($record->delete()) {
             return true;
         }
+    }
+
+    public function deleteAll()
+    {
+        $records = NotFoundRecord::find();
+        foreach ($records->all() as $record) {
+            $record->delete();
+        }
+        return true;
+    }
+
+    private function shouldWeCleanupRedirects()
+    {
+
     }
 }

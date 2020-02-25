@@ -8,7 +8,8 @@
 
 {% block contextMenu %}
     {% if craft.app.sites.getEditableSites()|length > 1 %}
-        <div id="revision-btn" class="btn menubtn" data-icon="world">{% if craft.app.request.getSegment(-1) == 'not-found' %}{{ "All sites"|t('seo-fields') }}{% else %}{{ currentSite.name }}{% endif %}</div>
+        <div id="revision-btn" class="btn menubtn"
+             data-icon="world">{% if craft.app.request.getSegment(-1) == 'not-found' %}{{ "All sites"|t('seo-fields') }}{% else %}{{ currentSite.name }}{% endif %}</div>
         <div class="menu">
             <ul class="padded">
                 <li>
@@ -31,14 +32,19 @@
     {% endif %}
 {% endblock %}
 
+{% block actionButton %}
+    {% set confirmation = "Are you sure you want to remove all tracked 404's?"|t('seo-fields') %}
+    <a href="{{ actionUrl('seo-fields/not-found/clear-all') }}" class="btn" onclick='return confirm("{{ confirmation }}")'>{{ "Clear all"|t('seo-fields') }}</a>
+{% endblock %}
+
 {% block content %}
     <table class="data fullwidth collapsible">
         <thead>
         <tr>
             <th>{{ "URL"|t('seo-fields') }}</th>
             <th>{{ "Hits"|t('seo-fields') }}</th>
-            {% if craft.app.request.getSegment(-1) == 'not-found' %}
-            <th>{{ "Site"|t('seo-fields') }}</th>
+            {% if craft.app.request.getSegment(-1) == 'not-found' and craft.app .getIsMultiSite() %}
+                <th>{{ "Site"|t('seo-fields') }}</th>
             {% endif %}
             <th>{{ "Last linked from"|t('seo-fields') }}</th>
             <th>{{ "Last hit at"|t('seo-fields') }}</th>
@@ -54,9 +60,9 @@
                 {{ row.urlPath }}
             </th>
             <td>{{ row.counter }}</td>
-            {% if craft.app.request.getSegment(-1) == 'not-found' %}
+            {% if craft.app.request.getSegment(-1) == 'not-found' and craft.app .getIsMultiSite() %}
                 {% set site = craft.app.sites.getSiteById(row.siteId) %}
-                <td>{{site.name}}</td>
+                <td>{{ site.name }}</td>
             {% endif %}
             <td>{{ row.referrer }}</td>
             <td>{{ row.dateLastHit|date('d/m/Y H:i:s') }}</td>

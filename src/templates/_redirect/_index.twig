@@ -9,7 +9,15 @@
 {% block header %}
     {{ block('pageTitle') }}
     {{ block('contextMenu') }}
-    <div class="flex-grow"></div>
+    <div id="toolbar" class="flex flex-nowrap">
+        <form action="" method="get">
+        <div class="flex-grow texticon search icon clearable">
+            <input type="text" class="text" autocomplete="off" placeholder="{{ 'Search'|t }}" name="search"
+            {% if craft.app.request.getParam('search') %}value="{{ craft.app.request.getParam('search') }}"{% endif %}>
+            <div class="clear hidden" title="Verwijderen"></div>
+        </div>
+        </form>
+    </div>
     <a href="{{ cpUrl('seo-fields/redirects/add') }}" class="btn submit"><span data-icon="plus"></span> {{ 'New redirect'|t('seo-fields') }}</a>
 {% endblock %}
 
@@ -19,7 +27,9 @@
         <tr>
             <th>{{ "Pattern / URL"|t('seo-fields') }}</th>
             <th>{{ "Redirect to"|t('seo-fields') }}</th>
-            <th>{{ "Site"|t('seo-fields') }}</th>
+            {% if craft.app.getIsMultiSite() %}
+                <th>{{ "Site"|t('seo-fields') }}</th>
+            {% endif %}
             <th>{{ "Hits"|t('seo-fields') }}</th>
             <th>{{ "Matched by"|t('seo-fields') }}</th>
             <th>{{ "Last hit at"|t('seo-fields') }}</th>
@@ -32,13 +42,15 @@
         <tr>
             <td><a href="{{ cpUrl('seo-fields/redirects/edit/' ~ row.id) }}">{{ row.pattern }}</a></td>
             <td>{{ row.redirect }}</td>
-            {% if row.siteId %}
-                {% set site = craft.app.sites.getSiteById(row.siteId) %}
-                {% set site = site.name %}
-            {% else %}
-                {% set site = 'All sites'|t('seo-fields') %}
+            {% if craft.app.getIsMultiSite() %}
+                {% if row.siteId %}
+                    {% set site = craft.app.sites.getSiteById(row.siteId) %}
+                    {% set site = site.name %}
+                {% else %}
+                    {% set site = 'All sites'|t('seo-fields') %}
+                {% endif %}
+                <td>{{ site  }}</td>
             {% endif %}
-            <td>{{ site  }}</td>
             <td class="light">{{ row.counter ?? 0 }}</td>
             <td class="light">{{ row.sourceMatch == "url" ? 'Full url' : 'Path only' }}</td>
             <td class="light">{{ row.dateLastHit|length ? row.dateLastHit|date('d/m/Y H:i') : '-' }}</td>
