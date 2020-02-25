@@ -2,14 +2,14 @@
 
 {% switch getenv('ENVIRONMENT') %}
 
-{% case "live" %}
+{% case "live" or "production" %}
 
 User-agent: *
 Disallow: /cpresources/
 Disallow: /vendor/
 Disallow: /.env
 
-{% case "local" %}
+{% case "local" or "dev" %}
 
 # local - disallow all
 
