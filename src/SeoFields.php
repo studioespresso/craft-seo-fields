@@ -45,6 +45,7 @@ use studioespresso\seofields\variables\SeoFieldsVariable;
 use yii\base\Event;
 use yii\base\Exception;
 use yii\web\HttpException;
+use yii\console\Application as ConsoleApplication;
 
 /**
  * https://craftcms.com/docs/plugins/introduction
@@ -95,6 +96,10 @@ class SeoFields extends Plugin
             "redirectService" => RedirectService::class,
             "notFoundService" => NotFoundService::class,
         ]);
+
+        if (Craft::$app instanceof ConsoleApplication) {
+            $this->controllerNamespace = 'studioespresso\seofields\console\controllers';
+        }
 
         Craft::$app->view->hook('seo-fields', function (array &$context) {
             return $this->renderService->renderMeta($context);
