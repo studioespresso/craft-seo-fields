@@ -8,6 +8,7 @@ use craft\base\Component;
 use craft\elements\Entry;
 use ether\seo\models\data\SeoData;
 use ether\seo\models\data\SocialData;
+use studioespresso\seofields\fields\SeoField;
 use studioespresso\seofields\models\SeoFieldModel;
 use yii\helpers\Console;
 
@@ -21,12 +22,12 @@ class Ether extends Component
 
     private $titleSeperator;
 
-    public function migrate($oldHandle = 'seo', $newHandle = 'newSeo', $siteId = null, $titleSeperator = '|')
+    public function migrate($oldHandle = 'seo', $newHandle = 'newSeo', $siteId = null, $titleSeperator = null)
     {
+        $this->titleSeperator = $titleSeperator;
         $query = Entry::find();
         $sites = [];
 
-        $this->titleSeperator = $titleSeperator;
         if ($siteId) {
             $site = Craft::$app->getSites()->getSiteById($siteId);
             if (!$site) {
@@ -40,7 +41,7 @@ class Ether extends Component
         foreach ($sites as $site) {
             echo "Migrating entries for $site->handle\n";
             $query->siteId($site->id);
-            $total = clone $query ;
+            $total = clone $query;
             $total = $total->count();
 
             Console::startProgress(0, $total);
@@ -61,8 +62,6 @@ class Ether extends Component
             /** @var SeoData $oldField */
             $oldField = $entry->$field;
             $newField = new SeoFieldModel();
-            $newField->siteId = $entry->siteId;
-
             $newField->metaTitle = $this->getTitle($oldField);
             $newField->metaDescription = $this->getMarkup($oldField->getDescription());
 
@@ -96,7 +95,8 @@ class Ether extends Component
         return $this->removeSeperator($oldTitle);
     }
 
-    private function removeSeperator($title) {
+    private function removeSeperator($title)
+    {
         if ($this->titleSeperator) {
             $str = explode($this->titleSeperator, $title);
             array_pop($str);

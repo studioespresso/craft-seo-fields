@@ -26,7 +26,7 @@ class MigrateController extends Controller
 
     public $siteId;
 
-    public $titleSeperator = '|';
+    public $titleSeperator;
 
     public function options($actionId)
     {
