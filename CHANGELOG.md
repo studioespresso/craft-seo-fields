@@ -4,7 +4,6 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-
 ## 2.0.0 - Unreleased
 ### Added
 - 404 tracking
@@ -13,6 +12,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Changes
 - Defaults is now renamed to "Meta" in the CP sidebar
+
+## 1.0.6 - 2020-04-13
+### Fixed
+- Fixed a crash when a section that was included in the sitemap was deleted. ([#21](https://github.com/studioespresso/craft-seo-fields/issues/21))
 
 ## 1.0.5 - 2019-12-06
 ### Fixed
