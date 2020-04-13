@@ -298,10 +298,14 @@ class SitemapService extends Component
 
     private function _shouldRenderEntries($sitemapSettings)
     {
-        $shouldRenderSections = array_filter($sitemapSettings['entry'], function ($section) use ($sitemapSettings) {
-            if (isset($sitemapSettings['entry'][$section]['enabled'])) {
+        $shouldRenderSections = array_filter($sitemapSettings['entry'], function ($sectionId) use ($sitemapSettings) {
+            $section = Craft::$app->getSections()->getSectionById($sectionId);
+            if(!$section) {
+                return false;
+            }
+            if (isset($sitemapSettings['entry'][$sectionId]['enabled'])) {
                 $site = Craft::$app->getSites()->getCurrentSite();
-                $sectionSites = Craft::$app->getSections()->getSectionById($section)->siteSettings;
+                $sectionSites = $section->siteSettings;
                 if (isset($sectionSites[$site->id]) && $sectionSites[$site->id]->hasUrls) {
                     return true;
                 }
