@@ -152,8 +152,8 @@ class SeoFieldModel extends Model
         }
         $siteEntries =
             (new Query())->select(['siteId', 'uri', 'language'])
-                ->from('{{%elements_sites}}')
-                ->leftJoin('{{sites}}', 'sites.id = elements_sites.siteId')
+                ->from('{{%elements_sites}} as  elements')
+                ->leftJoin('{{%sites}} as sites', 'sites.id = elements.siteId')
                 ->where('[[elementId]] = ' . $element->id)
                 ->andWhere('enabled = true')
                 ->all();
