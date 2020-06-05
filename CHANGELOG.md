@@ -13,11 +13,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changes
 - Defaults is now renamed to "Meta" in the CP sidebar
 
-## 1.0.7 - 2020-05-25
+## 1.0.7 - 2020-06-05
 ### Fixed
 - Fixed an issue with installs that use a table prefix
-
-
+- Fixed an issue with date formats in the sitemaps
 
 ## 1.0.6 - 2020-04-13
 ### Fixed
