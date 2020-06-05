@@ -227,7 +227,7 @@ class SitemapService extends Component
             if ($entry->getUrl()) {
                 $data[] = "<url>";
                 $data[] = "<loc>" . $entry->getUrl() . "</loc>";
-                $data[] = "<lastmod>" . $entry->dateUpdated->format(\DateTime::W3C) . "</lastmod>";
+                $data[] = "<lastmod>" . $entry->dateUpdated->format("Y-m-d") . "</lastmod>";
                 $data[] = "<changefreq>" . $settings['changefreq'] . "</changefreq>";
                 $data[] = "<priority>" . $settings['priority'] . "</priority>";
                 if ($sites) {
@@ -291,7 +291,7 @@ class SitemapService extends Component
         $data[] = '<sitemap><loc>';
         $data[] = UrlHelper::siteUrl(htmlentities('/sitemap_' . $site->id . '_' . $elementName . '_' . $type->id . '_' . strtolower($type->handle) . '.xml'), null, null, $site->id);
         $data[] = '</loc><lastmod>';
-        $data[] = $entry->dateUpdated->format('Y-m-d h:m:s');
+        $data[] = $entry->dateUpdated->format('Y-m-d');
         $data[] = '</lastmod></sitemap>';
         return $data;
     }
