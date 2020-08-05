@@ -212,10 +212,10 @@ class SitemapService extends Component
         foreach ($entries as $entry) {
             $siteEntries =
                 (new Query())->select(['siteId', 'uri', 'language'])
-                    ->from('{{%elements_sites}}')
+                    ->from('{{%elements_sites}} as elements_sites')
                     ->leftJoin('{{sites}}', 'sites.id = elements_sites.siteId')
                     ->where('[[elementId]] = ' . $entry->id)
-                    ->andWhere('enabled = true')
+                    ->andWhere('elements_sites.enabled = true')
                     ->all();
             $sites = array_filter($siteEntries, function ($item) use ($currentSite) {
                 if ($item['siteId'] != $currentSite->id) {
