@@ -155,7 +155,7 @@ class SeoFieldModel extends Model
                 ->from('{{%elements_sites}} as  elements')
                 ->leftJoin('{{%sites}} as sites', 'sites.id = elements.siteId')
                 ->where('[[elementId]] = ' . $element->id)
-                ->andWhere('enabled = true')
+                ->andWhere('elements.enabled = true')
                 ->all();
         $currentSite = Craft::$app->getSites()->getCurrentSite()->id;
         $sites = array_filter($siteEntries, function ($item) use ($currentSite) {

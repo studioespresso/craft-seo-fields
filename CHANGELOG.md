@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changes
 - Defaults is now renamed to "Meta" in the CP sidebar
 
+## 1.0.9 - 2020-08-09
+### Fixed
+- Fixed an issue with the meta querries in Craft 3.5
+
 ## 1.0.8 - 2020-08-05
 ### Fixed
 - Fixed an issue with the sitemap querries in Craft 3.5
