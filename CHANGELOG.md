@@ -13,6 +13,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changes
 - Defaults is now renamed to "Meta" in the CP sidebar
 
+## 1.1.0 - 2020-10-08
+### Added
+- It's now possible to overwrite each SEO file in template. Docs can be found [here](https://studioespresso.github.io/craft-seo-fields/templating.html#overwriting-field-values)
+
+
+## 1.0.9 - 2020-08-09
+### Fixed
+- Fixed an issue with the meta querries in Craft 3.5
+
+## 1.0.8 - 2020-08-05
+### Fixed
+- Fixed an issue with the sitemap querries in Craft 3.5
+
 ## 1.0.7 - 2020-06-05
 ### Fixed
 - Fixed an issue with installs that use a table prefix

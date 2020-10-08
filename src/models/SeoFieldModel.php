@@ -6,6 +6,7 @@ use Craft;
 use craft\base\Model;
 use craft\db\Query;
 use craft\elements\Asset;
+use craft\elements\db\AssetQuery;
 use craft\helpers\UrlHelper;
 use craft\models\AssetTransform;
 use studioespresso\seofields\SeoFields;
@@ -84,7 +85,8 @@ class SeoFieldModel extends Model
         }
     }
 
-    public function getMetaDescription() {
+    public function getMetaDescription()
+    {
         return $this->metaDescription ? $this->metaDescription : $this->siteDefault->defaultMetaDescription;
 
     }
@@ -101,9 +103,9 @@ class SeoFieldModel extends Model
 
     public function getOgImage(Asset $asset = null)
     {
-        if($asset) {
+        if ($asset) {
             $asset = $asset;
-        } elseif($this->facebookImage) {
+        } elseif ($this->facebookImage) {
             $asset = Craft::$app->getAssets()->getAssetById($this->facebookImage[0]);
         } elseif ($this->siteDefault->defaultImage) {
             $asset = Craft::$app->getAssets()->getAssetById($this->siteDefault->defaultImage[0]);
@@ -124,9 +126,9 @@ class SeoFieldModel extends Model
 
     public function getTwitterImage(Asset $asset = null)
     {
-        if($asset) {
+        if ($asset) {
             $asset = $asset;
-        } elseif($this->twitterImage) {
+        } elseif ($this->twitterImage) {
             $asset = Craft::$app->getAssets()->getAssetById($this->twitterImage[0]);
         } elseif ($this->siteDefault->defaultImage) {
             $asset = Craft::$app->getAssets()->getAssetById($this->siteDefault->defaultImage[0]);
@@ -147,7 +149,7 @@ class SeoFieldModel extends Model
 
     public function getAlternate($element)
     {
-        if(!$element) {
+        if (!$element) {
             return false;
         }
         $siteEntries =
@@ -155,7 +157,7 @@ class SeoFieldModel extends Model
                 ->from('{{%elements_sites}} as  elements')
                 ->leftJoin('{{%sites}} as sites', 'sites.id = elements.siteId')
                 ->where('[[elementId]] = ' . $element->id)
-                ->andWhere('enabled = true')
+                ->andWhere('elements.enabled = true')
                 ->all();
         $currentSite = Craft::$app->getSites()->getCurrentSite()->id;
         $sites = array_filter($siteEntries, function ($item) use ($currentSite) {
@@ -177,6 +179,60 @@ class SeoFieldModel extends Model
         }
 
         return $data;
+    }
+
+    public function setMetaTitle($value)
+    {
+        $this->metaTitle = $value;
+    }
+
+    public function setMetaDescription($value)
+    {
+        $this->metaDescription = $value;
+    }
+
+    public function setFacebookTitle($value)
+    {
+        $this->facebookTitle = $value;
+    }
+
+    public function setFacebookDescription($value)
+    {
+        $this->facebookDescription = $value;
+    }
+
+    public function setFacebookImage($value)
+    {
+        if(is_object($value) && get_class($value) === AssetQuery::class) {
+            $asset = $value->one()->id;
+        }elseif(is_object($value) && get_class($value) === Asset::class) {
+            $asset = $value->id;
+        }else {
+            $asset = $value;
+        }
+        $this->facebookImage = [$asset];
+    }
+
+    public function setTwitterTitle($value)
+    {
+        $this->twitterTitle = $value;
+    }
+
+    public function setTwitterDescription($value)
+    {
+        $this->twitterDescription = $value;
+    }
+
+    public function setTwitterImage($value)
+    {
+        if(is_object($value) && get_class($value) === AssetQuery::class) {
+            $asset = $value->one()->id;
+        }elseif(is_object($value) && get_class($value) === Asset::class) {
+            $asset = $value->id;
+        }else {
+            $asset = $value;
+        }
+        $this->twitterImage = [$asset];
     }
 
     /**
