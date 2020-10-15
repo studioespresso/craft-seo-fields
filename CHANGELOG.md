@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changes
 - Defaults is now renamed to "Meta" in the CP sidebar
 
+## 1.2.0 - 2020-10-15
+### Added
+- Added support for 3.5's option to disable sites [#28](https://github.com/studioespresso/craft-seo-fields/issues/28)
+
 ## 1.1.0 - 2020-10-08
 ### Added
 - It's now possible to overwrite each SEO file in template. Docs can be found [here](https://studioespresso.github.io/craft-seo-fields/templating.html#overwriting-field-values)
