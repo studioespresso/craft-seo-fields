@@ -157,7 +157,8 @@ class SeoFieldModel extends Model
                 ->from('{{%elements_sites}} as  elements')
                 ->leftJoin('{{%sites}} as sites', 'sites.id = elements.siteId')
                 ->where('[[elementId]] = ' . $element->id)
-                ->where('sites.enabled = 1')
+                ->andWhere('sites.enabled = 1')
+                ->andWhere('sites.dateDeleted IS NULL')
                 ->andWhere('elements.enabled = true')
                 ->all();
         $currentSite = Craft::$app->getSites()->getCurrentSite()->id;

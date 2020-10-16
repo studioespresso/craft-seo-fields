@@ -13,6 +13,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changes
 - Defaults is now renamed to "Meta" in the CP sidebar
 
+## 1.2.1 - 2020-10-16
+### Fixed
+- Fixed an issue where deleted sites were still included in queries
+
+
 ## 1.2.0 - 2020-10-15
 ### Added
 - Added support for 3.5's option to disable sites [#28](https://github.com/studioespresso/craft-seo-fields/issues/28)
