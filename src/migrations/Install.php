@@ -51,7 +51,7 @@ class Install extends Migration
             $default = new DefaultsRecord();
             $default->setAttribute('siteId', $siteId);
             $default->setAttribute('enableRobots', true);
-            $default->setAttribute('robots', file_get_contents(CRAFT_VENDOR_PATH . '/studioespresso/craft-seo-fields/src/templates/_placeholder/_robots.twig'));
+            $default->setAttribute('robots', file_get_contents(Craft::$app->getVendorPath() . '/studioespresso/craft-seo-fields/src/templates/_placeholder/_robots.twig'));
             if ($default->validate()) {
                 $default->save();
             }

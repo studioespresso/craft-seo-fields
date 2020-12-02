@@ -6,10 +6,12 @@ namespace studioespresso\seofields\services\migrate;
 use Craft;
 use craft\base\Component;
 use craft\elements\Entry;
+use craft\errors\SiteNotFoundException;
 use ether\seo\models\data\SeoData;
 use ether\seo\models\data\SocialData;
 use studioespresso\seofields\fields\SeoField;
 use studioespresso\seofields\models\SeoFieldModel;
+use Twig\Markup;
 use yii\helpers\Console;
 
 /**

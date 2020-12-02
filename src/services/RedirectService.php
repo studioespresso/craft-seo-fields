@@ -104,9 +104,10 @@ class RedirectService extends Component
     {
         try {
             $url = UrlHelper::siteUrl($redirectModel->redirect, null, null, $redirectModel->siteId);
-        } catch (yii\base\Exception $e) {
+            $response = Craft::$app->response;
+            $response->redirect($url, $redirectModel->method)->send();
+        } catch (\Exception $e) {
         }
-        $response = Craft::$app->response;
-        $response->redirect($url, $redirectModel->method)->send();
+        return;
     }
 }

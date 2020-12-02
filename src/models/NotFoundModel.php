@@ -82,7 +82,7 @@ class NotFoundModel extends Model
         if (!$this->redirect) {
             return false;
         } else {
-            $redirect = RedirectRecord::find(['id' => $this->redirect])->one();
+            $redirect = RedirectRecord::findOne(['id' => $this->redirect]);
             return $redirect;
         }
     }
