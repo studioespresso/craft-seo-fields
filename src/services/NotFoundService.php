@@ -15,6 +15,7 @@ use studioespresso\seofields\models\RedirectModel;
 use studioespresso\seofields\records\NotFoundRecord;
 use studioespresso\seofields\records\RedirectRecord;
 use studioespresso\seofields\SeoFields;
+use yii\base\Exception;
 
 /**
  * @author    Studio Espresso
@@ -56,6 +57,8 @@ class NotFoundService extends Component
 
     public function handleNotFound(Request $request, Site $site)
     {
+        try {
+
         $notFoundRecord = NotFoundRecord::findOne(['fullUrl' => $request->getAbsoluteUrl(), 'urlPath' => $request->getUrl(), 'siteId' => $site->id]);
         if ($notFoundRecord) {
             Craft::debug("Updating excisting 404", SeoFields::class);
@@ -89,6 +92,9 @@ class NotFoundService extends Component
 
         $this->shouldWeCleanupRedirects();
 
+        } catch(Exception $e) {
+            Craft::error($e->getMessage(), 'seo-fields');
+        }
     }
 
     /**
@@ -154,6 +160,19 @@ class NotFoundService extends Component
 
     private function shouldWeCleanupRedirects()
     {
+        $total = NotFoundRecord::find()->count();
+        $max = SeoFields::getInstance()->getSettings()->notFoundLimit;
+        if($total <=$max) {
+            return;
+        }
+
+        $limit = $total - $max;
+        $toDelete = NotFoundRecord::find();
+        $toDelete->limit($limit);
+        $toDelete->orderBy("dateCreated ASC");
+        foreach($toDelete->all() as $record) {
+            $this->deletetById($record->id);
+        }
 
     }
 }
