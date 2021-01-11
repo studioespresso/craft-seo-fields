@@ -53,6 +53,7 @@ class RedirectService extends Component
         $query = RedirectRecord::find();
         if ($searchParam) {
             $query->where(['like', 'pattern', $searchParam]);
+            $query->orWhere(['like', 'redirect', $searchParam]);
         }
         return $query->all();
     }
