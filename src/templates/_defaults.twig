@@ -10,8 +10,12 @@
     {% if selectedSubnavItem == 'defaults' %}
         {% include 'seo-fields/_includes/_sites' %}
     {% endif %}
-
 {% endblock %}
+
+{% set crumbs = [
+    {'label': 'SEO Fields'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields')},
+    {'label': 'Default meta'|t('seo-fields'), 'url' : '#'},
+] %}
 
 {% block content %}
     {{ actionInput('seo-fields/defaults/save') }}

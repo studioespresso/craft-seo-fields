@@ -11,6 +11,11 @@
     {{ block('actionButton') }}
 {% endblock %}
 
+{% set crumbs = [
+    {'label': 'SEO Fields'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields')},
+    {'label': 'Sitemap'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields/sitemap')},
+] %}
+
 {% import "_includes/forms" as forms %}
 
 {% set selectedSubnavItem = 'sitemap' %}

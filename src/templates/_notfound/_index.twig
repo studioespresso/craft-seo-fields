@@ -6,6 +6,11 @@
 {% set selectedSubnavItem = 'notfound' %}
 {% set title = "404's" %}
 
+{% set crumbs = [
+    {'label': 'SEO Fields'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields')},
+    {'label': '404 Overview'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields/not-found')},
+] %}
+
 {% block contextMenu %}
     {% if craft.app.sites.getEditableSites()|length > 1 %}
         <div id="revision-btn" class="btn menubtn"

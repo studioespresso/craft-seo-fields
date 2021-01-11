@@ -6,6 +6,12 @@
 {% set title = "New redirect" %}
 {% set fullPageForm = true %}
 
+{% set crumbs = [
+    {'label': 'SEO Fields'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields')},
+    {'label': 'Redirects'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields/redirects')},
+    {'label': 'Redirect detail'|t('seo-fields'), 'url' : '#'},
+] %}
+
 {% import "_includes/forms" as forms %}
 
 {% block content %}

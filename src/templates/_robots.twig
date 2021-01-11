@@ -13,6 +13,11 @@
     {% endif %}
 {% endblock %}
 
+{% set crumbs = [
+    {'label': 'SEO Fields'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields')},
+    {'label': 'Robots.txt'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields/robots')},
+] %}
+
 {% block content %}
     {% if robotsPerSite %}
         <input type="hidden" name="siteId" value="{{ currentSite.id }}">
