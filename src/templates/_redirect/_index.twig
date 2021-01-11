@@ -4,23 +4,44 @@
 {% import "_includes/forms" as forms %}
 
 {% set selectedSubnavItem = 'redirects' %}
-{% set title = "Redirects" %}
+{% set title = "Redirects"|t('seo-fields') %}
 
 {% set crumbs = [
     {'label': 'SEO Fields'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields')},
     {'label': 'Redirects'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields/redirects')},
 ] %}
 
-{% block header %}
-    {{ block('pageTitle') }}
-    {{ block('contextMenu') }}
-    <div id="toolbar" class="flex flex-nowrap">
-        <form action="" method="get">
-        <div class="flex-grow texticon search icon clearable">
-            <input type="text" class="text" autocomplete="off" placeholder="{{ 'Search'|t }}" name="search"
-            {% if craft.app.request.getParam('search') %}value="{{ craft.app.request.getParam('search') }}"{% endif %}>
-            <div class="clear hidden" title="Verwijderen"></div>
+{% block contextMenu %}
+    {% if craft.app.sites.getEditableSites()|length > 1 %}
+        <div id="revision-btn" class="btn menubtn"
+             data-icon="world">{% if craft.app.request.getSegment(-1) == 'not-found' %}{{ "All sites"|t('seo-fields') }}{% else %}{{ currentSite.name }}{% endif %}</div>
+        <div class="menu">
+            <ul class="padded">
+                <li>
+                    <a href="{{ url('seo-fields/not-found' ) }}"
+                       {% if craft.app.request.getSegment(-1) == 'not-found' %}class="sel" {% endif %}>
+                        {{ "All sites"|t('seo-fields') }}
+                    </a>
+                </li>
+                {% for site in craft.app.sites.getEditableSites() %}
+                    <li>
+                        <a href="{{ url('seo-fields/not-found/' ~ site.handle ) }}"
+                           {% if site.handle == craft.app.request.getSegment(-1) %}class="sel"{% endif %}>
+                            {{ site.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
+        <input type="hidden" name="siteId" value="{{ currentSite.id }}">
+    {% endif %}
+{% endblock %}
+
+{% block actionButton %}
+    <div class="flex-grow pull-right texticon search icon clearable">
+        <form action="" method="get">
+            <input type="text" class="text" autocomplete="off" placeholder="{{ 'Search'|t }}" name="search"
+                   {% if craft.app.request.getParam('search') %}value="{{ craft.app.request.getParam('search') }}"{% endif %}>
         </form>
     </div>
     <a href="{{ cpUrl('seo-fields/redirects/add') }}" class="btn submit"><span data-icon="plus"></span> {{ 'New redirect'|t('seo-fields') }}</a>
