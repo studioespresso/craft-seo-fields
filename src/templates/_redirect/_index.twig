@@ -44,7 +44,14 @@
                    {% if craft.app.request.getParam('search') %}value="{{ craft.app.request.getParam('search') }}"{% endif %}>
         </form>
     </div>
-    <a href="{{ cpUrl('seo-fields/redirects/add') }}" class="btn submit"><span data-icon="plus"></span> {{ 'New redirect'|t('seo-fields') }}</a>
+    <form method="post" accept-charset="UTF-8" enctype="multipart/form-data">
+        {{ csrfInput() }}
+        {{ actionInput('seo-fields/redirects/upload') }}
+        <input type="file" name="file" id="file" class="btn" accept=".csv" onchange="this.form.submit();" style="display: none;">
+        <label class="btn" for="file">{{ "Import CSV File"|t('seo-fields') }}</label>
+    </form>
+    <a href="{{ cpUrl('seo-fields/redirects/add') }}"
+       class="btn submit add icon">{{ 'New redirect'|t('seo-fields') }}</a>
 {% endblock %}
 
 {% block content %}
@@ -75,13 +82,14 @@
                 {% else %}
                     {% set site = 'All sites'|t('seo-fields') %}
                 {% endif %}
-                <td>{{ site  }}</td>
+                <td>{{ site }}</td>
             {% endif %}
             <td class="light">{{ row.counter ?? 0 }}</td>
             <td class="light">{{ row.sourceMatch == "url" ? 'Full url' : 'Path only' }}</td>
             <td class="light">{{ row.dateLastHit|length ? row.dateLastHit|date('d/m/Y H:i') : '-' }}</td>
             <td class="light">{{ row.method }}</td>
-            <td><a href="{{ cpUrl('seo-fields/redirects/delete/' ~ row.id) }}" class="delete icon" title="Delete"></a></td>
+            <td><a href="{{ cpUrl('seo-fields/redirects/delete/' ~ row.id) }}" class="delete icon" title="Delete"></a>
+            </td>
         </tr>
         </tbody>
         {% endfor %}

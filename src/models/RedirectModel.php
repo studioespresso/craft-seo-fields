@@ -32,7 +32,7 @@ class RedirectModel extends Model
 
     public $matchType;
 
-    public $method;
+    public $method = 301;
 
     public $siteId;
 

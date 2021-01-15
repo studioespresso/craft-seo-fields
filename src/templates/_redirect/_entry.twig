@@ -3,7 +3,7 @@
 
 
 {% set selectedSubnavItem = 'redirects' %}
-{% set title = data.id ? "Redirect"|t('seo-fields') :"New redirect"|t('seo-fields') %}
+{% set title = data is defined ? "Redirect"|t('seo-fields') :"New redirect"|t('seo-fields') %}
 {% set fullPageForm = true %}
 
 {% set crumbs = [

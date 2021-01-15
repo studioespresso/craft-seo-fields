@@ -158,6 +158,7 @@ class SeoFieldModel extends Model
                 ->leftJoin('{{%sites}} as sites', 'sites.id = elements.siteId')
                 ->where('[[elementId]] = ' . $element->id)
                 ->where('sites.enabled = 1')
+                ->andWhere('sites.dateDeleted IS NULL')
                 ->andWhere('elements.enabled = true')
                 ->all();
         $currentSite = Craft::$app->getSites()->getCurrentSite()->id;
@@ -173,10 +174,12 @@ class SeoFieldModel extends Model
 
         $data = [];
         foreach ($sites as $site) {
-            $data[] = [
-                'url' => UrlHelper::siteUrl($site['uri'], null, null, $site['siteId']),
-                'language' => $site['language']
-            ];
+            if ($site['uri']) {
+                $data[] = [
+                    'url' => UrlHelper::siteUrl($site['uri'], null, null, $site['siteId']),
+                    'language' => $site['language']
+                ];
+            }
         }
 
         return $data;
@@ -204,11 +207,11 @@ class SeoFieldModel extends Model
 
     public function setFacebookImage($value)
     {
-        if(is_object($value) && get_class($value) === AssetQuery::class) {
+        if (is_object($value) && get_class($value) === AssetQuery::class) {
             $asset = $value->one()->id;
-        }elseif(is_object($value) && get_class($value) === Asset::class) {
+        } elseif (is_object($value) && get_class($value) === Asset::class) {
             $asset = $value->id;
-        }else {
+        } else {
             $asset = $value;
         }
         $this->facebookImage = [$asset];
@@ -226,11 +229,11 @@ class SeoFieldModel extends Model
 
     public function setTwitterImage($value)
     {
-        if(is_object($value) && get_class($value) === AssetQuery::class) {
+        if (is_object($value) && get_class($value) === AssetQuery::class) {
             $asset = $value->one()->id;
-        }elseif(is_object($value) && get_class($value) === Asset::class) {
+        } elseif (is_object($value) && get_class($value) === Asset::class) {
             $asset = $value->id;
-        }else {
+        } else {
             $asset = $value;
         }
         $this->twitterImage = [$asset];

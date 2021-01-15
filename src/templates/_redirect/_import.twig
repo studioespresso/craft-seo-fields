@@ -1,0 +1,72 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{% extends "_layouts/cp" %}
+
+{% import "_includes/forms" as forms %}
+
+{% set selectedSubnavItem = 'redirects' %}
+{% set title = "Redirects"|t('seo-fields') %}
+
+{% set crumbs = [
+    {'label': 'SEO Fields'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields')},
+    {'label': 'Redirects'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields/redirects')},
+    {'label': 'Import'|t('seo-fields'), 'url' : '#'},
+] %}
+
+{% block content %}
+    <form method="post">
+        {{ csrfInput() }}
+        {{ actionInput('seo-fields/redirects/run-import') }}
+        {{ redirectInput('/seo-fields/redirects/import/results') }}
+        <table class="data fullwidth collapsible">
+            <thead>
+            <tr>
+                <th>{{ "Pattern / URL"|t('seo-fields') }}</th>
+                <th>{{ "Redirect to"|t('seo-fields') }}</th>
+                {% if craft.app.getIsMultiSite() %}
+                    <th>{{ "Site"|t('seo-fields') }}</th>
+                {% endif %}
+                <th>{{ "Method"|t('seo-fields') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                {# Pattern to match #}
+                <td>
+                    <select name="fields[pattern]" id="pattern" required>
+                        <option value="">---</option>
+                        {% for key,col in headers %}
+                            <option value="{{ key }}">{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                {# Redirect to #}
+                <td>
+                    <select name="fields[redirect]" id="redirect" required>
+                        <option value="">---</option>
+                        {% for key, col in headers %}
+                            <option value="{{ key }}">{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                {# Site #}
+                <td>
+                </td>
+                {# Method #}
+                <td>
+                    <select name="fields[method]" id="method" required>
+                        <option value="">---</option>
+                        {% for col in headers %}
+                            <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                        <option value="301">Default: 301</option>
+                        <option value="302">Default: 302</option>
+                    </select>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <input type="submit" class="btn submit add icon" value="{{ 'Validate & run import'|t('seo-fields') }}">
+    </form>
+
+{% endblock %}
