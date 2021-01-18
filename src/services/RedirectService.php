@@ -123,6 +123,7 @@ class RedirectService extends Component
             $model = new RedirectModel();
             $model->pattern = $row[$patternCol];
             $model->redirect = $row[$redirectCol];
+            $model->method = $settings['method'];
             if($model->validate()) {
                 $this->saveRedirect($model);
             } else {

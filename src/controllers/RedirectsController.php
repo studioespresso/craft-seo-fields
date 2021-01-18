@@ -100,7 +100,6 @@ class RedirectsController extends Controller
     public function actionImport()
     {
 
-
         $filename = self::IMPORT_FILE;
         $filePath = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . $filename;
         if(!file_exists($filePath)) {
@@ -120,11 +119,12 @@ class RedirectsController extends Controller
         $data = $request->getBodyParam('fields');
         if (!$data['pattern'] || $data['redirect'] || $data['method']) {
         }
-
+        
         App::maxPowerCaptain();
         $settings = [
             'patternCol' => $data['pattern'],
-            'redirectCol' => $data['redirect']
+            'redirectCol' => $data['redirect'],
+            'method' => $data['method'],
         ];
 
         $filename = self::IMPORT_FILE;
