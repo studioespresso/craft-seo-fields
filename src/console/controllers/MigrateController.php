@@ -5,19 +5,12 @@ namespace studioespresso\seofields\console\controllers;
 use Craft;
 use craft\db\Query;
 use craft\elements\Entry;
-use craft\errors\SiteNotFoundException;
 use craft\helpers\App;
 use craft\helpers\Console;
 use craft\helpers\Db;
-use craft\helpers\UrlHelper;
-use craft\services\Sections;
 use ether\seo\models\data\SeoData;
-use studioespresso\seofields\fields\SeoField;
-use studioespresso\seofields\models\SeoDefaultsModel;
-use studioespresso\seofields\records\DefaultsRecord;
-use studioespresso\seofields\SeoFields;
+use studioespresso\seofields\jobs\MigrateFieldDataJob;
 use studioespresso\seofields\services\migrate\Ether;
-use Twig\Markup;
 use yii\console\Controller;
 
 class MigrateController extends Controller
@@ -62,11 +55,11 @@ class MigrateController extends Controller
         $field = Craft::$app->getFields()->getFieldByHandle($this->fieldHandle);
 
         $query = new Query();
-        $query->select('entrytypes.sectionId as sectionId');
-        $query->addSelect('entrytypes.id as typeId');
-        $query->from('{{%fieldlayoutfields}}');
+        $query->select('types.sectionId as sectionId');
+        $query->addSelect('types.id as typeId');
+        $query->from('{{%fieldlayoutfields}} layout');
         $query->where(Db::parseParam('fieldId', $field->id));
-        $query->leftJoin('{{%entrytypes}}', 'fieldlayoutfields.layoutId = entrytypes.fieldLayoutId');
+        $query->leftJoin('{{%entrytypes}} types', 'layout.layoutId = types.fieldLayoutId');
 
         App::maxPowerCaptain();
         foreach ($query->all() as $data) {
@@ -74,15 +67,15 @@ class MigrateController extends Controller
             $type = Craft::$app->getSections()->getEntryTypeById($data['typeId']);
             $entries = Entry::findAll(['sectionId' => $data['sectionId'], 'typeId' => $data['typeId']]);
             $this->stdout("Processing entries in {$section->name} ($type->name)" . PHP_EOL, Console::FG_GREEN);
-            foreach($entries as $entry) {
-                Craft::$app->getQueue()->push(new SeoUpdateJob([
+            foreach ($entries as $entry) {
+
+                Craft::$app->getQueue()->push(new MigrateFieldDataJob([
                     'entryId' => $entry->id,
                     'fieldHandle' => $this->fieldHandle,
                     'metaTitle' => $this->metaTitle,
                     'metaDescription' => $this->metaDescription,
                 ]));
-        };
+            };
+        }
     }
-
-
 }
