@@ -3,38 +3,48 @@
 namespace studioespresso\seofields\jobs;
 
 use craft\elements\Entry;
+use craft\errors\InvalidFieldException;
 use craft\queue\BaseJob;
 use studioespresso\seofields\models\SeoFieldModel;
 
 class MigrateFieldDataJob extends BaseJob
 {
 
+    public $entry;
+    public $fieldHandle;
     public $entryId;
+    public $metaTitle;
+    public $metaDescription;
+
 
     public function init()
     {
-        $this->description = "Updating SEO data for {$this->entryId}";
+        if(!$this->fieldHandle)
+        {
+            throw new InvalidFieldException('Field handle not provided');
+        }
+        $this->entry = Entry::findOne(['id' => $this->entryId]);
+        $this->description = "Updating SEO data for '{$this->entry->title}'";
     }
 
 
     public function execute($queue)
     {
-        $entry = Entry::findOne(['id' => $this->entryId]);
         $model = new SeoFieldModel();
-        if($entry->metaTitle) {
-            $model->metaTitle = $entry->metaTitle;
+        if($this->entry->metaTitle) {
+            $model->metaTitle = $this->entry->metaTitle;
         }
-        if($entry->metaDescription) {
-            $model->metaDescription = $entry->metaDescription;
+        if($this->entry->metaDescription) {
+            $model->metaDescription = $this->entry->metaDescription;
         }
-        if($entry->metaImage) {
-            if ($entry->metaImage->one()) {
-                $model->facebookImage = [$entry->metaImage->one()->id];
+        if($this->entry->metaImage) {
+            if ($this->entry->metaImage->one()) {
+                $model->facebookImage = [$this->entry->metaImage->one()->id];
             }
         }
-        $entry->setFieldValue('seo', $model);
-        if($entry->validate()) {
-            \Craft::$app->getElements()->saveElement($entry);
+        $this->entry->setFieldValue($this->fieldHandle, $model);
+        if($this->entry->validate()) {
+            \Craft::$app->getElements()->saveElement($this->entry);
         }
     }
 

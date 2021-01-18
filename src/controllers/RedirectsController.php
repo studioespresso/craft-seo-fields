@@ -99,8 +99,13 @@ class RedirectsController extends Controller
 
     public function actionImport()
     {
+
+
         $filename = self::IMPORT_FILE;
         $filePath = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . $filename;
+        if(!file_exists($filePath)) {
+            return $this->redirect(UrlHelper::cpUrl('seo-fields/redirects'));
+        }
         $csv = Reader::createFromPath($filePath);
         $headers = $csv->fetchOne(0);
         $variables['headers'] = $headers;
