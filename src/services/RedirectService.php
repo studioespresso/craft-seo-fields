@@ -101,35 +101,41 @@ class RedirectService extends Component
         }
     }
 
-    public function import($data, $settings) {
+    public function import($data, $settings)
+    {
         $patternCol = $settings['patternCol'];
         $redirectCol = $settings['redirectCol'];
         $validRedirects = [];
         $invalidRedirects = [];
 
-        foreach($data as $row) {
+        foreach ($data as $row) {
             $pattern = $row[$patternCol];
-            $redirect =  $row[$redirectCol];
-            if($pattern === $redirect ||
-                substr($redirect,0, 1) != "/"
-            ) {
+            $redirect = $row[$redirectCol];
+            if ($pattern === $redirect) {
+                continue;
+            } elseif (substr($redirect, 0, 1) != "/") {
                 $invalidRedirects[] = $row;
                 continue;
             }
             $validRedirects[] = $row;
         }
 
-        foreach($validRedirects as $row) {
+        foreach ($validRedirects as $row) {
             $model = new RedirectModel();
             $model->pattern = $row[$patternCol];
             $model->redirect = $row[$redirectCol];
             $model->method = $settings['method'];
-            if($model->validate()) {
+            if ($model->validate()) {
                 $this->saveRedirect($model);
             } else {
                 dd($model->getErrors());
             }
         }
+
+        return [
+            'imported' => $validRedirects,
+            'invalid' => $invalidRedirects,
+        ];
     }
 
     private function redirect(RedirectModel $redirectModel)

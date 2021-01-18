@@ -119,7 +119,7 @@ class RedirectsController extends Controller
         $data = $request->getBodyParam('fields');
         if (!$data['pattern'] || $data['redirect'] || $data['method']) {
         }
-        
+
         App::maxPowerCaptain();
         $settings = [
             'patternCol' => $data['pattern'],
@@ -136,6 +136,7 @@ class RedirectsController extends Controller
 
         $csv->setOffset(1);
         $results = SeoFields::getInstance()->redirectService->import($csv->fetchAll(), $settings);
+        return $this->renderTemplate('seo-fields/_redirect/_import_results', $results);
 
     }
 
