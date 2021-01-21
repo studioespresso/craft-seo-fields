@@ -4,6 +4,7 @@ namespace studioespresso\seofields\services;
 
 use Craft;
 use craft\base\Component;
+use craft\helpers\App;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\StringHelper;
 use craft\helpers\UrlHelper;
@@ -103,6 +104,7 @@ class RedirectService extends Component
 
     public function import($data, $settings)
     {
+        App::maxPowerCaptain();
         $patternCol = $settings['patternCol'];
         $redirectCol = $settings['redirectCol'];
         $validRedirects = [];
@@ -124,6 +126,7 @@ class RedirectService extends Component
             $model = new RedirectModel();
             $model->pattern = $row[$patternCol];
             $model->redirect = $row[$redirectCol];
+            $model->siteId = $settings['siteId'];
             $model->method = $settings['method'];
             if ($model->validate()) {
                 $this->saveRedirect($model);

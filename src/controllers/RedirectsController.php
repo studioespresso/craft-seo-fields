@@ -109,6 +109,7 @@ class RedirectsController extends Controller
         $headers = $csv->fetchOne(0);
         $variables['headers'] = $headers;
         $variables['filename'] = $filePath;
+        $variables['sites'] = $this->getSitesMenu();
 
         $this->renderTemplate('seo-fields/_redirect/_import', $variables);
     }
@@ -124,6 +125,7 @@ class RedirectsController extends Controller
         $settings = [
             'patternCol' => $data['pattern'],
             'redirectCol' => $data['redirect'],
+            'siteId' => $data['siteId'],
             'method' => $data['method'],
         ];
 

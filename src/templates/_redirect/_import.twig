@@ -50,16 +50,19 @@
                 </td>
                 {# Site #}
                 <td>
+                    {{ forms.selectField({
+                        id: 'siteId',
+                        name: 'fields[siteId]',
+                        value: data.siteId ?? '',
+                        options: sites
+                    }) }}
                 </td>
                 {# Method #}
                 <td>
                     <select name="fields[method]" id="method" required>
                         <option value="">---</option>
-                        {% for col in headers %}
-                            <option value="{{ col }}">{{ col }}</option>
-                        {% endfor %}
-                        <option value="301">Default: 301</option>
-                        <option value="302">Default: 302</option>
+                        <option value="301">{{ "301 (Permanent redirect)"|t('seo-fields') }}</option>
+                        <option value="302">{{ "302 (Temporary redirect)"|t('seo-fields') }}</option>
                     </select>
                 </td>
             </tr>
