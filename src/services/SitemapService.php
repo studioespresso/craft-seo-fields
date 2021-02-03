@@ -213,7 +213,7 @@ class SitemapService extends Component
             $siteEntries =
                 (new Query())->select(['siteId', 'uri', 'language'])
                     ->from('{{%elements_sites}} as elements_sites')
-                    ->leftJoin('{{sites}}', 'sites.id = elements_sites.siteId')
+                    ->leftJoin('{{%sites}} as sites', 'sites.id = elements_sites.siteId')
                     ->where('[[elementId]] = ' . $entry->id)
                     ->andWhere('elements_sites.enabled = true')
                     ->all();
