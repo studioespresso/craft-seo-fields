@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changes
 - Defaults is now renamed to "Meta" in the CP sidebar
 
+## 1.2.2 - 2021-02-03
+### Fixed
+- Fixed an issue with sitemap querries on installed that use a tableprefix.
+
 ## 1.2.1 - 2020-10-16
 ### Fixed
 - Fixed an issue where deleted sites were still included in queries
