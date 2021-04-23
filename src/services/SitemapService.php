@@ -215,7 +215,7 @@ class SitemapService extends Component
                     ->from('{{%elements_sites}} as elements_sites')
                     ->leftJoin('{{%sites}} as sites', 'sites.id = elements_sites.siteId')
                     ->where('[[elementId]] = ' . $entry->id)
-                    ->andWhere('elements_sites.enabled = true')
+                    ->andWhere('sites.enabled = true')
                     ->all();
             $sites = array_filter($siteEntries, function ($item) use ($currentSite) {
                 if ($item['siteId'] != $currentSite->id) {
