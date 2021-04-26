@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changes
 - Defaults is now renamed to "Meta" in the CP sidebar
 
+## 1.2.3 - 2021-04-26
+### Fixed
+- Fixed an issue with disabled entries showing up in sitemaps ([#30](https://github.com/studioespresso/craft-seo-fields/pull/30))
+
 ## 1.2.2 - 2021-02-03
 ### Fixed
 - Fixed an issue with sitemap querries on installed that use a tableprefix.
