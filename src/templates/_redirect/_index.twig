@@ -1,0 +1,97 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{% extends "_layouts/cp" %}
+
+{% import "_includes/forms" as forms %}
+
+{% set selectedSubnavItem = 'redirects' %}
+{% set title = "Redirects"|t('seo-fields') %}
+
+{% set crumbs = [
+    {'label': 'SEO Fields'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields')},
+    {'label': 'Redirects'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields/redirects')},
+] %}
+
+{% block contextMenu %}
+    {% if craft.app.sites.getEditableSites()|length > 1 %}
+        <div id="revision-btn" class="btn menubtn"
+             data-icon="world">{% if craft.app.request.getSegment(-1) == 'not-found' %}{{ "All sites"|t('seo-fields') }}{% else %}{{ currentSite.name }}{% endif %}</div>
+        <div class="menu">
+            <ul class="padded">
+                <li>
+                    <a href="{{ url('seo-fields/not-found' ) }}"
+                       {% if craft.app.request.getSegment(-1) == 'not-found' %}class="sel" {% endif %}>
+                        {{ "All sites"|t('seo-fields') }}
+                    </a>
+                </li>
+                {% for site in craft.app.sites.getEditableSites() %}
+                    <li>
+                        <a href="{{ url('seo-fields/not-found/' ~ site.handle ) }}"
+                           {% if site.handle == craft.app.request.getSegment(-1) %}class="sel"{% endif %}>
+                            {{ site.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <input type="hidden" name="siteId" value="{{ currentSite.id }}">
+    {% endif %}
+{% endblock %}
+
+{% block actionButton %}
+    <div class="flex-grow pull-right texticon search icon clearable">
+        <form action="" method="get">
+            <input type="text" class="text" autocomplete="off" placeholder="{{ 'Search'|t }}" name="search"
+                   {% if craft.app.request.getParam('search') %}value="{{ craft.app.request.getParam('search') }}"{% endif %}>
+        </form>
+    </div>
+    <form method="post" accept-charset="UTF-8" enctype="multipart/form-data">
+        {{ csrfInput() }}
+        {{ actionInput('seo-fields/redirects/upload') }}
+        <input type="file" name="file" id="file" class="btn" accept=".csv" onchange="this.form.submit();" style="display: none;">
+        <label class="btn" for="file">{{ "Import CSV File"|t('seo-fields') }}</label>
+    </form>
+    <a href="{{ cpUrl('seo-fields/redirects/add') }}"
+       class="btn submit add icon">{{ 'New redirect'|t('seo-fields') }}</a>
+{% endblock %}
+
+{% block content %}
+    <table class="data fullwidth collapsible">
+        <thead>
+        <tr>
+            <th>{{ "Pattern / URL"|t('seo-fields') }}</th>
+            <th>{{ "Redirect to"|t('seo-fields') }}</th>
+            {% if craft.app.getIsMultiSite() %}
+                <th>{{ "Site"|t('seo-fields') }}</th>
+            {% endif %}
+            <th>{{ "Hits"|t('seo-fields') }}</th>
+            <th>{{ "Matched by"|t('seo-fields') }}</th>
+            <th>{{ "Last hit at"|t('seo-fields') }}</th>
+            <th>{{ "Method"|t('seo-fields') }}</th>
+            <th>{{ "Remove"|t('seo-fields') }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in redirects %}
+        <tr>
+            <td><a href="{{ cpUrl('seo-fields/redirects/edit/' ~ row.id) }}">{{ row.pattern }}</a></td>
+            <td>{{ row.redirect }}</td>
+            {% if craft.app.getIsMultiSite() %}
+                {% if row.siteId %}
+                    {% set site = craft.app.sites.getSiteById(row.siteId) %}
+                    {% set site = site.name %}
+                {% else %}
+                    {% set site = 'All sites'|t('seo-fields') %}
+                {% endif %}
+                <td>{{ site }}</td>
+            {% endif %}
+            <td class="light">{{ row.counter ?? 0 }}</td>
+            <td class="light">{{ row.sourceMatch == "url" ? 'Full url' : 'Path only' }}</td>
+            <td class="light">{{ row.dateLastHit|length ? row.dateLastHit|date('d/m/Y H:i') : '-' }}</td>
+            <td class="light">{{ row.method }}</td>
+            <td><a href="{{ cpUrl('seo-fields/redirects/delete/' ~ row.id) }}" class="delete icon" title="Delete"></a>
+            </td>
+        </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+{% endblock %}

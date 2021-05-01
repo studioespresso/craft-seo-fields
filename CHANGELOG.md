@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 2.0.0 - Unreleased
+## 2.0.0-beta1
 ### Added
 - 404 tracking
 - Redirects
@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## 1.2.3 - 2021-04-26
 ### Fixed
 - Fixed an issue with disabled entries showing up in sitemaps ([#30](https://github.com/studioespresso/craft-seo-fields/pull/30))
+
 
 ## 1.2.2 - 2021-02-03
 ### Fixed

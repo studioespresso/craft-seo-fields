@@ -6,6 +6,8 @@ use Craft;
 use craft\db\Migration;
 use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\records\DefaultsRecord;
+use studioespresso\seofields\records\NotFoundRecord;
+use studioespresso\seofields\records\RedirectRecord;
 
 /***
  * @author    Studio Espresso
@@ -45,12 +47,12 @@ class Install extends Migration
     protected function createSiteDefaults()
     {
         $sites = Craft::$app->getSites()->getAllSiteIds();
-        foreach($sites as $siteId) {
+        foreach ($sites as $siteId) {
             $default = new DefaultsRecord();
             $default->setAttribute('siteId', $siteId);
             $default->setAttribute('enableRobots', true);
-            $default->setAttribute('robots', file_get_contents(CRAFT_VENDOR_PATH . '/studioespresso/craft-seo-fields/src/templates/_placeholder/_robots.twig'));
-            if($default->validate()) {
+            $default->setAttribute('robots', file_get_contents(Craft::$app->getVendorPath() . '/studioespresso/craft-seo-fields/src/templates/_placeholder/_robots.twig'));
+            if ($default->validate()) {
                 $default->save();
             }
         }
@@ -76,6 +78,43 @@ class Install extends Migration
                     'uid' => $this->uid(),
                 ]
             );
+
+            $this->createTable(
+                RedirectRecord::tableName(),
+                [
+                    'id' => $this->primaryKey(),
+                    'siteId' => $this->integer(11)->defaultValue(null),
+                    'pattern' => $this->string(255)->notNull(),
+                    'sourceMatch' => $this->string(),
+                    'redirect' => $this->string(255)->notNull(),
+                    'matchType' => $this->string(),
+                    'counter' => $this->bigInteger(),
+                    'method' => $this->integer(3)->notNull(),
+                    'dateLastHit' => $this->dateTime(),
+                    'dateCreated' => $this->dateTime()->notNull(),
+                    'dateUpdated' => $this->dateTime()->notNull(),
+                    'uid' => $this->uid(),
+                ]
+            );
+
+            $this->createTable(
+                NotFoundRecord::tableName(),
+                [
+                    'id' => $this->primaryKey(),
+                    'siteId' => $this->integer(11)->notNull(),
+                    'fullUrl' => $this->text(),
+                    'urlPath' => $this->text(),
+                    'urlParams' => $this->text(),
+                    'referrer' => $this->text(),
+                    'handled' => $this->boolean()->defaultValue(0),
+                    'counter' => $this->bigInteger(),
+                    'redirect' => $this->integer(11),
+                    'dateLastHit' => $this->dateTime()->notNull(),
+                    'dateCreated' => $this->dateTime()->notNull(),
+                    'dateUpdated' => $this->dateTime()->notNull(),
+                    'uid' => $this->uid(),
+                ]
+            );
         }
         return $tablesCreated;
     }
@@ -92,10 +131,39 @@ class Install extends Migration
             'CASCADE'
         );
 
+        $this->addForeignKey(
+            $this->db->getForeignKeyName(RedirectRecord::tableName(), 'siteId'),
+            RedirectRecord::tableName(),
+            'siteId',
+            '{{%sites}}',
+            'id',
+            'CASCADE'
+        );
+
+        $this->addForeignKey(
+            $this->db->getForeignKeyName(NotFoundRecord::tableName(), 'siteId'),
+            NotFoundRecord::tableName(),
+            'siteId',
+            '{{%sites}}',
+            'id',
+            'CASCADE'
+        );
+
+        $this->addForeignKey(
+            $this->db->getForeignKeyName(NotFoundRecord::tableName(), 'redirect'),
+            NotFoundRecord::tableName(),
+            'redirect',
+            '{{%seofields_redirects}}',
+            'id',
+            'SET NULL'
+        );
+
     }
 
     protected function removeTables()
     {
         $this->dropTableIfExists(DefaultsRecord::tableName());
+        $this->dropTableIfExists(NotFoundRecord::tableName());
+        $this->dropTableIfExists(RedirectRecord::tableName());
     }
 }

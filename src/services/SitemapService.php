@@ -121,6 +121,7 @@ class SitemapService extends Component
     public function getSitemapData($siteId, $type, $sectionId)
     {
         $settings = $this->getSettingsBySiteId($siteId);
+        $data = [];
         switch ($type) {
             case 'product':
                 $data = Product::findAll([

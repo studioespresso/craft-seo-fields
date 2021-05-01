@@ -114,7 +114,7 @@ class SeoFieldModel extends Model
             return false;
         }
 
-        $transform = $this->_getPreviewTransform();
+        $transform = $this->_getPreviewTransform($asset);
         $transformed = $asset->setTransform($transform);
         return [
             'height' => $asset->getHeight($transform),
@@ -137,7 +137,7 @@ class SeoFieldModel extends Model
             return false;
         }
 
-        $transform = $this->_getPreviewTransform();
+        $transform = $this->_getPreviewTransform($asset);
         $transformed = $asset->setTransform($transform);
         return [
             'height' => $asset->getHeight($transform),
@@ -157,7 +157,7 @@ class SeoFieldModel extends Model
                 ->from('{{%elements_sites}} as  elements')
                 ->leftJoin('{{%sites}} as sites', 'sites.id = elements.siteId')
                 ->where('[[elementId]] = ' . $element->id)
-                ->andWhere('sites.enabled = 1')
+                ->where('sites.enabled = 1')
                 ->andWhere('sites.dateDeleted IS NULL')
                 ->andWhere('elements.enabled = true')
                 ->all();
@@ -174,10 +174,12 @@ class SeoFieldModel extends Model
 
         $data = [];
         foreach ($sites as $site) {
-            $data[] = [
-                'url' => UrlHelper::siteUrl($site['uri'], null, null, $site['siteId']),
-                'language' => $site['language']
-            ];
+            if ($site['uri']) {
+                $data[] = [
+                    'url' => UrlHelper::siteUrl($site['uri'], null, null, $site['siteId']),
+                    'language' => $site['language']
+                ];
+            }
         }
 
         return $data;
@@ -205,11 +207,11 @@ class SeoFieldModel extends Model
 
     public function setFacebookImage($value)
     {
-        if(is_object($value) && get_class($value) === AssetQuery::class) {
+        if (is_object($value) && get_class($value) === AssetQuery::class) {
             $asset = $value->one()->id;
-        }elseif(is_object($value) && get_class($value) === Asset::class) {
+        } elseif (is_object($value) && get_class($value) === Asset::class) {
             $asset = $value->id;
-        }else {
+        } else {
             $asset = $value;
         }
         $this->facebookImage = [$asset];
@@ -227,11 +229,11 @@ class SeoFieldModel extends Model
 
     public function setTwitterImage($value)
     {
-        if(is_object($value) && get_class($value) === AssetQuery::class) {
+        if (is_object($value) && get_class($value) === AssetQuery::class) {
             $asset = $value->one()->id;
-        }elseif(is_object($value) && get_class($value) === Asset::class) {
+        } elseif (is_object($value) && get_class($value) === Asset::class) {
             $asset = $value->id;
-        }else {
+        } else {
             $asset = $value;
         }
         $this->twitterImage = [$asset];
@@ -261,12 +263,15 @@ class SeoFieldModel extends Model
         ];
     }
 
-    private function _getPreviewTransform()
+    private function _getPreviewTransform(Asset $asset)
     {
         $transform = new AssetTransform();
         $transform->width = 1200;
         $transform->height = 590;
         $transform->mode = 'crop';
+        if ($asset->hasFocalPoint) {
+            $transform->position = implode(',', $asset->focalPoint);
+        }
         return $transform;
     }
 }

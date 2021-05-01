@@ -152,7 +152,8 @@
 }
 
 .twitter-preview {
-    border-radius: 10px;
+    border-radius: 14px;
+    width: 507px;
 }
 
 .fb-text-wrap, .twitter-text-wrap {
@@ -175,11 +176,20 @@
     overflow-wrap: break-word;
 }
 
+.twitter-title {
+    margin-top: 0px;
+}
+
+.twitter-image-wrap img {
+    border-radius: 14px 14px 0px 0px
+}
+
+
 .fb-og-description, .twitter-description {
     color: rgb(96, 103, 112);
     direction: ltr;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, ".SFNSText-Regular", sans-serif;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 20px;
     margin-top: 3px;
     max-height: 80px;
@@ -206,6 +216,13 @@
     text-overflow: ellipsis;
     text-transform: uppercase;
     white-space: nowrap;
+}
+
+.twitter-url {
+    font-size: 15px;
+    text-transform: initial;
+    margin-top: 1px;
+    margin-bottom: 3px;
 }
 
 @media only screen and (min-width: 770px) and (max-width: 1200px), (min-width: 1330px) {

@@ -1,0 +1,88 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{% extends "_layouts/cp" %}
+
+
+{% set selectedSubnavItem = 'redirects' %}
+{% set title = data is defined ? "Redirect"|t('seo-fields') :"New redirect"|t('seo-fields') %}
+{% set fullPageForm = true %}
+
+{% set crumbs = [
+    {'label': 'SEO Fields'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields')},
+    {'label': 'Redirects'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields/redirects')},
+    {'label': 'Redirect detail'|t('seo-fields'), 'url' : '#'},
+] %}
+
+{% import "_includes/forms" as forms %}
+
+{% block content %}
+    {{ actionInput('seo-fields/redirects/save') }}
+    {{ redirectInput('seo-fields/redirects') }}
+    <input type="hidden" name="fields[siteId]" value="{{ currentSite.id }}">
+    <input type="hidden" name="redirectId" value="{{ data.id ?? '' }}">
+
+    {% if errors is defined %}
+        {{ d(errors) }}
+    {% endif %}
+
+    {% if sites|length > 1 %}
+       {{ forms.selectField({
+           label: 'Enable for site'|t('seo-fields'),
+           instructions: 'For which site should this redirect be active?'|t('seo-fields'),
+           id: 'siteId',
+           name: 'fields[siteId]',
+           value: data.siteId ?? '',
+           options: sites
+       }) }}
+    {% else %}
+        {{ forms.hidden({
+            name: 'fields[matchType]',
+            value: data.siteId ?? craft.app.sites.getPrimarySite().id,
+        }) }}
+    {% endif %}
+
+    {{ forms.textField({
+        label: 'Old pattern or URL to redirect'|t('seo-fields'),
+        instructions: 'Enter a URL or pattern that should be matched. Depening on the options set below, this will match the path (`/news`) or the full URL (`http://www.example.com/news`).'|t('seo-fields'),
+        id: 'pattern',
+        required: true,
+        name: 'fields[pattern]',
+        showCharsLeft: true,
+        value: data.pattern ?? pattern ?? '',
+        errors: data is defined ? data.getErrors('pattern') : ''
+    }) }}
+
+    {{ forms.selectField({
+        label: 'Which part of the old URL should be matched?'|t('seo-fields'),
+        instructions: 'Path only (`/news/old-press-release)` or the full path (`example.com/news/old-press-release`).'|t('seo-fields'),
+        id: 'sourceMatch',
+        name: 'fields[sourceMatch]',
+        value: data.matchType ?? '',
+        options: { 'path': 'Path only'|t('seo-fields'), 'url' : 'Full URL'|t}
+    }) }}
+
+
+    {{ forms.textField({
+        label: 'URL to redirect to'|t('seo-fields'),
+        id: 'redirect',
+        required: true,
+        name: 'fields[redirect]',
+        showCharsLeft: true,
+        value: data.redirect ?? '',
+        errors: data is defined ? data.getErrors('redirect') : ''
+    }) }}
+
+    {{ forms.hidden({
+        name: 'fields[matchType]',
+        value: data.matchType ?? 'exact',
+    }) }}
+
+    {{ forms.selectField({
+        label: 'Method'|t('seo-fields'),
+        id: 'method',
+        name: 'fields[method]',
+        options: { 302: '302', 301: '301'},
+        value: data.method ?? '301',
+        errors: data is defined ? data.getErrors('method') : ''
+    }) }}
+
+{% endblock %}

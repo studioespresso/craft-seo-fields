@@ -25,21 +25,21 @@
     label: "Show general Tab"|t("seo-fields"),
     id: "showGeneralTab",
     name: "tabs[general]",
-    on: field.tabs|length ? field.tabs.general : '',
+    on: field.tabs|length ? field.tabs.general : 1,
 }) }}
 
  {{ forms.lightswitchField({
      label: "Show Facebook Tab"|t("seo-fields"),
      id: "showFacebookTab",
      name: "tabs[facebook]",
-     on: field.tabs|length ? field.tabs.facebook : '',
+     on: field.tabs|length ? field.tabs.facebook : 1,
  }) }}
 
  {{ forms.lightswitchField({
      label: "Show Twitter Tab"|t("seo-fields"),
      id: "showTwitterTab",
      name: "tabs[twitter]",
-     on: field.tabs|length ? field.tabs.twitter : '',
+     on: field.tabs|length ? field.tabs.twitter : 1,
  }) }}
 
 

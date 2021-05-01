@@ -17,7 +17,7 @@ class SitemapController extends Controller
 
     public function actionIndex()
     {
-        $primarySite = Craft::$app->sites->getPrimarySite();
+        $primarySite = Craft::$app->getSites()->getPrimarySite();
         $this->redirect("seo-fields/sitemap/$primarySite->handle");
     }
 
@@ -66,7 +66,7 @@ class SitemapController extends Controller
 
     public function actionDetail($siteId, $type, $sectionId, $handle)
     {
-        $xml = SeoFields::$plugin->sitemapSerivce->getSitemapData($siteId, $type, $sectionId, $handle);
+        $xml = SeoFields::$plugin->sitemapSerivce->getSitemapData($siteId, $type, $sectionId);
         $headers = Craft::$app->response->headers;
         $headers->add('Content-Type', 'text/xml; charset=utf-8');
         $this->asRaw($xml);

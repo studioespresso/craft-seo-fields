@@ -1,0 +1,41 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{% extends "_layouts/cp" %}
+
+{% import "_includes/forms" as forms %}
+
+{% set selectedSubnavItem = 'redirects' %}
+{% set title = "Redirects"|t('seo-fields') %}
+
+{% set crumbs = [
+    {'label': 'SEO Fields'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields')},
+    {'label': 'Redirects'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields/redirects')},
+    {'label': 'Import'|t('seo-fields'), 'url' : '#'},
+] %}
+
+{% block content %}
+    {% if imported %}
+        <h2>{{ imported|length }} {{ "redirects imported"|t('seo-fields') }}</h2>
+    {% else %}
+        <h2>{{ "No redirects could be imported, check the invalid redirects below"|t('seo-fields') }}</h2>
+    {% endif %}
+
+    {% if invalid %}
+        <hr>
+        <h2>{{ invalid|length }} {{ "redirects could not be imported:" }}</h2>
+        <table>
+            <thead>
+            <td>Pattern</td>
+            <td>Redirect</td>
+            </thead>
+            <tbody>
+            {% for row in invalid %}
+                <tr>
+                    <td>{{ row|first }}</td>
+                    <td>{{ row|last }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+{% endblock %}

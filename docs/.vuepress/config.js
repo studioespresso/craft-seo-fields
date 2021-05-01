@@ -24,6 +24,7 @@ module.exports = {
             ['/templating', 'Templating'],
             ['/robots', 'Robots.txt'],
             ['/sitemap', 'Sitemap.xml'],
+            ['/extra', 'Extra'],
         ],
         nav: [
             {
