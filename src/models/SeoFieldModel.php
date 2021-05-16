@@ -176,7 +176,7 @@ class SeoFieldModel extends Model
         foreach ($sites as $site) {
             if ($site['uri']) {
                 $data[] = [
-                    'url' => UrlHelper::siteUrl($site['uri'], null, null, $site['siteId']),
+                    'url' => UrlHelper::siteUrl($site['uri'] === '__home__' ? '' : $site['uri'], null, null, $site['siteId']),
                     'language' => $site['language']
                 ];
             }
