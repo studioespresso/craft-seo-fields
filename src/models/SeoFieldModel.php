@@ -153,21 +153,17 @@ class SeoFieldModel extends Model
             return false;
         }
         $siteEntries =
-            (new Query())->select(['siteId', 'uri', 'language'])
+            (new Query())->select(['siteId', 'uri', 'language', 'sites.primary as primary'])
                 ->from('{{%elements_sites}} as  elements')
                 ->leftJoin('{{%sites}} as sites', 'sites.id = elements.siteId')
                 ->where('[[elementId]] = ' . $element->id)
                 ->where('sites.enabled = 1')
                 ->andWhere('sites.dateDeleted IS NULL')
                 ->andWhere('elements.enabled = true')
+                ->distinct(true)
                 ->all();
         $currentSite = Craft::$app->getSites()->getCurrentSite()->id;
-        $sites = array_filter($siteEntries, function ($item) use ($currentSite) {
-            if ($item['siteId'] != $currentSite) {
-                return true;
-            }
-            return false;
-        });
+        $sites = $siteEntries;
         if (empty($sites)) {
             return false;
         }
