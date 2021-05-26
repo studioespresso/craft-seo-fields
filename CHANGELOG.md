@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## 2.0.0-beta.4
+### Fixed
+- Fixed issue with alternate links
+
+
 ## 2.0.0-beta.3
 ### Fixed
 - Allow league/csv 8.2 or 9.x
