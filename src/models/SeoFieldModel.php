@@ -153,35 +153,34 @@ class SeoFieldModel extends Model
             return false;
         }
         $siteEntries =
-            (new Query())->select(['siteId', 'uri', 'language'])
+            (new Query())->select(['siteId', 'uri', 'language', 'sites.primary as primary'])
                 ->from('{{%elements_sites}} as  elements')
                 ->leftJoin('{{%sites}} as sites', 'sites.id = elements.siteId')
                 ->where('[[elementId]] = ' . $element->id)
                 ->andWhere('sites.enabled = 1')
                 ->andWhere('sites.dateDeleted IS NULL')
                 ->andWhere('elements.enabled = true')
+                ->distinct(true)
                 ->all();
         $currentSite = Craft::$app->getSites()->getCurrentSite()->id;
-        $sites = array_filter($siteEntries, function ($item) use ($currentSite) {
-            if ($item['siteId'] != $currentSite) {
-                return true;
-            }
-            return false;
-        });
+        $sites = $siteEntries;
         if (empty($sites)) {
             return false;
         }
 
         $data = [];
         foreach ($sites as $site) {
-            $data[] = [
-                'url' => UrlHelper::siteUrl($site['uri'], null, null, $site['siteId']),
-                'language' => $site['language']
-            ];
+            if ($site['uri']) {
+                $data[] = [
+                    'url' => UrlHelper::siteUrl($site['uri'] === '__home__' ? '' : $site['uri'], null, null, $site['siteId']),
+                    'language' => $site['language']
+                ];
+            }
         }
 
         return $data;
     }
+
 
     public function setMetaTitle($value)
     {
