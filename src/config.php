@@ -15,5 +15,5 @@ return [
     "robotsPerSite" => false,
     "sitemapPerSite" => false,
     "fieldHandle" => "seo",
-    "notFoundLimit" => 1000,
+    "notFoundLimit" => 10000,
 ];

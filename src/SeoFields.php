@@ -12,7 +12,7 @@ namespace studioespresso\seofields;
 
 use Craft;
 use craft\base\Plugin;
-use craft\commerce\elements\Product;
+use craft\db\Query;
 use craft\events\ElementEvent;
 use craft\events\ExceptionEvent;
 use craft\events\RegisterCacheOptionsEvent;
@@ -24,18 +24,18 @@ use craft\events\SiteEvent;
 use craft\helpers\UrlHelper;
 use craft\services\Elements;
 use craft\services\Fields;
+use craft\services\Gc;
 use craft\services\Sections;
 use craft\services\Sites;
 use craft\services\UserPermissions;
 use craft\utilities\ClearCaches;
 use craft\web\ErrorHandler;
 use craft\web\UrlManager;
-use craft\web\View;
 use studioespresso\seofields\events\RegisterSeoElementEvent;
 use studioespresso\seofields\extensions\SeoFieldsExtension;
 use studioespresso\seofields\fields\SeoField;
-use studioespresso\seofields\models\SeoFieldModel;
 use studioespresso\seofields\models\Settings;
+use studioespresso\seofields\records\NotFoundRecord;
 use studioespresso\seofields\services\DefaultsService;
 use studioespresso\seofields\services\NotFoundService;
 use studioespresso\seofields\services\RedirectService;
@@ -44,8 +44,8 @@ use studioespresso\seofields\services\SitemapService;
 use studioespresso\seofields\variables\SeoFieldsVariable;
 use yii\base\Event;
 use yii\base\Exception;
-use yii\web\HttpException;
 use yii\console\Application as ConsoleApplication;
+use yii\web\HttpException;
 
 /**
  * https://craftcms.com/docs/plugins/introduction
@@ -313,7 +313,7 @@ class SeoFields extends Plugin
         Event::on(
             Sections::class,
             Sections::EVENT_AFTER_DELETE_SECTION,
-            function(SectionEvent $event) {
+            function (SectionEvent $event) {
                 SeoFields::$plugin->sitemapSerivce->clearCaches();
             }
         );
@@ -321,11 +321,28 @@ class SeoFields extends Plugin
         Event::on(
             Sections::class,
             Sections::EVENT_AFTER_DELETE_ENTRY_TYPE,
-            function(SectionEvent $event) {
+            function (SectionEvent $event) {
                 SeoFields::$plugin->sitemapSerivce->clearCaches();
             }
         );
 
+        Event::on(Gc::class, Gc::EVENT_RUN, function () {
+            try {
+                $limit = SeoFields::$plugin->getSettings()->notFoundLimit;
+                if (!is_int($limit)) {
+                    return;
+                }
+
+                $query = NotFoundRecord::find();
+                $query->offset($limit);
+                $query->orderBy('dateLastHit ASC');
+                foreach ($query->all() as $row) {
+                    $row->delete();
+                }
+            } catch (Exception $e) {
+                Craft::error($e->getMessage(), __CLASS__);
+            }
+        });
     }
 
     private function _registerSiteListeners()
