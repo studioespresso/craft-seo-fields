@@ -4,11 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.0.0
+### Added
+- 404 tracking
+- Redirects
+- The plugin label in the sidebar can be changed in settings
+
+### Changes
+- Defaults is now renamed to "Meta" in the CP sidebar
 
 ## 2.0.0-beta.4
 ### Fixed
 - Fixed issue with alternate links
-
 
 ## 2.0.0-beta.3
 ### Fixed

@@ -31,7 +31,7 @@ class Settings extends Model
 
     public $fieldHandle = 'seo';
 
-    public $notFoundLimit = 1000;
+    public $notFoundLimit = 10000;
 
     // Public Methods
     // =========================================================================
