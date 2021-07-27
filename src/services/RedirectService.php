@@ -111,6 +111,7 @@ class RedirectService extends Component
         $invalidRedirects = [];
 
         foreach ($data as $row) {
+            $row = array_values($row);
             $pattern = $row[$patternCol];
             $redirect = $row[$redirectCol];
             if ($pattern === $redirect) {

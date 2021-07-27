@@ -102,7 +102,7 @@ class RedirectsController extends Controller
 
         $filename = self::IMPORT_FILE;
         $filePath = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . $filename;
-        if(!file_exists($filePath)) {
+        if (!file_exists($filePath)) {
             return $this->redirect(UrlHelper::cpUrl('seo-fields/redirects'));
         }
         $csv = Reader::createFromPath($filePath);
@@ -131,13 +131,16 @@ class RedirectsController extends Controller
 
         $filename = self::IMPORT_FILE;
         $filePath = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . $filename;
-        $csv = Reader::createFromPath($filePath);
-        $headers = $csv->fetchOne(0);
+        $reader = Reader::createFromPath($filePath);
+        //$headers = $reader->fetchOne(0);
+        $reader->setHeaderOffset(1);
+
+        $headers = $this->getHeaders($reader);
+        $rows = $this->getRows($reader);
         $variables['headers'] = $headers;
         $variables['filename'] = $filePath;
 
-        $csv->setOffset(1);
-        $results = SeoFields::getInstance()->redirectService->import($csv->fetchAll(), $settings);
+        $results = SeoFields::getInstance()->redirectService->import($rows, $settings);
         return $this->renderTemplate('seo-fields/_redirect/_import_results', $results);
 
     }
@@ -170,5 +173,33 @@ class RedirectsController extends Controller
             }
         }
         return $sites;
+    }
+
+    private function getHeaders($reader)
+    {
+        // Support for league/csv v8 with a header
+        try {
+            return $csv->fetchOne(0);
+        } catch (\Throwable $e) {
+        }
+
+        try {
+            $reader->setHeaderOffset(0);
+            return $reader->getHeader();
+        } catch (\Throwable $e) {
+        }
+
+    }
+    private function getRows(Reader $reader)
+    {
+        try {
+            return $reader->fetchAll();
+        } catch (\Throwable $e) {
+        }
+
+        try {
+            return $reader->getIterator();
+        } catch (\Throwable $e) {
+        }
     }
 }
