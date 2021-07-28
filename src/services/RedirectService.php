@@ -6,17 +6,12 @@ use Craft;
 use craft\base\Component;
 use craft\helpers\App;
 use craft\helpers\DateTimeHelper;
-use craft\helpers\StringHelper;
+use craft\helpers\Json;
 use craft\helpers\UrlHelper;
-use craft\models\Site;
-use craft\web\Request;
 use studioespresso\seofields\events\RegisterSeoSitemapEvent;
-use studioespresso\seofields\models\NotFoundModel;
 use studioespresso\seofields\models\RedirectModel;
-use studioespresso\seofields\records\NotFoundRecord;
 use studioespresso\seofields\records\RedirectRecord;
 use studioespresso\seofields\SeoFields;
-use yii\base\Exception;
 use yii\base\ExitException;
 
 /**
@@ -129,11 +124,10 @@ class RedirectService extends Component
             $model->redirect = $row[$redirectCol];
             $model->siteId = $settings['siteId'];
             $model->method = $settings['method'];
-            if ($model->validate()) {
-                $this->saveRedirect($model);
-            } else {
-                dd($model->getErrors());
+            if (!$model->validate()) {
+                Craft::error(Json::encode($model->getErrors()));
             }
+            $this->saveRedirect($model);
         }
 
         return [
@@ -145,7 +139,11 @@ class RedirectService extends Component
     private function redirect(RedirectModel $redirectModel)
     {
         try {
-            $url = UrlHelper::siteUrl($redirectModel->redirect, null, null, $redirectModel->siteId);
+            if ($redirectModel->siteId) {
+                $url = UrlHelper::siteUrl($redirectModel->redirect, null, null, $redirectModel->siteId);
+            } else {
+                $url = $redirectModel->redirect;
+            }
             $response = Craft::$app->response;
             $response->redirect($url, $redirectModel->method)->send();
         } catch (\Exception $e) {
