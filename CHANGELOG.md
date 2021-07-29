@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.0.3
+### Fixed
+- Fixed a layout issue on the 404 overview page when referral urls are really long
+
 ## 2.0.2
 ### Fixed
 - Better handing for redirects that apply to all site ids

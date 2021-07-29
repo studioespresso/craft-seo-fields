@@ -39,52 +39,58 @@
 
 {% block actionButton %}
     {% set confirmation = "Are you sure you want to remove all tracked 404's?"|t('seo-fields') %}
-    <a href="{{ actionUrl('seo-fields/not-found/clear-all') }}" class="btn" onclick='return confirm("{{ confirmation }}")'>{{ "Clear all"|t('seo-fields') }}</a>
+    <a href="{{ actionUrl('seo-fields/not-found/clear-all') }}" class="btn"
+       onclick='return confirm("{{ confirmation }}")'>{{ "Clear all"|t('seo-fields') }}</a>
 {% endblock %}
 
 {% block content %}
-    <table class="data fullwidth collapsible">
-        <thead>
-        <tr>
-            <th>{{ "URL"|t('seo-fields') }}</th>
-            <th>{{ "Hits"|t('seo-fields') }}</th>
-            {% if craft.app.request.getSegment(-1) == 'not-found' and craft.app .getIsMultiSite() %}
-                <th>{{ "Site"|t('seo-fields') }}</th>
-            {% endif %}
-            <th>{{ "Last linked from"|t('seo-fields') }}</th>
-            <th>{{ "Last hit at"|t('seo-fields') }}</th>
-            <th>{{ "Redirect?"|t('seo-fields') }}</th>
-            <th>{{ "Remove"|t('seo-fields') }}</th>
-        </tr>
-        </thead>
-        <tbody>
-
-        {% for row in data %}
-        <tr>
-            <th class="light">
-                {{ row.urlPath }}
-            </th>
-            <td>{{ row.counter }}</td>
-            {% if craft.app.request.getSegment(-1) == 'not-found' and craft.app .getIsMultiSite() %}
-                {% set site = craft.app.sites.getSiteById(row.siteId) %}
-                <td>{{ site.name }}</td>
-            {% endif %}
-            <td>{{ row.referrer }}</td>
-            <td>{{ row.dateLastHit|date('d/m/Y H:i:s') }}</td>
-            <td>
-                {% if row.redirect %}
-                    <a href="{{ cpUrl('seo-fields/redirects/edit/' ~ row.redirect) }}"><span data-icon="check"
-                                                                                             style="color: green;"></span></a>
-                {% else %}
-                    <a href="{{ cpUrl('seo-fields/redirects/add', {pattern : row.urlPath}) }}"><span
-                                data-icon="plus"></span></a>
+    <div class="tableview tablepane">
+        <table class="data fullwidth collapsible">
+            <thead>
+            <tr>
+                <th>{{ "URL"|t('seo-fields') }}</th>
+                <th>{{ "Hits"|t('seo-fields') }}</th>
+                {% if craft.app.request.getSegment(-1) == 'not-found' and craft.app .getIsMultiSite() %}
+                    <th>{{ "Site"|t('seo-fields') }}</th>
                 {% endif %}
-            </td>
-            <td>
-                <a href="{{ cpUrl('seo-fields/not-found/delete/' ~ row.id) }}" class="delete icon" title="Delete"></a>
-            </td>
-        </tr>
-        </tbody>
-        {% endfor %}
-    </table>
+                <th>{{ "Linked from"|t('seo-fields') }}</th>
+                <th>{{ "Redirect?"|t('seo-fields') }}</th>
+                <th>{{ "Remove"|t('seo-fields') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for row in data %}
+                <tr>
+                    <td title="{{ "Last visited on"|t }} {{ row.dateLastHit|date('d/m/Y H:i:s') }}">
+                        {{ row.urlPath }}
+                    </td>
+                    <td>{{ row.counter }}</td>
+                    {% if craft.app.request.getSegment(-1) == 'not-found' and craft.app .getIsMultiSite() %}
+                        {% set site = craft.app.sites.getSiteById(row.siteId) %}
+                        <td>{{ site.name }}</td>
+                    {% endif %}
+                    <td class="light center">
+                        <a href="{{ row.referrer }}" target="_blank">
+                            <span data-icon="globe"></span>
+                        </a>
+                    </td>
+                    <td class="">
+                        {% if row.redirect %}
+                            <a href="{{ cpUrl('seo-fields/redirects/edit/' ~ row.redirect) }}"><span data-icon="check"
+                                                                                                     style="color: green;"></span></a>
+                        {% else %}
+                            <a href="{{ cpUrl('seo-fields/redirects/add', {pattern : row.urlPath}) }}"><span
+                                        data-icon="plus"></span></a>
+                        {% endif %}
+                    </td>
+                    <td class="">
+                        <a href="{{ cpUrl('seo-fields/not-found/delete/' ~ row.id) }}" class="delete icon"
+                           title="Delete"></a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
