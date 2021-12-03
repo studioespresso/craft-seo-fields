@@ -75,8 +75,8 @@
             <tbody>
             {% for row in redirects %}
                 <tr>
-                    <td><a href="{{ cpUrl('seo-fields/redirects/edit/' ~ row.id) }}">{{ row.pattern }}</a></td>
-                    <td>{{ row.redirect }}</td>
+                    <td style="word-break: break-all"><a href="{{ cpUrl('seo-fields/redirects/edit/' ~ row.id) }}">{{ row.pattern }}</a></td>
+                    <td style="word-break: break-all">{{ row.redirect }}</td>
                     {% if craft.app.getIsMultiSite() %}
                         {% if row.siteId %}
                             {% set site = craft.app.sites.getSiteById(row.siteId) %}
