@@ -62,7 +62,7 @@
 
             {% for row in data %}
                 <tr>
-                    <td title="{{ "Last visited on"|t }} {{ row.dateLastHit|date('d/m/Y H:i:s') }}">
+                    <td title="{{ "Last visited on"|t }} {{ row.dateLastHit|date('d/m/Y H:i:s') }}" style="word-break: break-all">
                         {{ row.urlPath }}
                     </td>
                     <td>{{ row.counter }}</td>
