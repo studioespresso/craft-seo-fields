@@ -14,6 +14,7 @@ use Craft;
 use craft\base\Plugin;
 use craft\db\Query;
 use craft\events\ElementEvent;
+use craft\events\EntryTypeEvent;
 use craft\events\ExceptionEvent;
 use craft\events\RegisterCacheOptionsEvent;
 use craft\events\RegisterComponentTypesEvent;
@@ -321,7 +322,7 @@ class SeoFields extends Plugin
         Event::on(
             Sections::class,
             Sections::EVENT_AFTER_DELETE_ENTRY_TYPE,
-            function (SectionEvent $event) {
+            function (EntryTypeEvent $event) {
                 SeoFields::$plugin->sitemapSerivce->clearCaches();
             }
         );
