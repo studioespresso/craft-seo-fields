@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 2.0.5 - Unreleased
+## 2.0.5 - 2022-01-10
 ### Fixed
 - Beter an error when deleting a section ([#48](https://github.com/studioespresso/craft-seo-fields/issues/48))
 
