@@ -19,11 +19,6 @@
     {{ redirectInput('seo-fields/redirects') }}
     <input type="hidden" name="fields[siteId]" value="{{ currentSite.id }}">
     <input type="hidden" name="redirectId" value="{{ data.id ?? '' }}">
-
-    {% if errors is defined %}
-        {{ d(errors) }}
-    {% endif %}
-
     {% if sites|length > 1 %}
        {{ forms.selectField({
            label: 'Enable for site'|t('seo-fields'),

@@ -78,10 +78,10 @@ class SeoFields extends Plugin
 
     // Public Properties
     // =========================================================================
-    public $schemaVersion = '2.0.0';
+    public string $schemaVersion = "2.0.0";
 
 
-    const EVENT_SEOFIELDS_REGISTER_ELEMENT = "registerSeoElement";
+    public const EVENT_SEOFIELDS_REGISTER_ELEMENT = "registerSeoElement";
 
     // Public Methods
     // =========================================================================
@@ -117,7 +117,7 @@ class SeoFields extends Plugin
         $this->_registerCustomElements();
     }
 
-    public function getCpNavItem()
+    public function getCpNavItem() :? array
     {
         $subNavs = [];
         $navItem = parent::getCpNavItem();
@@ -164,7 +164,7 @@ class SeoFields extends Plugin
     // =========================================================================
     // Protected Methods
     // =========================================================================
-    protected function createSettingsModel()
+    protected function createSettingsModel() :? craft\base\Model
     {
         return new Settings();
     }
@@ -179,7 +179,7 @@ class SeoFields extends Plugin
         );
     }
 
-    protected function afterInstall()
+    protected function afterInstall() :void
     {
         if (!Craft::$app->getRequest()->isConsoleRequest) {
             parent::afterInstall();
