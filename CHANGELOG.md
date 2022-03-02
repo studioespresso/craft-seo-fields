@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.0.0-beta.1 - 2022-03-02
+### Added
+- Craft CMS 4 compatibility
+
 ## 2.0.5 - 2022-01-10
 ### Fixed
 - Beter an error when deleting a section ([#48](https://github.com/studioespresso/craft-seo-fields/issues/48))
