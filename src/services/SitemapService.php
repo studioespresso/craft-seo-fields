@@ -2,30 +2,21 @@
 
 namespace studioespresso\seofields\services;
 
+use Craft;
+use craft\base\Component;
 use craft\base\Element;
-use craft\base\Model;
 use craft\commerce\elements\Product;
 use craft\commerce\models\ProductTypeSite;
 use craft\commerce\Plugin as Commerce;
 use craft\commerce\services\ProductTypes;
 use craft\db\Query;
 use craft\elements\Category;
-use craft\elements\db\ElementQuery;
 use craft\elements\Entry;
-use craft\events\RegisterUrlRulesEvent;
 use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use craft\models\Site;
-use craft\web\UrlManager;
-use studioespresso\seofields\events\RegisterSeoElementEvent;
 use studioespresso\seofields\events\RegisterSeoSitemapEvent;
-use studioespresso\seofields\models\SeoDefaultsModel;
-use studioespresso\seofields\records\DefaultsRecord;
 use studioespresso\seofields\SeoFields;
-
-use Craft;
-use craft\base\Component;
-use yii\base\Event;
 use yii\caching\TagDependency;
 
 /**
@@ -127,18 +118,21 @@ class SitemapService extends Component
                 $data = Product::findAll([
                     'siteId' => $siteId,
                     'typeId' => $sectionId,
+                    'orderBy' => 'dateUpdated DESC',
                 ]);
                 break;
             case 'category':
                 $data = Category::findAll([
                     'siteId' => $siteId,
                     'groupId' => $sectionId,
+                    'orderBy' => 'dateUpdated DESC',
                 ]);
                 break;
             case 'entry':
                 $data = Entry::findAll([
                     'siteId' => $siteId,
-                    'sectionId' => $sectionId
+                    'sectionId' => $sectionId,
+                    'orderBy' => 'dateUpdated DESC',
                 ]);
                 break;
         }
@@ -249,7 +243,7 @@ class SitemapService extends Component
         $data = [];
         foreach ($sections as $id => $settings) {
             $type = Craft::$app->getSections()->getSectionById($id);
-            $entry = Entry::findOne(['sectionId' => $id]);
+            $entry = Entry::findOne(['sectionId' => $id, 'orderBy' => 'dateUpdated DESC']);
             if ($entry) {
                 $data[] = implode('', $this->_addItemToIndex($site, $type, $entry));
             }
@@ -262,7 +256,7 @@ class SitemapService extends Component
         $data = [];
         foreach ($groups as $id => $settings) {
             $type = Craft::$app->getCategories()->getGroupById($id);
-            $entry = Category::findOne(['groupId' => $type->id]);
+            $entry = Category::findOne(['groupId' => $type->id, 'orderBy' => 'dateUpdated DESC']);
             if ($entry) {
                 $data[] = implode('', $this->_addItemToIndex($site, $type, $entry));
             }
@@ -276,7 +270,7 @@ class SitemapService extends Component
         $data = [];
         foreach ($productTypes as $id => $settings) {
             $type = Commerce::getInstance()->productTypes->getProductTypeById($id);
-            $entry = Product::findOne(['typeId' => $type->id]);
+            $entry = Product::findOne(['typeId' => $type->id, 'orderBy' => 'dateUpdated DESC']);
             if ($entry) {
                 $data[] = implode('', $this->_addItemToIndex($site, $type, $entry));
             }
