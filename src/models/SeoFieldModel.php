@@ -24,6 +24,7 @@ class SeoFieldModel extends Model
     public $siteName;
     public $hideSiteName;
     public $siteId;
+    public $canonical;
 
     /**
      * @var SeoDefaultsModel
@@ -66,6 +67,11 @@ class SeoFieldModel extends Model
         return $this->metaTitle . $this->getSiteNameWithSeperator();
     }
 
+    public function getCanonical()
+    {
+        $request = Craft::$app->getRequest();
+        return $request->hostInfo . '/' . $request->pathInfo;
+    }
 
     public function getOgTitle($element)
     {
