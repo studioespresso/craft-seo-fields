@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.0.7 - 2022-04-20
+### Fixed
+- Query parameters are no longer included in canoncial urls
+
 ## 2.0.6 - 2022-03-15
 ### Fixed
 - Fixed in issue where ``dateModified`` properties in sitemap.xml could in incorrect.
