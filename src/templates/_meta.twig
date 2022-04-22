@@ -30,7 +30,7 @@
 {% if ogImage %}
     <meta name="twitter:image" content="{{ meta.getTwitterImage().url }}" />
 {% endif %}
-    {{ d(meta.getStatusCode()) }}
+
     <link rel="canonical" href="{{ meta.getCanonical()  }}" />
 {% for alt in meta.getAlternate(element) %}
     <link rel="alternate" hreflang="{{ alt.language }}" href="{{ alt.url }}" />
