@@ -3,6 +3,8 @@
 namespace studioespresso\seofields\extensions;
 
 use studioespresso\seofields\SeoFields;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
 /**
  * SeoFieldsExtension class.
@@ -10,13 +12,13 @@ use studioespresso\seofields\SeoFields;
  * @package   SeoFields
  * @since     1.0.0
  */
-class SeoFieldsExtension extends \Twig_Extension
+class SeoFieldsExtension extends AbstractExtension
 {
 
     public function getFunctions()
     {
         return [
-            new \Twig_Function(
+            new TwigFunction(
                 'getSeoFields',
                 [$this, 'getSeoFields'],
                 ['needs_context' => true]

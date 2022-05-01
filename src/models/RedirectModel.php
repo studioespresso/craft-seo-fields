@@ -59,7 +59,7 @@ class RedirectModel extends Model
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['pattern', 'redirect', 'method'], 'required'],

@@ -73,7 +73,7 @@ class SeoField extends Field
      *
      * @return array
      */
-    public function rules()
+    public function rules() : array
     {
         $rules = parent::rules();
         $rules = array_merge($rules, [
@@ -138,7 +138,7 @@ class SeoField extends Field
      *
      * @return string|null
      */
-    public function getSettingsHtml()
+    public function getSettingsHtml() :? string
     {
         // Render the settings template
         return Craft::$app->getView()->renderTemplate(
