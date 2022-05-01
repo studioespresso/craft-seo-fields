@@ -4,19 +4,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
 ## 3.0.0-beta.1 - 2022-03-02
 ### Added
 - Craft CMS 4 compatibility
 
+## 2.0.8 - 2022-04-22
+### Fixed
+- Removed dump
+
+## 2.0.7 - 2022-04-20
+### Fixed
+- Query parameters are no longer included in canoncial urls
+
+## 2.0.6 - 2022-03-15
+### Fixed
+- Fixed in issue where ``dateModified`` properties in sitemap.xml could in incorrect.
+
 ## 2.0.5 - 2022-01-10
 ### Fixed
-- Beter an error when deleting a section ([#48](https://github.com/studioespresso/craft-seo-fields/issues/48))
-
+- Fixed an error when deleting a section ([#48](https://github.com/studioespresso/craft-seo-fields/issues/48))
 
 ## 2.0.4 - 2021-12-06
 ### Fixed
 - Beter fix for the 404 overview page when referral urls are really long
-
 
 ## 2.0.3
 ### Fixed
