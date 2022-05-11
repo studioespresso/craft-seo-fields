@@ -117,7 +117,7 @@ class SeoFields extends Plugin
         $this->_registerCustomElements();
     }
 
-    public function getCpNavItem() :? array
+    public function getCpNavItem(): ?array
     {
         $subNavs = [];
         $navItem = parent::getCpNavItem();
@@ -164,7 +164,7 @@ class SeoFields extends Plugin
     // =========================================================================
     // Protected Methods
     // =========================================================================
-    protected function createSettingsModel() :? craft\base\Model
+    protected function createSettingsModel(): ?craft\base\Model
     {
         return new Settings();
     }
@@ -179,7 +179,7 @@ class SeoFields extends Plugin
         );
     }
 
-    protected function afterInstall() :void
+    protected function afterInstall(): void
     {
         if (!Craft::$app->getRequest()->isConsoleRequest) {
             parent::afterInstall();
@@ -206,23 +206,27 @@ class SeoFields extends Plugin
             function (RegisterUserPermissionsEvent $event) {
 
                 // Register our custom permissions
-                $event->permissions[Craft::t('seo-fields', 'SEO Fields')] = [
-                    'seo-fields:default' => [
-                        'label' => Craft::t('seo-fields', 'Meta'),
-                    ],
-                    'seo-fields:notfound' => [
-                        'label' => Craft::t('seo-fields', "404's"),
-                    ],
-                    'seo-fields:redirects' => [
-                        'label' => Craft::t('seo-fields', "redirects"),
-                    ],
-                    'seo-fields:robots' => [
-                        'label' => Craft::t('seo-fields', 'Robots'),
-                    ],
-                    'seo-fields:sitemap' => [
-                        'label' => Craft::t('seo-fields', 'Sitemap'),
-                    ],
+                $permissions = [
+                    "heading" => Craft::t('seo-fields', 'SEO Fields'),
+                    "permissions" => [
+                        'seo-fields:default' => [
+                            'label' => Craft::t('seo-fields', 'Meta'),
+                        ],
+                        'seo-fields:notfound' => [
+                            'label' => Craft::t('seo-fields', "404's"),
+                        ],
+                        'seo-fields:redirects' => [
+                            'label' => Craft::t('seo-fields', "redirects"),
+                        ],
+                        'seo-fields:robots' => [
+                            'label' => Craft::t('seo-fields', 'Robots'),
+                        ],
+                        'seo-fields:sitemap' => [
+                            'label' => Craft::t('seo-fields', 'Sitemap'),
+                        ],
+                    ]
                 ];
+                $event->permissions[Craft::t('seo-fields', 'SEO Fields')] = $permissions;
             }
         );
     }
