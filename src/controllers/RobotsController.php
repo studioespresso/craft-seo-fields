@@ -12,7 +12,7 @@ use yii\helpers\StringHelper;
 
 class RobotsController extends Controller
 {
-    public $allowAnonymous = ['render'];
+    protected array|bool|int $allowAnonymous = ['render'];
 
     public function actionIndex()
     {
