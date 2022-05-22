@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## 3.0.3 - 2022-05-22
+### Fixed
+- Fixed a type error in the Robots & Sitemap controllers ([#60](https://github.com/studioespresso/craft-seo-fields/issues/60))
+
 ## 3.0.2 - 2022-05-11
 ### Fixed
 - Fixed a error with plugin permissions
