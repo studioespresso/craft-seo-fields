@@ -8,7 +8,7 @@ use craft\db\Query;
 use craft\elements\Asset;
 use craft\elements\db\AssetQuery;
 use craft\helpers\UrlHelper;
-use craft\models\AssetTransform;
+use craft\models\ImageTransform;
 use studioespresso\seofields\SeoFields;
 
 class SeoFieldModel extends Model
@@ -267,7 +267,7 @@ class SeoFieldModel extends Model
 
     private function _getPreviewTransform(Asset $asset)
     {
-        $transform = new AssetTransform();
+        $transform = new ImageTransform();
         $transform->width = 1200;
         $transform->height = 590;
         $transform->mode = 'crop';
