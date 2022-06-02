@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## 3.0.5 - 2022-06-02
+### Fixed
+- Fixed an issue with canoncial urls when the site isn't running on the root url.
+
 ## 3.0.4 - 2022-05-24
 ### Fixed
 - Fixed missing class in SeoFieldModel
