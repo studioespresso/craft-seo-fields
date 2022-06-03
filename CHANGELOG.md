@@ -4,9 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 2.0.9 - 2022-06-02
+## 2.0.10 - 2022-06-03
 ### Fixed
-- Fixed an issue with canoncial urls when the site isn't running on the root url.
+- Typo
 
 
 ## 2.0.8 - 2022-04-22
