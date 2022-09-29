@@ -59,40 +59,40 @@ class NotFoundService extends Component
     {
         try {
 
-        $notFoundRecord = NotFoundRecord::findOne(['fullUrl' => $request->getAbsoluteUrl(), 'urlPath' => $request->getUrl(), 'siteId' => $site->id]);
-        if ($notFoundRecord) {
-            Craft::debug("Updating excisting 404", SeoFields::class);
-            $notFoundModel = new NotFoundModel($notFoundRecord->getAttributes());
-            $notFoundModel->counter++;
-            $notFoundModel->dateLastHit = DateTimeHelper::toIso8601(time());
-        } else {
-            Craft::debug("First time we see this 404, saving new record", SeoFields::class);
-            $notFoundModel = new NotFoundModel();
-            $notFoundModel->setAttributes([
-                'fullUrl' => urldecode($request->getAbsoluteUrl()),
-                'urlPath' => urldecode($request->getUrl()),
-                'referrer' => $request->referrer,
-                'urlParams' => $request->queryStringWithoutPath,
-                'siteId' => $site->id,
-                'handled' => false,
-                'counter' => 1,
-                'dateLastHit' => DateTimeHelper::toIso8601(time()),
-            ]);
-        }
+            $notFoundRecord = NotFoundRecord::findOne(['fullUrl' => $request->getAbsoluteUrl(), 'urlPath' => $request->getUrl(), 'siteId' => $site->id]);
+            if ($notFoundRecord) {
+                Craft::debug("Updating excisting 404", SeoFields::class);
+                $notFoundModel = new NotFoundModel($notFoundRecord->getAttributes());
+                $notFoundModel->counter++;
+                $notFoundModel->dateLastHit = DateTimeHelper::toIso8601(time());
+            } else {
+                Craft::debug("First time we see this 404, saving new record", SeoFields::class);
+                $notFoundModel = new NotFoundModel();
+                $notFoundModel->setAttributes([
+                    'fullUrl' => urldecode($request->getAbsoluteUrl()),
+                    'urlPath' => urldecode($request->getUrl()),
+                    'referrer' => $request->referrer,
+                    'urlParams' => $request->queryStringWithoutPath,
+                    'siteId' => $site->id,
+                    'handled' => false,
+                    'counter' => 1,
+                    'dateLastHit' => DateTimeHelper::toIso8601(time()),
+                ]);
+            }
 
-        $redirect = $this->getMatchingRedirect($notFoundModel);
-        if ($redirect) {
-            $notFoundModel->handled = true;
-            $notFoundModel->redirect = $redirect->id;
-        }
-        $this->saveNotFound($notFoundModel);
-        if ($redirect) {
-            SeoFields::getInstance()->redirectService->handleRedirect($redirect);
-        }
+            $redirect = $this->getMatchingRedirect($notFoundModel);
+            if ($redirect) {
+                $notFoundModel->handled = true;
+                $notFoundModel->redirect = $redirect->id;
+            }
+            $this->saveNotFound($notFoundModel);
+            if ($redirect) {
+                SeoFields::getInstance()->redirectService->handleRedirect($redirect);
+            }
 
-        $this->shouldWeCleanupRedirects();
+            $this->shouldWeCleanupRedirects();
 
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             Craft::error($e->getMessage(), 'seo-fields');
         }
     }
@@ -101,14 +101,27 @@ class NotFoundService extends Component
      * @param NotFoundModel $model
      * @return RedirectModel|false
      */
-    public function getMatchingRedirect(NotFoundModel $model)
+    public function getMatchingRedirect(NotFoundModel $model): RedirectModel|bool
     {
         Craft::debug("Check if our 404 is matched to a redirect", SeoFields::class);
+        $parsedUrl = parse_url($model->urlPath);
+
         $redirect = RedirectRecord::find();
-        $param = Db::parseParam('pattern', $model->urlPath, '=');
-        $redirect->where($param);
+
+        $redirect->where(['and',
+            Db::parseParam('pattern', $model->urlPath, '='),
+            Db::parseParam('sourceMatch', 'path', '=')
+        ]);
         $redirect->andWhere(Db::parseParam('siteId', [null, $model->siteId], 'in'));
 
+        if ($redirect->one()) {
+            return $redirect->one();
+        }
+
+        $redirect->where(['and',
+            Db::parseParam('pattern', $parsedUrl['path'], '='),
+            Db::parseParam('sourceMatch', 'pathWithoutParams', '=')
+        ]);
         return $redirect->one() ?? false;
     }
 
@@ -162,7 +175,7 @@ class NotFoundService extends Component
     {
         $total = NotFoundRecord::find()->count();
         $max = SeoFields::getInstance()->getSettings()->notFoundLimit;
-        if($total <=$max) {
+        if ($total <= $max) {
             return;
         }
 
@@ -170,7 +183,7 @@ class NotFoundService extends Component
         $toDelete = NotFoundRecord::find();
         $toDelete->limit($limit);
         $toDelete->orderBy("dateCreated ASC");
-        foreach($toDelete->all() as $record) {
+        foreach ($toDelete->all() as $record) {
             $this->deletetById($record->id);
         }
 

@@ -52,7 +52,11 @@
         id: 'sourceMatch',
         name: 'fields[sourceMatch]',
         value: data.matchType ?? '',
-        options: { 'path': 'Path only'|t('seo-fields'), 'url' : 'Full URL'|t}
+        options: {
+            'path': 'Path only'|t('seo-fields'),
+            'pathWithoutParams': 'Path only (ignore parameters)'|t('seo-fields'),
+            'url' : 'Full URL'|t('seo-fields')
+        }
     }) }}
 
 
