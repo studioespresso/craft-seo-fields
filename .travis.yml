@@ -21,7 +21,7 @@ notifications:
 deploy:
   provider: pages
   skip-cleanup: true
-  local_dir: docs/.vuepress/dist
+  local_dir: docs/.vitepress/dist
   github-token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
   repo: studioespresso/craft-seo-fields
   keep-history: true
