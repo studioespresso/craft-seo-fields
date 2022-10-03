@@ -4,10 +4,9 @@
   "description": "Fields for your SEO & OG data",
   "private": true,
   "scripts": {
-    "build": "webpack --config webpack.config.js --progress --hide-modules",
-    "watch": "webpack --watch --config webpack.config.js --progress --hide-modules",
-    "docs": "vuepress dev docs",
-    "docs:build": "vuepress build docs"
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:serve": "vitepress serve docs"
   },
   "repository": {
     "type": "git",
@@ -20,16 +19,8 @@
   },
   "homepage": "https://github.com/janhenckens/craft3-seo-fields#readme",
   "devDependencies": {
-    "@vuepress/plugin-google-analytics": "^1.0.0-alpha.47",
     "codemirror": "^5.44.0",
-    "css-loader": "^2.1.0",
-    "extract-text-webpack-plugin": "^4.0.0-beta.0",
-    "style-loader": "^0.23.1",
-    "vuepress": "1.8.2",
-    "webpack": "^4.29.5",
-    "webpack-cli": "^3.2.3"
-  },
-  "dependencies": {
-    "vue-carousel": "^0.18.0"
+    "vitepress": "^1.0.0-alpha.19",
+    "vue": "^3.2.40"
   }
 }
