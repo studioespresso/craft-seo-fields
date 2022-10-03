@@ -1,4 +1,7 @@
 import {defineConfig} from 'vitepress'
+import DefaultTheme from 'vitepress/theme'
+
+
 
 export default defineConfig({
     title: 'SEO Fields for Craft',
