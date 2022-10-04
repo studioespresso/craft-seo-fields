@@ -1,13 +1,9 @@
-import {defineConfig} from 'vitepress'
-import DefaultTheme from 'vitepress/theme'
-
-
-
-export default defineConfig({
+module.exports = {
     title: 'SEO Fields for Craft',
     base: '/craft-seo-fields',
     themeConfig: {
-        logo: '/icon-vuepress.svg',
+
+        logo: {light: '/icon-vuepress.svg', dark: '/icon-vuepress-light.svg'},
         sidebar: [
             {
                 items: [
@@ -28,10 +24,14 @@ export default defineConfig({
                 link: 'https://plugins.craftcms.com/seo-fields',
             },
             {
-                text: 'Issues?',
+                text: 'Report an issue',
+                link: 'https://github.com/studioespresso/craft-seo-fields/issues'
+            },
+            {
+                text: 'GitHub',
                 link: 'https://github.com/studioespresso/craft-seo-fields/issues'
             }
         ]
 
     }
-})
+};
