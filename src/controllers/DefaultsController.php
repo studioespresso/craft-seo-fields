@@ -16,8 +16,20 @@ class DefaultsController extends Controller
     {
         $params = Craft::$app->getRequest()->getQueryParams();
         unset($params['p']);
+        $currentUser = Craft::$app->getUser()->getIdentity();
         $primarySite = Craft::$app->sites->getPrimarySite();
-        $this->redirect(UrlHelper::cpUrl("seo-fields/defaults/$primarySite->handle", $params));
+        if ($currentUser->can('seo-fields:defaults')) {
+            $this->redirect(UrlHelper::cpUrl("seo-fields/defaults/$primarySite->handle", $params));
+
+        } elseif ($currentUser->can('seo-fields:notfound')) {
+            $this->redirect(UrlHelper::cpUrl("seo-fields/not-found/$primarySite->handle", $params));
+        } elseif ($currentUser->can('seo-fields:redirects')) {
+            $this->redirect(UrlHelper::cpUrl("seo-fields/redirects/$primarySite->handle", $params));
+        } elseif ($currentUser->can('seo-fields:robots')) {
+            $this->redirect(UrlHelper::cpUrl("seo-fields/robots/$primarySite->handle", $params));
+        } elseif ($currentUser->can('seo-fields:sitemap')) {
+            $this->redirect(UrlHelper::cpUrl("seo-fields/sitemap/$primarySite->handle", $params));
+        }
     }
 
     public function actionSettings($siteHandle = null)

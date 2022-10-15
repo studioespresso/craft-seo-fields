@@ -1,6 +1,9 @@
 {# @var craft \craft\web\twig\variables\CraftVariable #}
-{% extends "_layouts/cp" %}
+{% if not currentUser.can('seo-fields:sitemap') %}
+    {% exit 401 %}
+{% endif %}
 
+{% extends "_layouts/cp" %}
 {% set fullPageForm = true %}
 
 {% block header %}
