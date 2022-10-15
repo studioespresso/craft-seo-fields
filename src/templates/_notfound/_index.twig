@@ -1,6 +1,9 @@
 {# @var craft \craft\web\twig\variables\CraftVariable #}
-{% extends "_layouts/cp" %}
+{% if not currentUser.can('seo-fields:notfound') %}
+    {% exit 401 %}
+{% endif %}
 
+{% extends "_layouts/cp" %}
 {% import "_includes/forms" as forms %}
 
 {% set selectedSubnavItem = 'notfound' %}

@@ -1,6 +1,9 @@
 {# @var craft \craft\web\twig\variables\CraftVariable #}
-{% extends 'seo-fields/_includes/_header' %}
+{% if not currentUser.can('seo-fields:defaults') %}
+    {% exit 401 %}
+{% endif %}
 
+{% extends 'seo-fields/_includes/_header' %}
 {% set title = "SEO Fields" %}
 {% set selectedSubnavItem = 'defaults' %}
 
