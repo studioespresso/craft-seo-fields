@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## 3.1.2 - 2022-10-20
+### Fixed
+- Fixed an issue with an incorrect return type 
+
 ## 3.1.1 - 2022-10-15
 ### Fixed
 - Fixed an issue where users with limited permissions would still be redirects to the defaults tab ([#65](https://github.com/studioespresso/craft-seo-fields/issues/65))
