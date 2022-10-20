@@ -101,7 +101,7 @@ class NotFoundService extends Component
      * @param NotFoundModel $model
      * @return RedirectModel|false
      */
-    public function getMatchingRedirect(NotFoundModel $model): RedirectModel|bool
+    public function getMatchingRedirect(NotFoundModel $model): RedirectRecord|bool
     {
         Craft::debug("Check if our 404 is matched to a redirect", SeoFields::class);
         $parsedUrl = parse_url($model->urlPath);
