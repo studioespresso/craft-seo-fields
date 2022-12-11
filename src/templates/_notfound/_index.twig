@@ -39,7 +39,7 @@
         <input type="hidden" name="siteId" value="{{ currentSite.id }}">
     {% endif %}
     <div id="handles-btn" class="btn menubtn"
-         data-icon="world">{% if not craft.app.request.getParam('redirect') %}
+         data-icon="tool">{% if not craft.app.request.getParam('redirect') %}
             {{ "All 404's"|t('seo-fields') }}{% else %}{{ craft.app.request.getParam('redirect') == "handled" ? "Handled" : "Not handled" }}{% endif %}</div>
     <div class="menu">
         <ul class="padded">
