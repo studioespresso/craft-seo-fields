@@ -20,11 +20,19 @@ class NotFoundController extends Controller
      */
     public function actionIndex($siteHandle = null)
     {
-        if($siteHandle) {
+        if ($siteHandle) {
             $site = Craft::$app->getSites()->getSiteByHandle($siteHandle);
             Craft::$app->getSites()->setCurrentSite($site);
         }
-        $data = SeoFields::getInstance()->notFoundService->getAllNotFound('counter', $siteHandle);
+        $handled = "all";
+        if (Craft::$app->getRequest()->getParam('redirect')) {
+            if (Craft::$app->getRequest()->getParam('redirect') === "handled") {
+                $handled = 1;
+            } elseif (Craft::$app->getRequest()->getParam('redirect') === "not-handled") {
+                $handled = 0;
+            }
+        }
+        $data = SeoFields::getInstance()->notFoundService->getAllNotFound('counter', $siteHandle, $handled);
         return $this->renderTemplate('seo-fields/_notfound/_index', ['data' => $data]);
     }
 
@@ -44,7 +52,8 @@ class NotFoundController extends Controller
      * @return \yii\web\Response
      * @todo Should this also take the current site into account?
      */
-    public function actionClearAll() {
+    public function actionClearAll()
+    {
         SeoFields::getInstance()->notFoundService->deleteAll();
         return $this->redirect(UrlHelper::cpUrl('seo-fields/not-found'));
     }
