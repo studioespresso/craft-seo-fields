@@ -58,6 +58,7 @@ class RedirectService extends Component
     {
         $model->counter++;
         $model->dateLastHit = DateTimeHelper::toIso8601(time());
+
         $model->validate();
         $this->saveRedirect($model);
     }
@@ -122,6 +123,8 @@ class RedirectService extends Component
             $model = new RedirectModel();
             $model->pattern = $row[$patternCol];
             $model->redirect = $row[$redirectCol];
+            $model->matchType = 'exact';
+            $model->sourceMatch = 'path';
             $model->siteId = $settings['siteId'];
             $model->method = $settings['method'];
             if (!$model->validate()) {
