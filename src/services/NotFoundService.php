@@ -34,16 +34,19 @@ class NotFoundService extends Component
         $this->handleNotFound($request, $site);
     }
 
-    public function getAllNotFound($orderBy, $siteHandle = null)
+    public function getAllNotFound($orderBy, $siteHandle = null, $handled)
     {
         $data = [];
         $query = NotFoundRecord::find();
         $query->orderBy("$orderBy DESC, dateLastHIT DESC");
         $query->where(['in', 'siteId', Craft::$app->getSites()->getEditableSiteIds()]);
-
         if ($siteHandle) {
             $site = Craft::$app->getSites()->getSiteByHandle($siteHandle);
-            $query->where(['siteId' => $site->id]);
+            $query->andWhere(['siteId' => $site->id]);
+        }
+
+        if ($handled !== "all") {
+            $query->andWhere(Db::parseParam('handled', $handled));
         }
 
         foreach ($query->all() as $record) {
@@ -82,11 +85,14 @@ class NotFoundService extends Component
 
             $redirect = $this->getMatchingRedirect($notFoundModel);
             if ($redirect) {
+                if (is_array($redirect)) {
+                    $record = $redirect['record'];
+                    $notFoundModel->redirect = $record->id;
+                } else {
+                    $notFoundModel->redirect = $redirect->id;
+                }
                 $notFoundModel->handled = true;
-                $notFoundModel->redirect = $redirect->id;
-            }
-            $this->saveNotFound($notFoundModel);
-            if ($redirect) {
+                $this->saveNotFound($notFoundModel);
                 SeoFields::getInstance()->redirectService->handleRedirect($redirect);
             }
 
@@ -101,7 +107,7 @@ class NotFoundService extends Component
      * @param NotFoundModel $model
      * @return RedirectModel|false
      */
-    public function getMatchingRedirect(NotFoundModel $model): RedirectRecord|bool
+    private function getMatchingRedirect(NotFoundModel $model): RedirectRecord|array|bool
     {
         Craft::debug("Check if our 404 is matched to a redirect", SeoFields::class);
         $parsedUrl = parse_url($model->urlPath);
@@ -122,7 +128,25 @@ class NotFoundService extends Component
             Db::parseParam('pattern', $parsedUrl['path'], '='),
             Db::parseParam('sourceMatch', 'pathWithoutParams', '=')
         ]);
-        return $redirect->one() ?? false;
+
+        if ($redirect->one()) {
+            return $redirect->one();
+        }
+
+        // get all regex redirects and loop through them to get the match in PHP
+        $regexRedirects = $this->getAllRegexRedirects($model);
+        foreach ($regexRedirects as $regexRedirect) {
+            $pattern = '`' . $regexRedirect->pattern . '`i';
+            if (preg_match(
+                    $pattern,
+                    $model->urlPath
+                ) === 1) {
+                $parsedUrl = preg_replace($pattern, $regexRedirect->redirect, $model->fullUrl);
+                return ["record" => $regexRedirect, "url" => $parsedUrl];
+            }
+        }
+
+        return false;
     }
 
 
@@ -187,5 +211,13 @@ class NotFoundService extends Component
             $this->deletetById($record->id);
         }
 
+    }
+
+    private function getAllRegexRedirects(NotFoundModel $model): array
+    {
+        $query = RedirectRecord::find();
+        $query->where(Db::parseParam('matchType', 'regexMatch'));
+        $query->andWhere(Db::parseParam('siteId', [$model->siteId, null], 'IN'));
+        return $query->all();
     }
 }

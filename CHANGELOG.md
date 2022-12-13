@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.2.0 - Unreleased
+### Added
+- 404's can now be filtered by All, handled only, not handled only
+- Regex matching for redirects
+
+## Fixed
+- Imported redirects are assigned a valued sourceMatch again [#67](https://github.com/studioespresso/craft-seo-fields/issues/67)
 
 ## 3.1.2 - 2022-10-20
 ### Fixed
