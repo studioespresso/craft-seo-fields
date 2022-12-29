@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 3.2.0 - Unreleased
+## 3.2.0 - 2022-12-29
 ### Added
 - 404's can now be filtered by All, handled only, not handled only
 - Regex matching for redirects
