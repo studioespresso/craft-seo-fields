@@ -70,14 +70,22 @@
         errors: data is defined ? data.getErrors('redirect') : ''
     }) }}
 
-    {{ forms.hidden({
+    {{ forms.selectField({
+        label: 'Match type'|t('seo-fields'),
+        instructions:'',
+        id: 'matchType',
         name: 'fields[matchType]',
         value: data.matchType ?? 'exact',
+        options: {
+            'exact': 'Exact match'|t('seo-fields'),
+            'regexMatch' : 'Regex match'|t('seo-fields')
+        }
     }) }}
 
     {{ forms.selectField({
         label: 'Method'|t('seo-fields'),
         id: 'method',
+        instructions: 'Select whether the redirect should be permanent or temporary.'|t('seo-fields'),
         name: 'fields[method]',
         options: { 302: '302', 301: '301'},
         value: data.method ?? '301',

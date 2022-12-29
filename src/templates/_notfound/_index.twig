@@ -16,7 +16,7 @@
 
 {% block contextMenu %}
     {% if craft.app.sites.getEditableSites()|length > 1 %}
-        <div id="revision-btn" class="btn menubtn"
+        <div id="sites-btn" class="btn menubtn"
              data-icon="world">{% if craft.app.request.getSegment(-1) == 'not-found' %}{{ "All sites"|t('seo-fields') }}{% else %}{{ currentSite.name }}{% endif %}</div>
         <div class="menu">
             <ul class="padded">
@@ -38,6 +38,31 @@
         </div>
         <input type="hidden" name="siteId" value="{{ currentSite.id }}">
     {% endif %}
+    <div id="handles-btn" class="btn menubtn"
+         data-icon="tool">{% if not craft.app.request.getParam('redirect') %}
+            {{ "All 404's"|t('seo-fields') }}{% else %}{{ craft.app.request.getParam('redirect') == "handled" ? "Handled" : "Not handled" }}{% endif %}</div>
+    <div class="menu">
+        <ul class="padded">
+            <li>
+                <a href="{{ url('seo-fields/not-found' ) }}"
+                   {% if not craft.app.request.getParam('redirect') %}class="sel" {% endif %}>
+                    {{ "All 404's"|t('seo-fields') }}
+                </a>
+            </li>
+            <li>
+                <a href="{{ url(craft.app.request.getUrl(), { redirect: "handled"}) }}"
+                   {% if craft.app.request.getParam("redirect") == "handled" %}class="sel"{% endif %}>
+                    {{ "Handled" }}
+                </a>
+            </li>
+            <li>
+                <a href="{{ url(craft.app.request.getUrl(), { redirect: "not-handled"}) }}"
+                   {% if craft.app.request.getParam("redirect") == "not-handled" %}class="sel"{% endif %}>
+                    {{ "Not handled" }}
+                </a>
+            </li>
+        </ul>
+    </div>
 {% endblock %}
 
 {% block actionButton %}

@@ -22,12 +22,17 @@ use yii\base\ExitException;
 class RedirectService extends Component
 {
 
-    public function handleRedirect(RedirectRecord $redirect)
+    public function handleRedirect(RedirectRecord|array $redirect)
     {
+        if (is_array($redirect)) {
+            $record = $redirect['record'];
+            $model = new RedirectModel($record->getAttributes());
+        } else {
+            $model = new RedirectModel($redirect->getAttributes());
+        }
         Craft::debug("Found a redirect for this 404, redirecting", SeoFields::class);
-        $model = new RedirectModel($redirect->getAttributes());
         $this->updateOnRedirect($model);
-        $this->redirect($model);
+        $this->redirect($redirect);
 
         try {
             Craft::$app->end();
@@ -58,6 +63,7 @@ class RedirectService extends Component
     {
         $model->counter++;
         $model->dateLastHit = DateTimeHelper::toIso8601(time());
+
         $model->validate();
         $this->saveRedirect($model);
     }
@@ -122,6 +128,8 @@ class RedirectService extends Component
             $model = new RedirectModel();
             $model->pattern = $row[$patternCol];
             $model->redirect = $row[$redirectCol];
+            $model->matchType = 'exact';
+            $model->sourceMatch = 'path';
             $model->siteId = $settings['siteId'];
             $model->method = $settings['method'];
             if (!$model->validate()) {
@@ -136,16 +144,23 @@ class RedirectService extends Component
         ];
     }
 
-    private function redirect(RedirectModel $redirectModel)
+    private function redirect(RedirectModel|RedirectRecord|array $redirect)
     {
+
         try {
-            if ($redirectModel->siteId) {
-                $url = UrlHelper::siteUrl($redirectModel->redirect, null, null, $redirectModel->siteId);
+            if (is_array($redirect)) {
+                $url = $redirect['url'];
+                $method = $redirect['record']->method;
             } else {
-                $url = $redirectModel->redirect;
+                $method = $redirect->method;
+                if ($redirect->siteId) {
+                    $url = UrlHelper::siteUrl($redirect->redirect, null, null, $redirect->siteId);
+                } else {
+                    $url = $redirect->redirect;
+                }
             }
             $response = Craft::$app->response;
-            $response->redirect($url, $redirectModel->method)->send();
+            $response->redirect($url, $method)->send();
         } catch (\Exception $e) {
         }
         return;
