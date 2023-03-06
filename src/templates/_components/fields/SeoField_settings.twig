@@ -42,6 +42,13 @@
      on: field.tabs|length ? field.tabs.twitter : 1,
  }) }}
 
+ {{ forms.lightswitchField({
+     label: "Show advanced tab"|t("seo-fields"),
+     id: "showAdvancedTab",
+     name: "tabs[advanced]",
+     on: field.tabs|length ? (field.tabs.advanced is defined and field.tabs.advanced) : 1,
+ }) }}
+
 
 <hr>
 <a class="fieldtoggle {% if field.allowSitenameOverwrite or field.allowSitenameDisable %}expanded{% endif %}"

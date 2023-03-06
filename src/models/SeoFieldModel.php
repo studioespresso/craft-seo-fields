@@ -25,6 +25,7 @@ class SeoFieldModel extends Model
     public $hideSiteName;
     public $siteId;
     public $canonical;
+    public $allowIndexing = 'yes';
 
     /**
      * @var SeoDefaultsModel
@@ -259,6 +260,7 @@ class SeoFieldModel extends Model
                     'twitterTitle',
                     'twitterDescription',
                     'twitterImage',
+                    'allowIndexing'
                 ],
                 'safe',
             ],

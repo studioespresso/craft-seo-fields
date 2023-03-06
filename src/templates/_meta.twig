@@ -1,8 +1,8 @@
 {# SEO Fields meta fields start #}
 
 {# Uncomment these lines when copying the template to your site templates #}
-{#{% set seoFields = getSeoFields() %}#}
-{#{% set meta = seoFields.meta %}#}
+{# {% set seoFields = getSeoFields() %} #}
+{# {% set meta = seoFields.meta %} #}
 
 {% if meta %}
     <title>{{ meta.getPageTitle(element) }}</title>
@@ -11,30 +11,35 @@
     <meta property="og:url" content="{{ craft.app.request.absoluteUrl }}"/>
     <meta property="og:type" content="website"/>
     <meta property="og:title" content="{{ meta.getOgTitle(element) }}"/>
-{% set ogImage = meta.getOgImage() %}
-{% if ogImage %}
-    <meta property="og:image" content="{{ ogImage.url }}"/>
-    <meta property="og:image:width" content="{{ ogImage.width }}"/>
-    <meta property="og:image:height" content="{{ ogImage.height }}"/>
-    <meta property="og:image:alt" content="{{ ogImage.alt }}"/>
-{% endif %}
+    {% set ogImage = meta.getOgImage() %}
+    {% if ogImage %}
+        <meta property="og:image" content="{{ ogImage.url }}"/>
+        <meta property="og:image:width" content="{{ ogImage.width }}"/>
+        <meta property="og:image:height" content="{{ ogImage.height }}"/>
+        <meta property="og:image:alt" content="{{ ogImage.alt }}"/>
+    {% endif %}
     <meta property="og:description" content="{{ meta.getOgDescription() }}"/>
     <meta property="og:site_name" content=""/>
     <meta property="og:locale" content="{{ currentSite.language }}"/>
     {# Twitter #}
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="" />
-    <meta name="twitter:url" content="{{ craft.app.request.absoluteUrl }}" />
-    <meta name="twitter:title" content="{{ meta.getTwitterTitle(element) }}" />
-    <meta name="twitter:description" content="{{ meta.getTwitterDescription() }}" />
-{% if ogImage %}
-    <meta name="twitter:image" content="{{ meta.getTwitterImage().url ?? ogImage.url }}" />
-{% endif %}
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:site" content=""/>
+    <meta name="twitter:url" content="{{ craft.app.request.absoluteUrl }}"/>
+    <meta name="twitter:title" content="{{ meta.getTwitterTitle(element) }}"/>
+    <meta name="twitter:description" content="{{ meta.getTwitterDescription() }}"/>
+    {% if ogImage %}
+        <meta name="twitter:image" content="{{ meta.getTwitterImage().url ?? ogImage.url }}"/>
+    {% endif %}
 
-    <link rel="canonical" href="{{ meta.getCanonical()  }}" />
-{% for alt in meta.getAlternate(element) %}
-    <link rel="alternate" hreflang="{{ alt.language }}" href="{{ alt.url }}" />
-{% endfor %}
+    {% if not meta.allowIndexing %}
+        <meta name="robots" content="noindex">
+    {% endif %}
+
+    <link rel="canonical" href="{{ meta.getCanonical() }}"/>
+
+    {% for alt in meta.getAlternate(element) %}
+        <link rel="alternate" hreflang="{{ alt.language }}" href="{{ alt.url }}"/>
+    {% endfor %}
 
 {% endif %}
 {# SEO Fields meta fields end #}
