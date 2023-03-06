@@ -338,7 +338,6 @@ class SitemapService extends Component
                     if ($productTypeSite->siteId == $site->id && $productTypeSite->hasUrls) {
                         return true;
                     }
-                    return false;
                 }
             } else {
                 return false;
