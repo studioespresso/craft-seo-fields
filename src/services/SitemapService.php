@@ -12,6 +12,7 @@ use craft\commerce\services\ProductTypes;
 use craft\db\Query;
 use craft\elements\Category;
 use craft\elements\Entry;
+use craft\helpers\Db;
 use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use craft\models\Site;
@@ -206,12 +207,16 @@ class SitemapService extends Component
         /** @var $entry Element */
         foreach ($entries as $entry) {
             $siteEntries =
-                (new Query())->select(['siteId', 'uri', 'language'])
+                (new Query())->select(['elements_sites.siteId', 'uri', 'language'])
                     ->from('{{%elements_sites}} as elements_sites')
                     ->leftJoin('{{%sites}} as sites', 'sites.id = elements_sites.siteId')
-                    ->where('[[elementId]] = ' . $entry->id)
-                    ->andWhere('sites.enabled = true')
-                    ->all();
+                    ->leftJoin('{{%content}}', 'elements_sites.elementId = content.elementId')
+                    ->where('[[elements_sites.elementId]] = ' . $entry->id)
+                    ->andWhere(Db::parseParam("JSON_EXTRACT(content.field_seo_ufsjioip, '$.allowIndexing')", "yes"))
+                    ->andWhere('sites.enabled = true')->all();
+            if(!$siteEntries) {
+                continue;
+            }
             $sites = array_filter($siteEntries, function ($item) use ($currentSite) {
                 if ($item['siteId'] != $currentSite->id) {
                     return true;
