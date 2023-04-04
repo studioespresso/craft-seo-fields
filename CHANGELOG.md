@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## 3.2.1 - 2023-04-04
+### Fixed
+- Fixed issue where elements weren't included in sitemaps in some cases ([#70](https://github.com/studioespresso/craft-seo-fields/issues/70))
+
 ## 3.2.0 - 2022-12-29
 ### Added
 - 404's can now be filtered by All, handled only, not handled only
