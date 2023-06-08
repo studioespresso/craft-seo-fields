@@ -158,9 +158,11 @@ class RedirectService extends Component
                 } else {
                     $url = $redirect->redirect;
                 }
+
             }
+
             $response = Craft::$app->response;
-            $response->redirect($url, $method)->send();
+            $response->redirect($url . "?" . Craft::$app->getRequest()->getQueryStringWithoutPath() , $method)->send();
         } catch (\Exception $e) {
         }
         return;
