@@ -162,7 +162,11 @@ class RedirectService extends Component
             }
 
             $response = Craft::$app->response;
-            $response->redirect($url . "?" . Craft::$app->getRequest()->getQueryStringWithoutPath() , $method)->send();
+            if(Craft::$app->getRequest()->getQueryStringWithoutPath()) {
+                $response->redirect($url . "?" . Craft::$app->getRequest()->getQueryStringWithoutPath() , $method)->send();
+            }
+
+            $response->redirect($url, $method)->send();
         } catch (\Exception $e) {
         }
         return;
