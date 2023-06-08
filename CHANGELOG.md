@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.2.2 - 2023-06-08
+### Fixed
+- Fixed issue where query parameters would be discarded on redirect
+- Fixed issue where 404's wouldn't always be saved.
+
 
 ## 3.2.1 - 2023-04-04
 ### Fixed
