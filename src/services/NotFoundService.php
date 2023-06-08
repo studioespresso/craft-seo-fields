@@ -61,7 +61,6 @@ class NotFoundService extends Component
     public function handleNotFound(Request $request, Site $site)
     {
         try {
-
             $notFoundRecord = NotFoundRecord::findOne(['fullUrl' => $request->getAbsoluteUrl(), 'urlPath' => $request->getUrl(), 'siteId' => $site->id]);
             if ($notFoundRecord) {
                 Craft::debug("Updating excisting 404", SeoFields::class);
@@ -92,12 +91,16 @@ class NotFoundService extends Component
                     $notFoundModel->redirect = $redirect->id;
                 }
                 $notFoundModel->handled = true;
-                $this->saveNotFound($notFoundModel);
+            }
+
+            $this->saveNotFound($notFoundModel);
+
+            if ($redirect) {
                 SeoFields::getInstance()->redirectService->handleRedirect($redirect);
             }
 
             $this->shouldWeCleanupRedirects();
-
+            
         } catch (Exception $e) {
             Craft::error($e->getMessage(), 'seo-fields');
         }

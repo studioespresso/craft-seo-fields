@@ -1,0 +1,33 @@
+{% import "_includes/forms" as forms %}
+
+<input type="radio" name="tabs" id="advanced-tab" class="seofields-tab"
+       {% if tabSelected %}checked="checked"{% endif %}>
+<label for="advanced-tab" class="label">{{ "Advanced"|t("seo-fields") }}</label>
+<div class="seofields-tab-content">
+
+    {#   <div class="field" > #}
+
+    {% set options = [ {
+        'label': 'Yes',
+        'value': 'yes'
+    },
+        {
+            'label': 'No',
+            'value': 'no'
+        }] %}
+
+    <div style="padding-top: 15px;">
+
+        {{ forms.selectField({
+            label: "Allow search engines to index this page?"|t("seo-fields"),
+            instructions: "Disabling this option will add a noindex header and will remove the page from any sitemaps",
+            id: "allowIndexing",
+            name: name ~ "[allowIndexing]",
+            required: true,
+            options: options,
+            value: value.allowIndexing is defined  ? value.allowIndexing : 'yes',
+            errors: errors is defined and errors.allowIndexing is defined ? errors.allowIndexing
+        }) }}
+
+    </div>
+</div>
