@@ -32,8 +32,7 @@ class NotFoundController extends Controller
                 $handled = 0;
             }
         }
-        $data = SeoFields::getInstance()->notFoundService->getAllNotFound('counter', $siteHandle, $handled);
-        return $this->renderTemplate('seo-fields/_notfound/_index', ['data' => $data]);
+        return $this->renderTemplate('seo-fields/_notfound/_index');
     }
 
     /**

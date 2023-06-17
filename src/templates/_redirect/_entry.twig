@@ -25,7 +25,7 @@
            instructions: 'For which site should this redirect be active?'|t('seo-fields'),
            id: 'siteId',
            name: 'fields[siteId]',
-           value: data.siteId ?? '',
+           value: data.siteId ?? (craft.app.request.getQueryParam('site') ?? ''),
            options: sites
        }) }}
     {% else %}

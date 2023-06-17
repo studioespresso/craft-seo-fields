@@ -175,7 +175,6 @@ class NotFoundService extends Component
         $record->setAttribute('redirect', $model->redirect);
         $record->setAttribute('handled', $model->handled);
         $record->setAttribute('dateLastHit', $model->dateLastHit);
-        $record->setAttribute('handled', $model->handled);
         if ($record->save()) {
             return true;
         }
