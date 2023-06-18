@@ -30,6 +30,7 @@ class CpApiController extends Controller
     {
 
         $sort = $this->request->getQueryParam('sort');
+        $search = $this->request->getQueryParam('search');
         if(!$sort) {
             $sort = "counter|desc";
         };
@@ -48,7 +49,15 @@ class CpApiController extends Controller
 
         if ($site) {
             $site = Craft::$app->getSites()->getSiteByHandle($site);
-            $query->where(Db::parseParam('siteId', $site->id));
+            $query->orWhere(Db::parseParam('siteId', $site->id));
+        }
+
+        if($search) {
+            $query->andWhere([
+                'or',
+                "urlPath LIKE '%{$search}%'",
+                "fullUrl LIKE '%{$search}%'"
+            ]);
         }
         if($total> $limit) {
             $query->offset($page * 10);
@@ -96,7 +105,6 @@ class CpApiController extends Controller
             ],
             'data' => $rows
         ]);
-
     }
 
 
