@@ -106,6 +106,20 @@ class NotFoundService extends Component
         }
     }
 
+    public function markAsHandled(NotFoundRecord|int $record): void {
+        if(is_int($record)) {
+            $query = NotFoundRecord::find();
+            $query->where(['id' => $record]);
+            $record = $query->one();
+
+        }
+
+        $record->setAttribute('handled', 1);
+        $record->save();
+        return;
+
+    }
+
     /**
      * @param NotFoundModel $model
      * @return RedirectModel|false
