@@ -3,9 +3,11 @@
 namespace studioespresso\seofields\controllers;
 
 use Craft;
+use craft\helpers\DateTimeHelper;
 use craft\helpers\Db;
 use craft\helpers\Template;
 use craft\helpers\UrlHelper;
+use craft\i18n\Locale;
 use craft\web\Controller;
 use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\records\DefaultsRecord;
@@ -55,12 +57,22 @@ class CpApiController extends Controller
         $query->orderBy($key . " " . $direction);
         $rows = [];
 
+        $allSites = Craft::$app->getSites()->getAllSites();
+
+        $formatter = Craft::$app->getFormatter();
         foreach ($query->all() as $row) {
+            $lastHit = DateTimeHelper::toDateTime($row->dateLastHit);
             $row = [
                 'id' => $row->id,
                 'title' => $row->urlPath,
                 'hits' => $row->counter,
-                'site' => $row->siteId,
+                'siteId' => $row->siteId,
+                'lastHit' => $formatter->asDatetime($lastHit, Locale::LENGTH_SHORT),
+                'site' => array_filter(array_map(function ($site) use ($row) {
+                    if($row->siteId === $site->id) {
+                        return $site->name;
+                    }
+                }, $allSites))[0] ,
                 'hasRedirect' => $row->handled ? $row->handled : $row,
             ];
 
