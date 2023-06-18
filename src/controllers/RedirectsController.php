@@ -150,11 +150,12 @@ class RedirectsController extends Controller
 
     }
 
-    public function actionDelete($id)
+    public function actionDelete()
     {
+        $id = $this->request->getBodyParam('id');
         if (SeoFields::getInstance()->redirectService->deleteRedirectById($id)) {
             Craft::$app->getSession()->setNotice(Craft::t('seo-fields', 'Redirect removed'));
-            $this->redirect(UrlHelper::cpUrl('seo-fields/redirects'));
+            return $this->asJson(['success' => true]);
         }
     }
 

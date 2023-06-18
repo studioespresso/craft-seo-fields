@@ -78,12 +78,6 @@
 <div id="seofields-notfound"></div>
 {% endblock %}
 
-{% set cols = [
-    { name: '__slot:title', title: "URL" },
-    { name: 'hits', title: 'Hits', sortField: 'counter' },
-    { name: 'hasRedirect', title: 'Redirect?', sortField: 'handled' },
-] %}
-
 {% js %}
     var columns = [
         {
