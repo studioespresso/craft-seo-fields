@@ -39,11 +39,12 @@ class NotFoundController extends Controller
      * @param $id
      * @throws \craft\errors\MissingComponentException
      */
-    public function actionDelete($id)
+    public function actionDelete()
     {
+        $id = $this->request->getBodyParam('id');
         if (SeoFields::getInstance()->notFoundService->deletetById($id)) {
             Craft::$app->getSession()->setNotice(Craft::t('seo-fields', '404 removed'));
-            $this->redirect(UrlHelper::cpUrl('seo-fields/not-found'));
+            return $this->asJson(['success' => true]);
         }
     }
 
