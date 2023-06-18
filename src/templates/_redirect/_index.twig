@@ -44,12 +44,6 @@
 {% endblock %}
 
 {% block actionButton %}
-    <div class="flex-grow pull-right texticon search icon clearable">
-        <form action="" method="get">
-            <input type="text" class="text" autocomplete="off" placeholder="{{ 'Search'|t }}" name="search"
-                   {% if craft.app.request.getParam('search') %}value="{{ craft.app.request.getParam('search') }}"{% endif %}>
-        </form>
-    </div>
     <form method="post" accept-charset="UTF-8" enctype="multipart/form-data">
         {{ csrfInput() }}
         {{ actionInput('seo-fields/redirects/upload') }}

@@ -130,8 +130,8 @@ class CpApiController extends Controller
         if ($search) {
             $query->andWhere([
                 'or',
-                "urlPath LIKE '%{$search}%'",
-                "fullUrl LIKE '%{$search}%'"
+                "pattern LIKE '%{$search}%'",
+                "redirect LIKE '%{$search}%'"
             ]);
         }
         if ($total > $limit) {
