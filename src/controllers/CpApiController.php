@@ -121,14 +121,12 @@ class CpApiController extends Controller
         $limit = 20;
 
         $query = RedirectRecord::find();
-
         $site = $this->request->getQueryParam('site');
 
         if ($site) {
             $site = Craft::$app->getSites()->getSiteByHandle($site);
             $query->orWhere(Db::parseParam('siteId', $site->id));
         }
-
         if ($search) {
             $query->andWhere([
                 'or',
@@ -146,6 +144,7 @@ class CpApiController extends Controller
         $allSites = Craft::$app->getSites()->getAllSites();
 
         $formatter = Craft::$app->getFormatter();
+
         $types = [
             'exact' => 'Exact match',
             'regexMatch' => 'Regex match',
@@ -154,6 +153,7 @@ class CpApiController extends Controller
         foreach ($query->all() as $row) {
             $lastHit = DateTimeHelper::toDateTime($row->dateLastHit);
             $row = [
+                'url' => UrlHelper::cpUrl("seo-fields/redirects/edit/{$row->id}"),
                 'id' => $row->id,
                 'title' => $row->pattern,
                 'redirect' => $row->redirect,

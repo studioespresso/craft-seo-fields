@@ -24,14 +24,14 @@
         <div class="menu">
             <ul class="padded">
                 <li>
-                    <a href="{{ url('seo-fields/not-found' ) }}"
-                       {% if craft.app.request.getSegment(-1) == 'not-found' %}class="sel" {% endif %}>
+                    <a href="{{ url('seo-fields/redirects' ) }}"
+                       {% if craft.app.request.getSegment(-1) == 'redirect' %}class="sel" {% endif %}>
                         {{ "All sites"|t('seo-fields') }}
                     </a>
                 </li>
                 {% for site in craft.app.sites.getEditableSites() %}
                     <li>
-                        <a href="{{ url('seo-fields/not-found/' ~ site.handle ) }}"
+                        <a href="{{ url('seo-fields/redirects/' ~ site.handle ) }}"
                            {% if site.handle == craft.app.request.getSegment(-1) %}class="sel"{% endif %}>
                             {{ site.name }}
                         </a>
@@ -62,52 +62,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="tableview tablepane">
-        <table class="data fullwidth collapsible">
-            <thead>
-            <tr>
-                <th>{{ "Pattern / URL"|t('seo-fields') }}</th>
-                <th>{{ "Redirect to"|t('seo-fields') }}</th>
-                {% if craft.app.getIsMultiSite() %}
-                    <th>{{ "Site"|t('seo-fields') }}</th>
-                {% endif %}
-                <th>{{ "Hits"|t('seo-fields') }}</th>
-                <th>{{ "Matched by"|t('seo-fields') }}</th>
-                <th>{{ "Last hit at"|t('seo-fields') }}</th>
-                <th>{{ "Method"|t('seo-fields') }}</th>
-                <th>{{ "Remove"|t('seo-fields') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for row in redirects %}
-                <tr>
-                    <td style="word-break: break-all"><a href="{{ cpUrl('seo-fields/redirects/edit/' ~ row.id) }}">{{ row.pattern }}</a></td>
-                    <td style="word-break: break-all">{{ row.redirect }}</td>
-                    {% if craft.app.getIsMultiSite() %}
-                        {% if row.siteId %}
-                            {% set site = craft.app.sites.getSiteById(row.siteId) %}
-                            {% set site = site.name %}
-                        {% else %}
-                            {% set site = 'All sites'|t('seo-fields') %}
-                        {% endif %}
-                        <td>{{ site }}</td>
-                    {% endif %}
-                    <td class="light">{{ row.counter ?? 0 }}</td>
-                    <td class="light">{{ row.sourceMatch == "url" ? 'Full url' : 'Path only' }}</td>
-                    <td class="light">{{ row.dateLastHit|length ? row.dateLastHit|date('d/m/Y H:i') : '-' }}</td>
-                    <td class="light">{{ row.method }}</td>
-                    <td><a href="{{ cpUrl('seo-fields/redirects/delete/' ~ row.id) }}" class="delete icon"
-                           title="Delete"></a>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-
     <div id="seofields-redirects"></div>
-
 {% endblock %}
 
 {% js %}
