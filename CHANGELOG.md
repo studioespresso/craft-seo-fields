@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.2.4 - 2023-06-30
+### Fixed
+- Fixed an error in the sitemap query where we were checking an incorrect collumn and not all items would be returend 
+
+
 ## 3.2.3 - 2023-06-08
 ### Fixed
 - Fixed issue where redirect would always get a ? appended
