@@ -124,7 +124,7 @@ class SeoFields extends Plugin
         $navItem['label'] = $this->getSettings()->pluginLabel;
         $currentUser = Craft::$app->getUser()->getIdentity();
         // Only show sub-navs the user has permission to view
-        if ($currentUser->can('seo-fields:defaults')) {
+        if ($currentUser->can('seo-fields:default')) {
             $subNavs['defaults'] = [
                 'label' => 'Meta',
                 'url' => 'seo-fields/defaults',
