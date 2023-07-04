@@ -106,6 +106,20 @@ class NotFoundService extends Component
         }
     }
 
+    public function markAsHandled(NotFoundRecord|int $record): void {
+        if(is_int($record)) {
+            $query = NotFoundRecord::find();
+            $query->where(['id' => $record]);
+            $record = $query->one();
+
+        }
+
+        $record->setAttribute('handled', 1);
+        $record->save();
+        return;
+
+    }
+
     /**
      * @param NotFoundModel $model
      * @return RedirectModel|false
@@ -175,7 +189,6 @@ class NotFoundService extends Component
         $record->setAttribute('redirect', $model->redirect);
         $record->setAttribute('handled', $model->handled);
         $record->setAttribute('dateLastHit', $model->dateLastHit);
-        $record->setAttribute('handled', $model->handled);
         if ($record->save()) {
             return true;
         }

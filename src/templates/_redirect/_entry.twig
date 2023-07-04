@@ -19,13 +19,20 @@
     {{ redirectInput('seo-fields/redirects') }}
     <input type="hidden" name="fields[siteId]" value="{{ currentSite.id }}">
     <input type="hidden" name="redirectId" value="{{ data.id ?? '' }}">
+
+    {{ forms.hidden({
+        name: 'record',
+        value: record ?? "",
+    }) }}
+
+
     {% if sites|length > 1 %}
        {{ forms.selectField({
            label: 'Enable for site'|t('seo-fields'),
            instructions: 'For which site should this redirect be active?'|t('seo-fields'),
            id: 'siteId',
            name: 'fields[siteId]',
-           value: data.siteId ?? '',
+           value: data.siteId ?? (craft.app.request.getQueryParam('site') ?? ''),
            options: sites
        }) }}
     {% else %}

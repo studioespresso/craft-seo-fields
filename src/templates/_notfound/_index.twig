@@ -14,6 +14,8 @@
     {'label': '404 Overview'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields/not-found')},
 ] %}
 
+{% do view.registerAssetBundle('craft\\web\\assets\\admintable\\AdminTableAsset') -%}
+
 {% block contextMenu %}
     {% if craft.app.sites.getEditableSites()|length > 1 %}
         <div id="sites-btn" class="btn menubtn"
@@ -21,15 +23,15 @@
         <div class="menu">
             <ul class="padded">
                 <li>
-                    <a href="{{ url('seo-fields/not-found' ) }}"
-                       {% if craft.app.request.getSegment(-1) == 'not-found' %}class="sel" {% endif %}>
+                    <a href="{{ url('seo-fields/not-found', {site: ''}) }}"
+                       {% if not craft.app.request.getQueryParam('site') %}class="sel" {% endif %}>
                         {{ "All sites"|t('seo-fields') }}
                     </a>
                 </li>
                 {% for site in craft.app.sites.getEditableSites() %}
                     <li>
-                        <a href="{{ url('seo-fields/not-found/' ~ site.handle ) }}"
-                           {% if site.handle == craft.app.request.getSegment(-1) %}class="sel"{% endif %}>
+                        <a href="{{ url('seo-fields/not-found/', {site: site.handle} ) }}"
+                           {% if site.handle == craft.app.request.getQueryParam('site') %}class="sel"{% endif %}>
                             {{ site.name }}
                         </a>
                     </li>
@@ -38,32 +40,33 @@
         </div>
         <input type="hidden" name="siteId" value="{{ currentSite.id }}">
     {% endif %}
-    <div id="handles-btn" class="btn menubtn"
-         data-icon="tool">{% if not craft.app.request.getParam('redirect') %}
-            {{ "All 404's"|t('seo-fields') }}{% else %}{{ craft.app.request.getParam('redirect') == "handled" ? "Handled" : "Not handled" }}{% endif %}</div>
-    <div class="menu">
-        <ul class="padded">
-            <li>
-                <a href="{{ url('seo-fields/not-found' ) }}"
-                   {% if not craft.app.request.getParam('redirect') %}class="sel" {% endif %}>
-                    {{ "All 404's"|t('seo-fields') }}
-                </a>
-            </li>
-            <li>
-                <a href="{{ url(craft.app.request.getUrl(), { redirect: "handled"}) }}"
-                   {% if craft.app.request.getParam("redirect") == "handled" %}class="sel"{% endif %}>
-                    {{ "Handled" }}
-                </a>
-            </li>
-            <li>
-                <a href="{{ url(craft.app.request.getUrl(), { redirect: "not-handled"}) }}"
-                   {% if craft.app.request.getParam("redirect") == "not-handled" %}class="sel"{% endif %}>
-                    {{ "Not handled" }}
-                </a>
-            </li>
-        </ul>
-    </div>
+{#    <div id="handles-btn" class="btn menubtn"#}
+{#         data-icon="tool">{% if not craft.app.request.getParam('redirect') %}#}
+{#            {{ "All 404's"|t('seo-fields') }}{% else %}{{ craft.app.request.getParam('redirect') == "handled" ? "Handled" : "Not handled" }}{% endif %}</div>#}
+{#    <div class="menu">#}
+{#        <ul class="padded">#}
+{#            <li>#}
+{#                <a href="{{ url('seo-fields/not-found' ) }}"#}
+{#                   {% if not craft.app.request.getParam('redirect') %}class="sel" {% endif %}>#}
+{#                    {{ "All 404's"|t('seo-fields') }}#}
+{#                </a>#}
+{#            </li>#}
+{#            <li>#}
+{#                <a href="{{ url(craft.app.request.getUrl(), { redirect: "handled"}) }}"#}
+{#                   {% if craft.app.request.getParam("redirect") == "handled" %}class="sel"{% endif %}>#}
+{#                    {{ "Handled" }}#}
+{#                </a>#}
+{#            </li>#}
+{#            <li>#}
+{#                <a href="{{ url(craft.app.request.getUrl(), { redirect: "not-handled"}) }}"#}
+{#                   {% if craft.app.request.getParam("redirect") == "not-handled" %}class="sel"{% endif %}>#}
+{#                    {{ "Not handled" }}#}
+{#                </a>#}
+{#            </li>#}
+{#        </ul>#}
+{#    </div>#}
 {% endblock %}
+
 
 {% block actionButton %}
     {% set confirmation = "Are you sure you want to remove all tracked 404's?"|t('seo-fields') %}
@@ -72,53 +75,55 @@
 {% endblock %}
 
 {% block content %}
-    <div class="tableview tablepane">
-        <table class="data fullwidth collapsible">
-            <thead>
-            <tr>
-                <th>{{ "URL"|t('seo-fields') }}</th>
-                <th>{{ "Hits"|t('seo-fields') }}</th>
-                {% if craft.app.request.getSegment(-1) == 'not-found' and craft.app .getIsMultiSite() %}
-                    <th>{{ "Site"|t('seo-fields') }}</th>
-                {% endif %}
-                <th>{{ "Linked from"|t('seo-fields') }}</th>
-                <th>{{ "Redirect?"|t('seo-fields') }}</th>
-                <th>{{ "Remove"|t('seo-fields') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-
-            {% for row in data %}
-                <tr>
-                    <td title="{{ "Last visited on"|t }} {{ row.dateLastHit|date('d/m/Y H:i:s') }}" style="word-break: break-all">
-                        {{ row.urlPath }}
-                    </td>
-                    <td>{{ row.counter }}</td>
-                    {% if craft.app.request.getSegment(-1) == 'not-found' and craft.app .getIsMultiSite() %}
-                        {% set site = craft.app.sites.getSiteById(row.siteId) %}
-                        <td>{{ site.name }}</td>
-                    {% endif %}
-                    <td class="light center">
-                        <a href="{{ row.referrer }}" target="_blank">
-                            <span data-icon="globe"></span>
-                        </a>
-                    </td>
-                    <td class="">
-                        {% if row.redirect %}
-                            <a href="{{ cpUrl('seo-fields/redirects/edit/' ~ row.redirect) }}"><span data-icon="check"
-                                                                                                     style="color: green;"></span></a>
-                        {% else %}
-                            <a href="{{ cpUrl('seo-fields/redirects/add', {pattern : row.urlPath}) }}"><span
-                                        data-icon="plus"></span></a>
-                        {% endif %}
-                    </td>
-                    <td class="">
-                        <a href="{{ cpUrl('seo-fields/not-found/delete/' ~ row.id) }}" class="delete icon"
-                           title="Delete"></a>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+<div id="seofields-notfound"></div>
 {% endblock %}
+
+{% js %}
+    var columns = [
+        {
+            name: '__slot:title',
+            title: Craft.t('seo-fields', 'URL'),
+        },
+        {
+            name: 'hits',
+            title: Craft.t('seo-fields', 'Hits'),
+            sortField: 'counter'
+        },
+        {
+            name: 'site',
+            title: Craft.t('seo-fields', 'Site'),
+
+        },
+        {
+            name: 'lastHit',
+            title: Craft.t('seo-fields', 'Last visit'),
+
+        },
+        {
+            name: 'hasRedirect',
+            title: 'Redirect?',
+            sortField: 'handled',
+            callback: function(value) {
+                if (typeof value != 'object') {
+                    return '<span data-icon="check" style="color: green;"></span>';
+                }
+
+                var url = "{{ cpUrl('seo-fields/redirects/add') }}" + "&pattern=" + value.urlPath + "&site=" + value.siteId + "&record=" + value.id;
+                return '<a class="add icon" href="' + url + '" title="Add"></a>';
+            }
+        }
+
+    ];
+
+    new Craft.VueAdminTable({
+    container: '#seofields-notfound',
+    columns: columns,
+    tableDataEndpoint: "{{ cpUrl('seo-fields/cp-api/not-found', {site: craft.app.request.getQueryParam('site', '')} ) }}" ,
+    deleteAction: 'seo-fields/not-found/delete',
+    checkboxes:  0,
+    search: true,
+    allowMultipleSelections: false,
+    perPage: 10,
+    });
+
+{% endjs %}

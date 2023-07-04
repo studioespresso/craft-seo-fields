@@ -32,19 +32,19 @@ class NotFoundController extends Controller
                 $handled = 0;
             }
         }
-        $data = SeoFields::getInstance()->notFoundService->getAllNotFound('counter', $siteHandle, $handled);
-        return $this->renderTemplate('seo-fields/_notfound/_index', ['data' => $data]);
+        return $this->renderTemplate('seo-fields/_notfound/_index');
     }
 
     /**
      * @param $id
      * @throws \craft\errors\MissingComponentException
      */
-    public function actionDelete($id)
+    public function actionDelete()
     {
+        $id = $this->request->getBodyParam('id');
         if (SeoFields::getInstance()->notFoundService->deletetById($id)) {
             Craft::$app->getSession()->setNotice(Craft::t('seo-fields', '404 removed'));
-            $this->redirect(UrlHelper::cpUrl('seo-fields/not-found'));
+            return $this->asJson(['success' => true]);
         }
     }
 
