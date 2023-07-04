@@ -44,7 +44,6 @@ class CpApiController extends Controller
         $limit = 20;
 
         $query = NotFoundRecord::find();
-
         $site = $this->request->getQueryParam('site');
         if ($site) {
             $site = Craft::$app->getSites()->getSiteByHandle($site);
@@ -76,11 +75,7 @@ class CpApiController extends Controller
                 'hits' => $row->counter,
                 'siteId' => $row->siteId,
                 'lastHit' => $formatter->asDatetime($lastHit, Locale::LENGTH_SHORT),
-                'site' => array_filter(array_map(function ($site) use ($row) {
-                    if ($row->siteId === $site->id) {
-                        return $site->name;
-                    }
-                }, $allSites))[0],
+                'site' => Craft::$app->getSites()->getSiteById($row->siteId)->name,
                 'hasRedirect' => $row->handled ? $row->handled : $row,
             ];
 
@@ -106,7 +101,7 @@ class CpApiController extends Controller
         ]);
     }
 
-    public function actionRedirect()
+    public function actionRedirects()
     {
         $sort = $this->request->getQueryParam('sort');
         $search = $this->request->getQueryParam('search');
@@ -121,8 +116,8 @@ class CpApiController extends Controller
         $limit = 20;
 
         $query = RedirectRecord::find();
-        $site = $this->request->getQueryParam('site');
 
+        $site = $this->request->getQueryParam('site');
         if ($site) {
             $site = Craft::$app->getSites()->getSiteByHandle($site);
             $query->orWhere(Db::parseParam('siteId', $site->id));
@@ -158,12 +153,8 @@ class CpApiController extends Controller
                 'title' => $row->pattern,
                 'redirect' => $row->redirect,
                 'counter' => $row->counter,
-                'site' => array_filter(array_map(function ($site) use ($row) {
-                    if ($row->siteId === $site->id) {
-                        return $site->name;
-                    }
-                }, $allSites))[0],
-                'lastHit' => $formatter->asDatetime($lastHit, Locale::LENGTH_SHORT),
+                'site' => !$row->siteId ? "All" : Craft::$app->getSites()->getSiteById($row->siteId)->name,
+                'lastHit' => $lastHit ? $formatter->asDatetime($lastHit, Locale::LENGTH_SHORT) : "",
                 'method' => $row->method,
                 'matchType' => $types[$row->matchType],
             ];

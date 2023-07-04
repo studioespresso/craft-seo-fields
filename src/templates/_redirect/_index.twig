@@ -24,15 +24,15 @@
         <div class="menu">
             <ul class="padded">
                 <li>
-                    <a href="{{ url('seo-fields/redirects' ) }}"
-                       {% if craft.app.request.getSegment(-1) == 'redirect' %}class="sel" {% endif %}>
+                    <a href="{{ url('seo-fields/redirects', {site: ''}) }}"
+                       {% if not craft.app.request.getQueryParam('site') %}class="sel" {% endif %}>
                         {{ "All sites"|t('seo-fields') }}
                     </a>
                 </li>
                 {% for site in craft.app.sites.getEditableSites() %}
                     <li>
-                        <a href="{{ url('seo-fields/redirects/' ~ site.handle ) }}"
-                           {% if site.handle == craft.app.request.getSegment(-1) %}class="sel"{% endif %}>
+                        <a href="{{ url('seo-fields/redirects/', {site: site.handle} ) }}"
+                           {% if site.handle == craft.app.request.getQueryParam('site') %}class="sel"{% endif %}>
                             {{ site.name }}
                         </a>
                     </li>
@@ -68,7 +68,6 @@
         {
             name: 'redirect',
             title: Craft.t('seo-fields', 'Redirect to'),
-            sortField: 'counter'
         },
         {
             name: 'site',
@@ -77,7 +76,7 @@
         {
             name: 'counter',
             title: Craft.t('seo-fields', 'Hits'),
-
+            sortField: 'counter'
         },
         {
             name: 'matchType',
@@ -86,17 +85,20 @@
         {
             name: 'lastHit',
             title: Craft.t('seo-fields', 'Last hit at'),
-        },
+            sortField: 'dateLastHit'
+
+    },
         {
             name: 'method',
-            title: Craft.t('seo-fields', 'Method')
+            title: Craft.t('seo-fields', 'Method'),
+            sortField: 'method'
         }
     ];
 
     new Craft.VueAdminTable({
     container: '#seofields-redirects',
     columns: columns,
-    tableDataEndpoint: "{{ cpUrl('seo-fields/cp-api/redirect') }}" ,
+    tableDataEndpoint: "{{ cpUrl('seo-fields/cp-api/redirects', {site: craft.app.request.getQueryParam('site', '')} ) }}" ,
     deleteAction: 'seo-fields/redirects/delete',
     checkboxes:  0,
     search: true,
