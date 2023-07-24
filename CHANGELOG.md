@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 - Fixed a permissions issue where users would never get to see the "Default" menu ([#77](https://github.com/studioespresso/craft-seo-fields/issues/77))
 - Removed the self-referencing canoncincal on 404 pages ([#71](https://github.com/studioespresso/craft-seo-fields/issues/71))
-
+- Use full path for canonical URLs ([#78](https://github.com/studioespresso/craft-seo-fields/issues/78))
 
 
 ## 3.2.4 - 2023-06-30
