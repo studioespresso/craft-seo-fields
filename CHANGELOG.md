@@ -4,10 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.3.0 - 2023-07-24
+### Added
+- Overview of 404s and redirects are now using Craft's internal adminTable, making them much more performant.
+
+### Fixed
+- Fixed a permissions issue where users would never get to see the "Default" menu ([#77](https://github.com/studioespresso/craft-seo-fields/issues/77))
+- Removed the self-referencing canonical on 404 pages ([#71](https://github.com/studioespresso/craft-seo-fields/issues/71))
+- Use full path for canonical URLs ([#78](https://github.com/studioespresso/craft-seo-fields/issues/78))
+
 ## 3.2.4 - 2023-06-30
 ### Fixed
-- Fixed an error in the sitemap query where we were checking an incorrect collumn and not all items would be returend 
-
+- Fixed an error in the sitemap query where we were checking an incorrect collumn and not all items would be returned 
 
 ## 3.2.3 - 2023-06-08
 ### Fixed

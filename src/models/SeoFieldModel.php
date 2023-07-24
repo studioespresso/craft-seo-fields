@@ -71,7 +71,7 @@ class SeoFieldModel extends Model
     public function getCanonical()
     {
         $request = Craft::$app->getRequest();
-        return Craft::$app->getSites()->getCurrentSite()->baseUrl . $request->pathInfo;
+        return Craft::$app->getSites()->getCurrentSite()->baseUrl . $request->getFullPath();
     }
 
     public function getOgTitle($element)
@@ -126,7 +126,7 @@ class SeoFieldModel extends Model
         return [
             'height' => $asset->getHeight($transform),
             'width' => $asset->getWidth($transform),
-            'url' => $asset->getUrl($transform),
+            'url' => $asset->getUrl($transform, true),
             'alt' => $asset->title,
         ];
     }
@@ -149,7 +149,7 @@ class SeoFieldModel extends Model
         return [
             'height' => $asset->getHeight($transform),
             'width' => $asset->getWidth($transform),
-            'url' => $asset->getUrl($transform),
+            'url' => $asset->getUrl($transform, true),
             'alt' => $asset->title,
         ];
     }

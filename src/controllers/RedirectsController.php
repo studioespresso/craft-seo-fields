@@ -31,6 +31,7 @@ class RedirectsController extends Controller
     {
         return $this->renderTemplate('seo-fields/_redirect/_entry', [
             'pattern' => Craft::$app->getRequest()->getParam('pattern') ?? null,
+            'record' => Craft::$app->getRequest()->getParam('record') ?? null,
             'sites' => $this->getSitesMenu()
         ]);
     }
@@ -46,7 +47,8 @@ class RedirectsController extends Controller
 
     public function actionSave()
     {
-        $id = Craft::$app->getRequest()->getBodyParam('redirectId');
+        $id = $this->request->getBodyParam('redirectId');
+        $record = $this->request->getBodyParam('record');
         if ($id) {
             $model = SeoFields::getInstance()->redirectService->getRedirectById($id);
         } else {
@@ -58,6 +60,9 @@ class RedirectsController extends Controller
         if ($model->validate()) {
             $saved = SeoFields::getInstance()->redirectService->saveRedirect($model);
             if ($saved) {
+                if($record) {
+                    SeoFields::getInstance()->notFoundService->markAsHandled($record);
+                }
                 Craft::$app->getSession()->setNotice(Craft::t('seo-fields', 'Redirect saved'));
                 $this->redirectToPostedUrl();
             }
@@ -145,11 +150,12 @@ class RedirectsController extends Controller
 
     }
 
-    public function actionDelete($id)
+    public function actionDelete()
     {
+        $id = $this->request->getBodyParam('id');
         if (SeoFields::getInstance()->redirectService->deleteRedirectById($id)) {
             Craft::$app->getSession()->setNotice(Craft::t('seo-fields', 'Redirect removed'));
-            $this->redirect(UrlHelper::cpUrl('seo-fields/redirects'));
+            return $this->asJson(['success' => true]);
         }
     }
 
