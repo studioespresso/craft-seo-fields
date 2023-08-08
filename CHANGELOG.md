@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.0.12 - 2023-08-08
+### Fixed
+- Fixed an issue where `getDefaults()` wouldn't get called when not using the base template ([#80](https://github.com/studioespresso/craft-seo-fields/pull/80))
+
+
 ## 2.0.11 - 2023-05-31
 ### Fixed
 - Fixed error when creating new redirects
