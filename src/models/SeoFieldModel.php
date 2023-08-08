@@ -31,6 +31,11 @@ class SeoFieldModel extends Model
      */
     public $siteDefault;
 
+    public function init()
+    {
+        $this->getDefaults();
+    }
+
     public function getDefaults()
     {
         if ($this->siteId) {
