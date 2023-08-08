@@ -18,7 +18,7 @@ class DefaultsController extends Controller
         unset($params['p']);
         $currentUser = Craft::$app->getUser()->getIdentity();
         $primarySite = Craft::$app->sites->getPrimarySite();
-        if ($currentUser->can('seo-fields:defaults')) {
+        if ($currentUser->can('seo-fields:default')) {
             $this->redirect(UrlHelper::cpUrl("seo-fields/defaults/$primarySite->handle", $params));
 
         } elseif ($currentUser->can('seo-fields:notfound')) {

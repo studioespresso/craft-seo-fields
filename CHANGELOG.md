@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.3.1 - 2023-08-08
+### Fixed
+- Permissions for defaults are now really fixed ([#77](https://github.com/studioespresso/craft-seo-fields/issues/77))
+- Canoncial urls now take into account pagination and multsite subfolders ([#78](https://github.com/studioespresso/craft-seo-fields/issues/78))
+
+
 ## 3.3.0 - 2023-07-24
 ### Added
 - Overview of 404s and redirects are now using Craft's internal adminTable, making them much more performant.

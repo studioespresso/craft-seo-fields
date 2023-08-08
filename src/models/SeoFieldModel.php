@@ -71,7 +71,7 @@ class SeoFieldModel extends Model
     public function getCanonical()
     {
         $request = Craft::$app->getRequest();
-        return Craft::$app->getSites()->getCurrentSite()->baseUrl . $request->getFullPath();
+        return $request->hostInfo .'/' . $request->getPathInfo(true);
     }
 
     public function getOgTitle($element)

@@ -1,5 +1,5 @@
 {# @var craft \craft\web\twig\variables\CraftVariable #}
-{% if not currentUser.can('seo-fields:defaults') %}
+{% if not currentUser.can('seo-fields:default') %}
     {% exit 401 %}
 {% endif %}
 
