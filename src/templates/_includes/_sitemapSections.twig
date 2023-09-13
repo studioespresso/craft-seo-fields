@@ -11,9 +11,8 @@
         <tr>
             <th>{{ 'Section'|t('seo-fields') }}</th>
             <th>{{ 'Update frequency'|t('seo-fields') }}
-                <span class="info">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                    </span>
+{#                <span class="info">#}
+{#                    </span>#}
             </th>
             <th>Priority
                 <span class="info">
@@ -26,7 +25,7 @@
         <tbody>
 
         {% set sitemapSettings = data.sitemap|json_decode %}
-        {% for section in allSections %}
+        {% for section in sections %}
             {% set settings = attribute(sitemapSettings.entry, section.id) ?? [] %}
             <tr>
                 <th>{{ section.name }}</th>

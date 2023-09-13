@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.3.2 - 2023-09-13
+### Fixed
+- Fixed an issue where sitemaps couldn't be saved for different sites
+
 ## 3.3.1 - 2023-08-08
 ### Fixed
 - Permissions for defaults are now really fixed ([#77](https://github.com/studioespresso/craft-seo-fields/issues/77))

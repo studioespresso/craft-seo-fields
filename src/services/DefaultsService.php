@@ -26,11 +26,12 @@ class DefaultsService extends Component
         $record = DefaultsRecord::findOne(
             ['siteId' => $siteId]
         );
+
         if (!$record) {
             $record = new DefaultsRecord();
         }
         $record->setAttribute('defaultMeta', $model->toArray(['defaultSiteTitle', 'defaultMetaDescription', 'titleSeperator', 'defaultImage']));
-        $record->setAttribute('siteId', $model->siteId);
+        $record->setAttribute('siteId', $model->siteId ?? $siteId);
         $record->setAttribute('enableRobots', $model->enableRobots);
         $record->setAttribute('robots', $model->robots);
         $record->setAttribute('sitemap', $model->sitemap);

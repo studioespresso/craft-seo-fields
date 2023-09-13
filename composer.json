@@ -2,7 +2,7 @@
     "name": "studioespresso/craft-seo-fields",
     "description": "Fields for your SEO & OG meta data",
     "type": "craft-plugin",
-    "version": "3.3.1",
+    "version": "3.3.2",
     "keywords": [
         "craft",
         "cms",
@@ -18,7 +18,7 @@
     "authors": [
         {
             "name": "Studio Espresso",
-            "homepage": "https://www.studioespresso.dev"
+            "homepage": "https://www.studioespresso.co"
         },
         {
             "name": "Jan Henckens",

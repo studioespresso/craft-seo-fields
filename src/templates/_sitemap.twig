@@ -33,7 +33,7 @@
 {% block content %}
     {{ actionInput('seo-fields/sitemap/save') }}
     {% if sitemapPerSite %}
-        <input type="hidden" name="siteId" value="{{ currentSite.id }}">
+        <input type="hidden" name="siteId" value="{{ selectedSite.id }}">
     {% endif %}
 
     {% if data.id is defined %}
