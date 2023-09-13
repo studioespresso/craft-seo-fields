@@ -34,11 +34,12 @@ class DefaultsController extends Controller
 
     public function actionSettings($siteHandle = null)
     {
-        $currentSite = Craft::$app->sites->getSiteByHandle($siteHandle);
-        Craft::$app->sites->setCurrentSite($currentSite);
-        $data = SeoFields::$plugin->defaultsService->getDataBySite($currentSite);
+        $site = Craft::$app->sites->getSiteByHandle($siteHandle);
+        Craft::$app->sites->setCurrentSite($site);
+        $data = SeoFields::$plugin->defaultsService->getDataBySite($site);
         return $this->renderTemplate('seo-fields/_defaults', [
-            'data' => $data
+            'data' => $data,
+            'selectedSite' => $site
         ]);
 
     }

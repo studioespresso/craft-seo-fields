@@ -4,6 +4,7 @@ namespace studioespresso\seofields\controllers;
 
 use Craft;
 use craft\helpers\Template;
+use craft\records\Section_SiteSettings;
 use craft\web\Controller;
 use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\records\DefaultsRecord;
@@ -23,10 +24,19 @@ class SitemapController extends Controller
 
     public function actionSettings($siteHandle = null)
     {
+        $site = Craft::$app->getSites()->getSiteByHandle($siteHandle);
+        Craft::$app->getSites()->getSiteByHandle($site);
+        $sectionsForSite = Section_SiteSettings::findAll(['siteId' => $site->id]);
+        $sections = [];
+        foreach($sectionsForSite as $s) {
+            $sections[] = Craft::$app->getSections()->getSectionById($s->sectionId);
+        }
         $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($siteHandle);
         return $this->renderTemplate('seo-fields/_sitemap', [
             'data' => $data,
-            'sitemapPerSite' => SeoFields::$plugin->getSettings()->sitemapPerSite
+            'sitemapPerSite' => SeoFields::$plugin->getSettings()->sitemapPerSite,
+            'sections' => $sections,
+            'selectedSite' => $site
         ]);
     }
 
@@ -38,10 +48,11 @@ class SitemapController extends Controller
         } else {
             $model = new SeoDefaultsModel();
         }
+
         $data['sitemap'] = Craft::$app->getRequest()->getBodyParam('data');
         $data['siteId'] = Craft::$app->getRequest()->getBodyParam('siteId', Craft::$app->getSites()->getPrimarySite()->id);
         $model->setAttributes($data);
-        SeoFields::$plugin->defaultsService->saveDefaults($model, Craft::$app->sites->currentSite->id);
+        SeoFields::$plugin->defaultsService->saveDefaults($model, $data['siteId']);
         SeoFields::$plugin->sitemapSerivce->clearCaches();
     }
 
