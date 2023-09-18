@@ -32,6 +32,16 @@ class SeoFieldModel extends Model
      */
     public $siteDefault;
 
+    public function init(): void
+    {
+        if ($this->siteId) {
+            $site = Craft::$app->getSites()->getSiteById($this->siteId);
+        } else {
+            $site = Craft::$app->getSites()->getCurrentSite();
+        }
+        $this->siteDefault = SeoFields::getInstance()->defaultsService->getDataBySite($site);
+    }
+
     public function getDefaults()
     {
         if ($this->siteId) {
@@ -74,7 +84,7 @@ class SeoFieldModel extends Model
         return $request->hostInfo .'/' . $request->getPathInfo(true);
     }
 
-    public function getOgTitle($element)
+    public function getOgTitle($element = null)
     {
         if ($this->facebookTitle) {
             return $this->facebookTitle . $this->getSiteNameWithSeperator();
@@ -83,7 +93,7 @@ class SeoFieldModel extends Model
         }
     }
 
-    public function getTwitterTitle($element)
+    public function getTwitterTitle($element = null)
     {
         if ($this->twitterTitle) {
             return $this->twitterTitle . $this->getSiteNameWithSeperator();
@@ -154,7 +164,7 @@ class SeoFieldModel extends Model
         ];
     }
 
-    public function getAlternate($element)
+    public function getAlternate($element = null)
     {
         if (!$element) {
             return false;

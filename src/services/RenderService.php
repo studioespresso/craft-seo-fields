@@ -76,7 +76,7 @@ class RenderService extends Component
                 $meta = new SeoFieldModel();
             }
 
-            return ['meta' => $meta, 'entry' => $element];
+            return ['meta' => $meta, 'entry' => $element, 'element' => $element];
 
         } catch (\Exception $e) {
             return null;
