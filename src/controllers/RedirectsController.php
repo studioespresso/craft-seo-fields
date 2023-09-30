@@ -175,12 +175,6 @@ class RedirectsController extends Controller
 
     private function getHeaders($reader)
     {
-        // Support for league/csv v8 with a header
-        try {
-            return $reader->fetchOne(0);
-        } catch (\Throwable $e) {
-        }
-
         try {
             $reader->setHeaderOffset(0);
             return $reader->getHeader();
@@ -189,10 +183,6 @@ class RedirectsController extends Controller
     }
     private function getRows(Reader $reader)
     {
-        try {
-            return $reader->fetchAll();
-        } catch (\Throwable $e) {
-        }
 
         try {
             return $reader->getIterator();

@@ -93,10 +93,6 @@ class NotFoundService extends Component
         return;
     }
 
-    /**
-     * @param NotFoundModel $model
-     * @return RedirectModel|false
-     */
     private function getMatchingRedirect(NotFoundModel $model): RedirectRecord|array|bool
     {
         Craft::debug("Check if our 404 is matched to a redirect", SeoFields::class);
@@ -197,6 +193,9 @@ class NotFoundService extends Component
         $toDelete->limit($limit);
         $toDelete->orderBy("dateCreated ASC");
         foreach ($toDelete->all() as $record) {
+            /**
+             * @var NotFoundRecord|null $record
+             */
             $this->deletetById($record->id);
         }
     }

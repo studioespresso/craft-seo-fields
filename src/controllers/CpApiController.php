@@ -17,7 +17,6 @@ class CpApiController extends Controller
     public const REDIRECT_BASE = "seo-fields/cp-api/redirect";
 
     /**
-     * @param null $siteHandle
      * @return \yii\web\Response
      */
     public function actionNotFound()
@@ -58,6 +57,9 @@ class CpApiController extends Controller
 
         $formatter = Craft::$app->getFormatter();
         foreach ($query->all() as $row) {
+            /**
+             * @var NotFoundRecord|null $row
+             */
             $lastHit = DateTimeHelper::toDateTime($row->dateLastHit);
             $row = [
                 'id' => $row->id,
@@ -136,6 +138,9 @@ class CpApiController extends Controller
         ];
 
         foreach ($query->all() as $row) {
+            /**
+             * @var RedirectRecord|null $row
+             */
             $lastHit = DateTimeHelper::toDateTime($row->dateLastHit);
             $row = [
                 'url' => UrlHelper::cpUrl("seo-fields/redirects/edit/{$row->id}"),

@@ -11,6 +11,7 @@
 namespace studioespresso\seofields;
 
 use Craft;
+use craft\base\Model;
 use craft\base\Plugin;
 use craft\events\ElementEvent;
 use craft\events\EntryTypeEvent;
@@ -158,11 +159,7 @@ class SeoFields extends Plugin
         return $navItem;
     }
 
-    // Protected Methods
-    // =========================================================================
-    // Protected Methods
-    // =========================================================================
-    protected function createSettingsModel(): ?craft\base\Model
+    protected function createSettingsModel(): ? Model
     {
         return new Settings();
     }

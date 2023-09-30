@@ -11,6 +11,16 @@ use craft\db\ActiveRecord;
  */
 class RedirectRecord extends ActiveRecord
 {
+
+    public $id;
+    public $dateLastHit;
+    public $counter;
+    public $matchType;
+    public $method;
+    public $siteId;
+    public $redirect;
+    public $pattern;
+
     // Public Static Methods
     // =========================================================================
     public static function tableName()

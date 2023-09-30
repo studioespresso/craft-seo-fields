@@ -11,6 +11,15 @@ use craft\db\ActiveRecord;
  */
 class NotFoundRecord extends ActiveRecord
 {
+
+    public $id;
+    public $dateLastHit;
+    public $urlPath;
+    public $matchType;
+    public $siteId;
+    public $counter;
+    public $handled;
+
     // Public Static Methods
     // =========================================================================
     public static function tableName()
