@@ -2,15 +2,14 @@
 
 namespace studioespresso\seofields\services;
 
-use craft\base\Model;
+use Craft;
+use craft\base\Component;
 use craft\helpers\Json;
 use craft\models\Site;
 use studioespresso\seofields\models\SeoDefaultsModel;
+
 use studioespresso\seofields\records\DefaultsRecord;
 use studioespresso\seofields\SeoFields;
-
-use Craft;
-use craft\base\Component;
 
 /**
  * @author    Studio Espresso
@@ -69,7 +68,7 @@ class DefaultsService extends Component
                     'id' => $record->id,
                     'enableRobots' => $record->enableRobots,
                     'robots' => $record->robots,
-                    'sitemap' => $record->sitemap
+                    'sitemap' => $record->sitemap,
                 ]);
             $model->setAttributes($fields);
             return $model;
@@ -78,7 +77,8 @@ class DefaultsService extends Component
         }
     }
 
-    public function getDataBySiteHandle($handle) {
+    public function getDataBySiteHandle($handle)
+    {
         $site = Craft::$app->sites->getSiteByHandle($handle);
         return $this->getDataBySiteId($site->id);
     }
@@ -101,7 +101,7 @@ class DefaultsService extends Component
             $model = new SeoDefaultsModel();
             $fields = [
                 'enableRobots' => $record->enableRobots,
-                'robots' => $record->robots
+                'robots' => $record->robots,
             ];
             $model->setAttributes($fields);
             return $model;
@@ -118,9 +118,9 @@ class DefaultsService extends Component
 
     public function copyDefaultsForSite(Site $site, $oldPrimarySiteId)
     {
-      $defaults = $this->getDataBySiteId($oldPrimarySiteId);
-      $defaults->siteId = $site->id;
-      $this->saveDefaults($defaults, $site->id);
-      return true;
+        $defaults = $this->getDataBySiteId($oldPrimarySiteId);
+        $defaults->siteId = $site->id;
+        $this->saveDefaults($defaults, $site->id);
+        return true;
     }
 }

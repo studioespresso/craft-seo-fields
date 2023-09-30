@@ -2,14 +2,12 @@
 
 namespace studioespresso\seofields\services\migrate;
 
-
 use Craft;
 use craft\base\Component;
 use craft\elements\Entry;
 use craft\errors\SiteNotFoundException;
 use ether\seo\models\data\SeoData;
 use ether\seo\models\data\SocialData;
-use studioespresso\seofields\fields\SeoField;
 use studioespresso\seofields\models\SeoFieldModel;
 use Twig\Markup;
 use yii\helpers\Console;
@@ -21,7 +19,6 @@ use yii\helpers\Console;
  */
 class Ether extends Component
 {
-
     private $titleSeperator;
 
     public function migrate($oldHandle = 'seo', $newHandle = 'newSeo', $siteId = null, $titleSeperator = null)
@@ -55,7 +52,6 @@ class Ether extends Component
             }
             Console::endProgress();
         }
-
     }
 
     private function migrateContent(Entry $entry, $field, $newHandle)
@@ -112,7 +108,7 @@ class Ether extends Component
 
     private function getMarkup($string)
     {
-        if ($string instanceof Markup OR (is_object($string) && get_class($string) == 'Twig\Markup')) {
+        if ($string instanceof Markup or (is_object($string) && get_class($string) == 'Twig\Markup')) {
             return !empty($string->__toString()) ? $string->__toString() : null;
         } else {
             return !empty($string) ? $string : null;

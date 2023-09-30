@@ -3,13 +3,10 @@
 namespace studioespresso\seofields\controllers;
 
 use Craft;
-use craft\helpers\Template;
 use craft\records\Section_SiteSettings;
 use craft\web\Controller;
 use studioespresso\seofields\models\SeoDefaultsModel;
-use studioespresso\seofields\records\DefaultsRecord;
 use studioespresso\seofields\SeoFields;
-use yii\helpers\StringHelper;
 use yii\web\NotFoundHttpException;
 
 class SitemapController extends Controller
@@ -28,7 +25,7 @@ class SitemapController extends Controller
         Craft::$app->getSites()->getSiteByHandle($site);
         $sectionsForSite = Section_SiteSettings::findAll(['siteId' => $site->id]);
         $sections = [];
-        foreach($sectionsForSite as $s) {
+        foreach ($sectionsForSite as $s) {
             $sections[] = Craft::$app->getSections()->getSectionById($s->sectionId);
         }
         $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($siteHandle);
@@ -36,7 +33,7 @@ class SitemapController extends Controller
             'data' => $data,
             'sitemapPerSite' => SeoFields::$plugin->getSettings()->sitemapPerSite,
             'sections' => $sections,
-            'selectedSite' => $site
+            'selectedSite' => $site,
         ]);
     }
 
@@ -72,7 +69,6 @@ class SitemapController extends Controller
         $headers = Craft::$app->response->headers;
         $headers->add('Content-Type', 'text/xml; charset=utf-8');
         $this->asRaw($xml);
-
     }
 
     public function actionDetail($siteId, $type, $sectionId, $handle)

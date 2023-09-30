@@ -40,7 +40,7 @@ class SeoDefaultsModel extends Model
                     'enableRobots',
                     'robots',
                     'sitemap',
-                    'id'
+                    'id',
                 ],
                 'safe',
             ],

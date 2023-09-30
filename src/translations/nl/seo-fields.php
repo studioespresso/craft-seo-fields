@@ -19,5 +19,5 @@ return [
     "Last hit at" => "Laatste keer actief op",
     "Method" => "Methode",
     "Remove" => "Verwijderen",
-    "Last linked from" => "Laatste gelinkt vanaf"
+    "Last linked from" => "Laatste gelinkt vanaf",
 ];

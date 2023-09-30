@@ -4,7 +4,6 @@ namespace studioespresso\seofields\assetbundles;
 
 use craft\web\AssetBundle;
 use craft\web\assets\cp\CpAsset;
-use craft\web\View;
 
 class SeoFieldAsset extends AssetBundle
 {
@@ -21,11 +20,11 @@ class SeoFieldAsset extends AssetBundle
         ];
 
         $this->js = [
-            'field.js'
+            'field.js',
         ];
 
         $this->css = [
-            'field.css'
+            'field.css',
         ];
 
         parent::init();

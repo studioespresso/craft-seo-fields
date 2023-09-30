@@ -8,7 +8,6 @@ use craft\helpers\App;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\Json;
 use craft\helpers\UrlHelper;
-use studioespresso\seofields\events\RegisterSeoSitemapEvent;
 use studioespresso\seofields\models\RedirectModel;
 use studioespresso\seofields\records\RedirectRecord;
 use studioespresso\seofields\SeoFields;
@@ -21,7 +20,6 @@ use yii\base\ExitException;
  */
 class RedirectService extends Component
 {
-
     public function handleRedirect(RedirectRecord|array $redirect)
     {
         if (is_array($redirect)) {
@@ -146,7 +144,6 @@ class RedirectService extends Component
 
     private function redirect(RedirectModel|RedirectRecord|array $redirect)
     {
-
         try {
             if (is_array($redirect)) {
                 $url = $redirect['url'];
@@ -158,11 +155,10 @@ class RedirectService extends Component
                 } else {
                     $url = $redirect->redirect;
                 }
-
             }
 
             $response = Craft::$app->response;
-            if(Craft::$app->getRequest()->getQueryStringWithoutPath()) {
+            if (Craft::$app->getRequest()->getQueryStringWithoutPath()) {
                 $response->redirect($url . "?" . Craft::$app->getRequest()->getQueryStringWithoutPath() , $method)->send();
             }
 

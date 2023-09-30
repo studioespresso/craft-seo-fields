@@ -14,7 +14,6 @@ use Twig\TwigFunction;
  */
 class SeoFieldsExtension extends AbstractExtension
 {
-
     public function getFunctions()
     {
         return [
@@ -30,8 +29,7 @@ class SeoFieldsExtension extends AbstractExtension
     // =========================================================================
     public function getSeoFields($context)
     {
-        $data =  SeoFields::getInstance()->renderService->getSeoFromContent($context, SeoFields::getInstance()->getSettings()->fieldHandle);
+        $data = SeoFields::getInstance()->renderService->getSeoFromContent($context, SeoFields::getInstance()->getSettings()->fieldHandle);
         return $data;
     }
-
 }

@@ -8,14 +8,12 @@ use craft\elements\Entry;
 use craft\helpers\App;
 use craft\helpers\Console;
 use craft\helpers\Db;
-use ether\seo\models\data\SeoData;
 use studioespresso\seofields\jobs\MigrateFieldDataJob;
 use studioespresso\seofields\services\migrate\Ether;
 use yii\console\Controller;
 
 class MigrateController extends Controller
 {
-
     public $newHandle = 'newSeo';
     public $oldHandle = 'seo';
     public $siteId;
@@ -47,7 +45,6 @@ class MigrateController extends Controller
 
         $etherMigration = new Ether();
         $etherMigration->migrate($this->oldHandle = 'seo', $this->newHandle = 'newSeo', $this->siteId, $this->titleSeperator);
-
     }
 
     public function actionFields()
@@ -68,7 +65,6 @@ class MigrateController extends Controller
             $entries = Entry::findAll(['sectionId' => $data['sectionId'], 'typeId' => $data['typeId']]);
             $this->stdout("Processing entries in {$section->name} ($type->name)" . PHP_EOL, Console::FG_GREEN);
             foreach ($entries as $entry) {
-
                 Craft::$app->getQueue()->push(new MigrateFieldDataJob([
                     'entryId' => $entry->id,
                     'fieldHandle' => $this->fieldHandle,

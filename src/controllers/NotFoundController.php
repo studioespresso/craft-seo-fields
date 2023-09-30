@@ -3,14 +3,9 @@
 namespace studioespresso\seofields\controllers;
 
 use Craft;
-use craft\helpers\Template;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
-use studioespresso\seofields\models\SeoDefaultsModel;
-use studioespresso\seofields\records\DefaultsRecord;
 use studioespresso\seofields\SeoFields;
-use yii\helpers\StringHelper;
-use yii\web\NotFoundHttpException;
 
 class NotFoundController extends Controller
 {
@@ -57,5 +52,4 @@ class NotFoundController extends Controller
         SeoFields::getInstance()->notFoundService->deleteAll();
         return $this->redirect(UrlHelper::cpUrl('seo-fields/not-found'));
     }
-
 }

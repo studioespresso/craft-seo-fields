@@ -4,7 +4,6 @@ namespace studioespresso\seofields\migrations;
 
 use Craft;
 use craft\db\Migration;
-use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\records\DefaultsRecord;
 use studioespresso\seofields\records\NotFoundRecord;
 use studioespresso\seofields\records\RedirectRecord;
@@ -157,7 +156,6 @@ class Install extends Migration
             'id',
             'SET NULL'
         );
-
     }
 
     protected function removeTables()

@@ -4,21 +4,16 @@ namespace studioespresso\seofields\controllers;
 
 use Craft;
 use craft\helpers\App;
-use craft\helpers\Template;
 use craft\helpers\UrlHelper;
-use craft\models\Site;
 use craft\web\Controller;
 use League\Csv\Reader;
 use studioespresso\seofields\models\RedirectModel;
-use studioespresso\seofields\models\SeoDefaultsModel;
-use studioespresso\seofields\records\DefaultsRecord;
 use studioespresso\seofields\SeoFields;
-use yii\helpers\StringHelper;
 use yii\web\UploadedFile;
 
 class RedirectsController extends Controller
 {
-    const IMPORT_FILE = 'seofields_redirects_import.csv';
+    public const IMPORT_FILE = 'seofields_redirects_import.csv';
 
     public function actionIndex()
     {
@@ -32,7 +27,7 @@ class RedirectsController extends Controller
         return $this->renderTemplate('seo-fields/_redirect/_entry', [
             'pattern' => Craft::$app->getRequest()->getParam('pattern') ?? null,
             'record' => Craft::$app->getRequest()->getParam('record') ?? null,
-            'sites' => $this->getSitesMenu()
+            'sites' => $this->getSitesMenu(),
         ]);
     }
 
@@ -41,7 +36,7 @@ class RedirectsController extends Controller
         $redirect = SeoFields::getInstance()->redirectService->getRedirectById($id);
         return $this->renderTemplate('seo-fields/_redirect/_entry', [
             'data' => $redirect,
-            'sites' => $this->getSitesMenu()
+            'sites' => $this->getSitesMenu(),
         ]);
     }
 
@@ -60,7 +55,7 @@ class RedirectsController extends Controller
         if ($model->validate()) {
             $saved = SeoFields::getInstance()->redirectService->saveRedirect($model);
             if ($saved) {
-                if($record) {
+                if ($record) {
                     SeoFields::getInstance()->notFoundService->markAsHandled($record);
                 }
                 Craft::$app->getSession()->setNotice(Craft::t('seo-fields', 'Redirect saved'));
@@ -71,9 +66,8 @@ class RedirectsController extends Controller
         Craft::$app->getSession()->setError(Craft::t('app', 'Couldn’t save redirect.'));
         return $this->renderTemplate('seo-fields/_redirect/_entry', [
             'data' => $model,
-            'sites' => $this->getSitesMenu()
+            'sites' => $this->getSitesMenu(),
         ]);
-
     }
 
     public function actionUpload()
@@ -104,7 +98,6 @@ class RedirectsController extends Controller
 
     public function actionImport()
     {
-
         $filename = self::IMPORT_FILE;
         $filePath = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . $filename;
         if (!file_exists($filePath)) {
@@ -147,7 +140,6 @@ class RedirectsController extends Controller
 
         $results = SeoFields::getInstance()->redirectService->import($rows, $settings);
         return $this->renderTemplate('seo-fields/_redirect/_import_results', $results);
-
     }
 
     public function actionDelete()
@@ -194,7 +186,6 @@ class RedirectsController extends Controller
             return $reader->getHeader();
         } catch (\Throwable $e) {
         }
-
     }
     private function getRows(Reader $reader)
     {

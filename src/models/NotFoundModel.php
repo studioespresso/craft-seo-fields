@@ -66,10 +66,10 @@ class NotFoundModel extends Model
     {
         return [
             [
-                ['counter', 'url', 'dateLastHit', 'handled', 'siteId'], 'required'
+                ['counter', 'url', 'dateLastHit', 'handled', 'siteId'], 'required',
             ],
             [
-                ['id', 'counter', 'fullUrl','urlPath','referrer', 'urlParams', 'dateLastHit', 'handled', 'siteId','redirect', 'dateLastHit', 'dateCreated', 'dateUpdated'], 'safe'
+                ['id', 'counter', 'fullUrl', 'urlPath', 'referrer', 'urlParams', 'dateLastHit', 'handled', 'siteId', 'redirect', 'dateLastHit', 'dateCreated', 'dateUpdated'], 'safe',
             ],
             [['counter', 'siteId'], 'integer'],
             ['handled', 'boolean'],
