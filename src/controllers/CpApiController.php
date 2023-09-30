@@ -55,7 +55,6 @@ class CpApiController extends Controller
         $query->orderBy($key . " " . $direction);
         $rows = [];
 
-        $allSites = Craft::$app->getSites()->getAllSites();
 
         $formatter = Craft::$app->getFormatter();
         foreach ($query->all() as $row) {

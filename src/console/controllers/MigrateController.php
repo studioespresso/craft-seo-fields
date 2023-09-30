@@ -22,7 +22,7 @@ class MigrateController extends Controller
     public $metaTitle;
     public $metaDescription;
 
-    public function options($actionId)
+    public function options($actionId): array
     {
         switch ($actionId) {
             case 'ether':
@@ -30,6 +30,7 @@ class MigrateController extends Controller
             case 'fields':
                 return ['fieldHandle', 'metaTitle', 'metaDescription'];
         }
+        return [];
     }
 
     public function actionEther()

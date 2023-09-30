@@ -389,10 +389,14 @@ class SeoFields extends Plugin
     {
         $elements = [];
         if (Craft::$app->getPlugins()->isPluginEnabled('calendar')) {
-            $elements[] = \Solspace\Calendar\Elements\Event::class;
+            if(class_exists('Solspace\Calendar\Elements\Event')) {
+                $elements[] = \Solspace\Calendar\Elements\Event::class;
+            }
         }
         if (Craft::$app->getPlugins()->isPluginEnabled('commerce')) {
-            $elements[] = \craft\commerce\elements\Product::class;
+            if(class_exists('craft\commerce\elements\Product')) {
+                $elements[] = \craft\commerce\elements\Product::class;
+            }
         }
 
         if ($elements) {
