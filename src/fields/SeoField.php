@@ -43,7 +43,7 @@ class SeoField extends Field
      * @var string
      */
 
-    public $tabs = [];
+    public string|array $tabs = [];
     public $allowSitenameOverwrite = false;
     public $allowSitenameDisable = false;
 

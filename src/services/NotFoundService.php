@@ -115,7 +115,7 @@ class NotFoundService extends Component
             Db::parseParam('sourceMatch', 'pathWithoutParams', '='),
         ]);
 
-        if ($redirect->one()) {
+        if ($redirect->one() !== null) {
             return $redirect->one();
         }
 
