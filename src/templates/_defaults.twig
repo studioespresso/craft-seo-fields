@@ -81,12 +81,12 @@
             label: "Default meta image"|t('seo-fields'),
             id: "defaultImage",
             name: "defaultImage",
-            elements: [data['defaultImage']|length ? craft.assets.id(data['defaultImage'][0]).one() : null],
+            elements: data.defaultImage|length ? craft.assets.id(data.defaultImage|first).all() : null,
             elementType: "craft\\elements\\Asset",
-            viewMode: "large",
             criteria: {
                 kind: ["image"],
             },
+            viewMode: "large",
             limit: 1,
             selectionLabel: "Select an image"|t('seo-fields'),
         }) }}

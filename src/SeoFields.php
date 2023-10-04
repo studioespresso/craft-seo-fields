@@ -24,6 +24,7 @@ use craft\events\SectionEvent;
 use craft\events\SiteEvent;
 use craft\helpers\UrlHelper;
 use craft\services\Elements;
+use craft\services\Entries;
 use craft\services\Fields;
 use craft\services\Gc;
 use craft\services\Sections;
@@ -311,16 +312,16 @@ class SeoFields extends Plugin
         );
 
         Event::on(
-            Sections::class,
-            Sections::EVENT_AFTER_DELETE_SECTION,
+            Entries::class,
+            Entries::EVENT_AFTER_DELETE_SECTION,
             function(SectionEvent $event) {
                 SeoFields::$plugin->sitemapSerivce->clearCaches();
             }
         );
 
         Event::on(
-            Sections::class,
-            Sections::EVENT_AFTER_DELETE_ENTRY_TYPE,
+            Entries::class,
+            Entries::EVENT_AFTER_DELETE_ENTRY_TYPE,
             function(EntryTypeEvent $event) {
                 SeoFields::$plugin->sitemapSerivce->clearCaches();
             }
