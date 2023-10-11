@@ -112,13 +112,11 @@ class SitemapService extends Component
         $data = [];
         switch ($type) {
             case 'product':
-                if(class_exists('craft\commerce\elements\Product')) {
-                    $data = Product::findAll([
-                        'siteId' => $siteId,
-                        'typeId' => $sectionId,
-                        'orderBy' => 'dateUpdated DESC',
-                    ]);
-                }
+                $data = Product::findAll([
+                    'siteId' => $siteId,
+                    'typeId' => $sectionId,
+                    'orderBy' => 'dateUpdated DESC',
+                ]);
                 break;
             case 'category':
                 $data = Category::findAll([
@@ -281,9 +279,7 @@ class SitemapService extends Component
     {
         $data = [];
         foreach ($productTypes as $id => $settings) {
-            /** @phpstan-ignore-next-line */
             $type = Commerce::getInstance()->productTypes->getProductTypeById($id);
-            /** @phpstan-ignore-next-line */
             $entry = Product::findOne(['typeId' => $type->id, 'orderBy' => 'dateUpdated DESC']);
             if ($entry) {
                 $data[] = implode('', $this->_addItemToIndex($site, $type, $entry));
@@ -350,7 +346,6 @@ class SitemapService extends Component
 
         $shouldRenderProducts = array_filter($sitemapSettings['product'], function($productType) use ($sitemapSettings) {
             if (isset($sitemapSettings['product'][$productType]['enabled'])) {
-                /** @phpstan-ignore-next-line */
                 $productTypeService = new ProductTypes();
                 $site = Craft::$app->getSites()->getCurrentSite();
                 foreach ($productTypeService->getProductTypeSites($productType) as $productTypeSite) {

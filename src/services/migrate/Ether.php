@@ -56,36 +56,34 @@ class Ether extends Component
 
     private function migrateContent(Entry $entry, $field, $newHandle)
     {
-        if (class_exists("ether\seo\models\data\SeoData") && class_exists("ether\seo\models\data\SocialData")) {
-            if ($entry->$field && get_class($entry->$field) === 'ether\seo\models\data\SeoData') {
-                /** @var SeoData $oldField */
-                $oldField = $entry->$field;
-                $newField = new SeoFieldModel();
-                $newField->metaTitle = $this->getTitle($oldField);
-                $newField->metaDescription = $this->getMarkup($oldField->getDescription());
+        if ($entry->$field && get_class($entry->$field) === 'ether\seo\models\data\SeoData') {
+            /** @var SeoData $oldField */
+            $oldField = $entry->$field;
+            $newField = new SeoFieldModel();
+            $newField->metaTitle = $this->getTitle($oldField);
+            $newField->metaDescription = $this->getMarkup($oldField->getDescription());
 
-                /** @var SocialData $facebook */
-                $facebook = $oldField->social['facebook'];
-                $newField->facebookTitle = $this->removeSeperator($facebook->title);
-                $newField->facebookDescription = $this->getMarkup($facebook->description);
-                $newField->facebookImage = [(int)$facebook->imageId];
+            /** @var SocialData $facebook */
+            $facebook = $oldField->social['facebook'];
+            $newField->facebookTitle = $this->removeSeperator($facebook->title);
+            $newField->facebookDescription = $this->getMarkup($facebook->description);
+            $newField->facebookImage = [(int)$facebook->imageId];
 
-                /** @var SocialData $twitter */
-                $twitter = $oldField->social['twitter'];
-                $newField->twitterTitle = $this->removeSeperator($twitter->title);
-                $newField->twitterDescription = $this->getMarkup($twitter->description);
-                $newField->twitterImage = [(int)$twitter->imageId];
+            /** @var SocialData $twitter */
+            $twitter = $oldField->social['twitter'];
+            $newField->twitterTitle = $this->removeSeperator($twitter->title);
+            $newField->twitterDescription = $this->getMarkup($twitter->description);
+            $newField->twitterImage = [(int)$twitter->imageId];
 
-                $entry->setFieldValue($newHandle, $newField);
+            $entry->setFieldValue($newHandle, $newField);
 
-                if (!Craft::$app->getElements()->saveElement($entry)) {
-                    echo "Error updating '$entry->title'";
-                }
+            if (!Craft::$app->getElements()->saveElement($entry)) {
+                echo "Error updating '$entry->title'";
             }
         }
     }
 
-    private function getTitle($data)
+    private function getTitle(SeoData $data)
     {
         if (count($data->titleRaw)) {
             $oldTitle = $data->titleRaw[1];
