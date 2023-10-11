@@ -122,7 +122,7 @@ class Install extends Migration
     {
         // $name, $table, $columns, $refTable, $refColumns, $delete = null, $update = null)
         $this->addForeignKey(
-            $this->db->getForeignKeyName(),
+            $this->db->getForeignKeyName(DefaultsRecord::tableName(), 'siteId'),
             DefaultsRecord::tableName(),
             'siteId',
             '{{%sites}}',
@@ -131,7 +131,7 @@ class Install extends Migration
         );
 
         $this->addForeignKey(
-            $this->db->getForeignKeyName(),
+            $this->db->getForeignKeyName(RedirectRecord::tableName(), 'siteId'),
             RedirectRecord::tableName(),
             'siteId',
             '{{%sites}}',
@@ -140,7 +140,7 @@ class Install extends Migration
         );
 
         $this->addForeignKey(
-            $this->db->getForeignKeyName(),
+            $this->db->getForeignKeyName(NotFoundRecord::tableName(), 'siteId'),
             NotFoundRecord::tableName(),
             'siteId',
             '{{%sites}}',
@@ -149,7 +149,7 @@ class Install extends Migration
         );
 
         $this->addForeignKey(
-            $this->db->getForeignKeyName(),
+            $this->db->getForeignKeyName(NotFoundRecord::tableName(), 'redirect'),
             NotFoundRecord::tableName(),
             'redirect',
             '{{%seofields_redirects}}',

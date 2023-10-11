@@ -15,7 +15,6 @@ use craft\helpers\Db;
 use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use craft\models\Site;
-use PhpCsFixer\DocBlock\Tag;
 use studioespresso\seofields\SeoFields;
 use yii\caching\TagDependency;
 
@@ -167,21 +166,14 @@ class SitemapService extends Component
         );
     }
 
-    /**
-     * @param Element|Entry|Category $element
-     * @return false|void
-     */
-    public function clearCacheForElement(Element|Entry|Category $element)
+    public function clearCacheForElement(Element $element)
     {
         $elementType = get_class($element);
         $typeHandle = explode('\\', $elementType);
         $typeHandle = end($typeHandle);
         switch (strtolower($typeHandle)) {
             case 'entry':
-            /**
-             * @var Entry|null $element
-             */
-            $section = Craft::$app->getSections()->getSectionById($element->sectionId);
+                $section = Craft::$app->getSections()->getSectionById($element->sectionId);
                 $id = $section->id;
                 break;
             default:
@@ -215,6 +207,7 @@ class SitemapService extends Component
         if ($seoField->columnSuffix) {
             $field = $field . "_{$seoField->columnSuffix}";
         }
+        /** @var $entry Element */
         foreach ($entries as $entry) {
             $siteEntries =
                 (new Query())->select(['elements_sites.siteId', 'uri', 'language'])
@@ -360,7 +353,6 @@ class SitemapService extends Component
                 /** @phpstan-ignore-next-line */
                 $productTypeService = new ProductTypes();
                 $site = Craft::$app->getSites()->getCurrentSite();
-                /** @phpstan-ignore-next-line */
                 foreach ($productTypeService->getProductTypeSites($productType) as $productTypeSite) {
                     if ($productTypeSite->siteId == $site->id && $productTypeSite->hasUrls) {
                         return true;

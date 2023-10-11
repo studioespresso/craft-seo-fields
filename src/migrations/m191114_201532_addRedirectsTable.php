@@ -42,7 +42,7 @@ class m191114_201532_addRedirectsTable extends Migration
 
         if ($tablesCreated) {
             $this->addForeignKey(
-                $this->db->getForeignKeyName(),
+                $this->db->getForeignKeyName(RedirectRecord::tableName(), 'siteId'),
                 RedirectRecord::tableName(),
                 'siteId',
                 '{{%sites}}',
@@ -50,7 +50,7 @@ class m191114_201532_addRedirectsTable extends Migration
                 'CASCADE'
             );
             $this->addForeignKey(
-                $this->db->getForeignKeyName(),
+                $this->db->getForeignKeyName(NotFoundRecord::tableName(), 'redirect'),
                 NotFoundRecord::tableName(),
                 'redirect',
                 '{{%seofields_redirects}}',
