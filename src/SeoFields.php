@@ -30,6 +30,7 @@ use craft\services\Sites;
 use craft\services\UserPermissions;
 use craft\utilities\ClearCaches;
 use craft\web\ErrorHandler;
+use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use studioespresso\seofields\events\RegisterSeoElementEvent;
 use studioespresso\seofields\extensions\SeoFieldsExtension;
@@ -41,6 +42,7 @@ use studioespresso\seofields\services\NotFoundService;
 use studioespresso\seofields\services\RedirectService;
 use studioespresso\seofields\services\RenderService;
 use studioespresso\seofields\services\SitemapService;
+use studioespresso\seofields\variables\SeoFieldsVariable;
 use yii\base\Event;
 use yii\base\Exception;
 use yii\console\Application as ConsoleApplication;
@@ -100,7 +102,7 @@ class SeoFields extends Plugin
             $this->controllerNamespace = 'studioespresso\seofields\console\controllers';
         }
 
-        Craft::$app->view->hook('seo-fields', function(array &$context) {
+        Craft::$app->view->hook('seo-fields', function (array &$context) {
             return $this->renderService->renderMeta($context);
         });
 
@@ -113,6 +115,7 @@ class SeoFields extends Plugin
         $this->_registerSiteListeners();
         $this->_registerCacheOptions();
         $this->_registerCustomElements();
+        $this->_registerTwigVariable();
     }
 
     public function getCpNavItem(): ?array
@@ -190,7 +193,7 @@ class SeoFields extends Plugin
         Event::on(
             Fields::class,
             Fields::EVENT_REGISTER_FIELD_TYPES,
-            function(RegisterComponentTypesEvent $event) {
+            function (RegisterComponentTypesEvent $event) {
                 $event->types[] = SeoField::class;
             }
         );
@@ -201,7 +204,7 @@ class SeoFields extends Plugin
         Event::on(
             UserPermissions::class,
             UserPermissions::EVENT_REGISTER_PERMISSIONS,
-            function(RegisterUserPermissionsEvent $event) {
+            function (RegisterUserPermissionsEvent $event) {
 
                 // Register our custom permissions
                 $permissions = [
@@ -242,7 +245,7 @@ class SeoFields extends Plugin
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
-            function(RegisterUrlRulesEvent $event) {
+            function (RegisterUrlRulesEvent $event) {
                 $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getCurrentSite());
                 if ($robots) {
                     $event->rules = array_merge($event->rules, [
@@ -269,7 +272,7 @@ class SeoFields extends Plugin
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
-            function(RegisterUrlRulesEvent $event) {
+            function (RegisterUrlRulesEvent $event) {
                 // Register our Control Panel routes
                 $event->rules = array_merge($event->rules, [
                     'seo-fields' => 'seo-fields/defaults/index',
@@ -290,7 +293,7 @@ class SeoFields extends Plugin
         Event::on(
             Sites::class,
             Sites::EVENT_AFTER_SAVE_SITE,
-            function(SiteEvent $event) {
+            function (SiteEvent $event) {
                 if ($event->isNew) {
                     SeoFields::$plugin->defaultsService->copyDefaultsForSite($event->site, $event->oldPrimarySiteId);
                 }
@@ -300,7 +303,7 @@ class SeoFields extends Plugin
         Event::on(
             Elements::class,
             Elements::EVENT_AFTER_SAVE_ELEMENT,
-            function(ElementEvent $event) {
+            function (ElementEvent $event) {
                 SeoFields::$plugin->sitemapSerivce->clearCacheForElement($event->element);
             }
         );
@@ -308,7 +311,7 @@ class SeoFields extends Plugin
         Event::on(
             Elements::class,
             Elements::EVENT_AFTER_DELETE_ELEMENT,
-            function(ElementEvent $event) {
+            function (ElementEvent $event) {
                 SeoFields::$plugin->sitemapSerivce->clearCacheForElement($event->element);
             }
         );
@@ -316,7 +319,7 @@ class SeoFields extends Plugin
         Event::on(
             Sections::class,
             Sections::EVENT_AFTER_DELETE_SECTION,
-            function(SectionEvent $event) {
+            function (SectionEvent $event) {
                 SeoFields::$plugin->sitemapSerivce->clearCaches();
             }
         );
@@ -324,12 +327,12 @@ class SeoFields extends Plugin
         Event::on(
             Sections::class,
             Sections::EVENT_AFTER_DELETE_ENTRY_TYPE,
-            function(EntryTypeEvent $event) {
+            function (EntryTypeEvent $event) {
                 SeoFields::$plugin->sitemapSerivce->clearCaches();
             }
         );
 
-        Event::on(Gc::class, Gc::EVENT_RUN, function() {
+        Event::on(Gc::class, Gc::EVENT_RUN, function () {
             try {
                 $limit = SeoFields::$plugin->getSettings()->notFoundLimit;
                 if (!is_int($limit)) {
@@ -353,7 +356,7 @@ class SeoFields extends Plugin
         Event::on(
             ErrorHandler::class,
             ErrorHandler::EVENT_BEFORE_HANDLE_EXCEPTION,
-            function(ExceptionEvent $event) {
+            function (ExceptionEvent $event) {
                 try {
                     if ($event->exception instanceof HttpException && $event->exception->statusCode === 404 && Craft::$app->getRequest()->getIsSiteRequest()) {
                         Craft::debug("404 exception, processing...", __CLASS__);
@@ -371,7 +374,7 @@ class SeoFields extends Plugin
         Event::on(
             ClearCaches::class,
             ClearCaches::EVENT_REGISTER_CACHE_OPTIONS,
-            function(RegisterCacheOptionsEvent $event) {
+            function (RegisterCacheOptionsEvent $event) {
                 // Register our Control Panel routes
                 $event->options = array_merge(
                     $event->options, [
@@ -397,10 +400,23 @@ class SeoFields extends Plugin
 
         if ($elements) {
             Event::on(SeoFields::class, SeoFields::EVENT_SEOFIELDS_REGISTER_ELEMENT,
-                function(RegisterSeoElementEvent $event) use ($elements) {
+                function (RegisterSeoElementEvent $event) use ($elements) {
                     $event->elements = array_merge($event->elements, $elements);
                 }
             );
         }
+    }
+
+    private function _registerTwigVariable()
+    {
+        Event::on(
+            CraftVariable::class,
+            CraftVariable::EVENT_INIT,
+            function (Event $event) {
+                /** @var CraftVariable $variable */
+                $variable = $event->sender;
+                $variable->set('schema', SeoFieldsVariable::class);
+            }
+        );
     }
 }

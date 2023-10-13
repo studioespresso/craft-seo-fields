@@ -27,7 +27,8 @@
     ],
     "require": {
         "craftcms/cms": "^4.0.0-RC1",
-        "league/csv": "^9.0"
+        "league/csv": "^9.0",
+        "spatie/schema-org": "^3.0.0"
     },
     "require-dev": {
         "codeception/codeception": "^4.0.0",
