@@ -3,6 +3,8 @@
 namespace studioespresso\seofields\controllers;
 
 use Craft;
+use craft\db\Query;
+use craft\helpers\Db;
 use craft\records\Section_SiteSettings;
 use craft\web\Controller;
 use studioespresso\seofields\models\SeoDefaultsModel;
@@ -23,11 +25,17 @@ class SitemapController extends Controller
     {
         $site = Craft::$app->getSites()->getSiteByHandle($siteHandle);
         Craft::$app->getSites()->getSiteByHandle($site);
-        $sectionsForSite = Section_SiteSettings::findAll(['siteId' => $site->id]);
+        $query = new Query();
+        $query->select('sectionId as id')
+            ->from('{{%sections_sites}}')
+            ->leftJoin('{{%sections}}', 'sections.id = sections_sites.sectionId')
+            ->where(Db::parseParam('siteId', $site->id))
+            ->andWhere(['sections.dateDeleted' => null]);
         $sections = [];
-        foreach ($sectionsForSite as $s) {
-            $sections[] = Craft::$app->getSections()->getSectionById($s->sectionId);
+        foreach ($query->all() as $s) {
+            $sections[] = Craft::$app->getSections()->getSectionById($s['id']);
         }
+
         $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($siteHandle);
         return $this->renderTemplate('seo-fields/_sitemap', [
             'data' => $data,
@@ -63,7 +71,7 @@ class SitemapController extends Controller
         if (!$data) {
             throw new NotFoundHttpException(Craft::t('app', 'Page not found'), 404);
         }
-        
+
         $xml = SeoFields::$plugin->sitemapSerivce->getSitemapIndex(array_filter($data));
 
         $headers = Craft::$app->response->headers;
