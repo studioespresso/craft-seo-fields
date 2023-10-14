@@ -9,7 +9,6 @@ use craft\helpers\Db;
 use craft\helpers\StringHelper;
 use craft\models\Site;
 use craft\web\Request;
-use studioespresso\seofields\events\RegisterSeoSitemapEvent;
 use studioespresso\seofields\models\NotFoundModel;
 use studioespresso\seofields\models\RedirectModel;
 use studioespresso\seofields\records\NotFoundRecord;
@@ -53,7 +52,6 @@ class NotFoundService extends Component
             $model = new NotFoundModel();
             $model->setAttributes($record->getAttributes());
             $data[] = $model;
-
         }
         return $data;
     }
@@ -100,24 +98,22 @@ class NotFoundService extends Component
             }
 
             $this->shouldWeCleanupRedirects();
-            
         } catch (Exception $e) {
             Craft::error($e->getMessage(), 'seo-fields');
         }
     }
 
-    public function markAsHandled(NotFoundRecord|int $record): void {
-        if(is_int($record)) {
+    public function markAsHandled(NotFoundRecord|int $record): void
+    {
+        if (is_int($record)) {
             $query = NotFoundRecord::find();
             $query->where(['id' => $record]);
             $record = $query->one();
-
         }
 
         $record->setAttribute('handled', 1);
         $record->save();
         return;
-
     }
 
     /**
@@ -133,7 +129,7 @@ class NotFoundService extends Component
 
         $redirect->where(['and',
             Db::parseParam('pattern', $model->urlPath, '='),
-            Db::parseParam('sourceMatch', 'path', '=')
+            Db::parseParam('sourceMatch', 'path', '='),
         ]);
         $redirect->andWhere(Db::parseParam('siteId', [null, $model->siteId], 'in'));
 
@@ -143,7 +139,7 @@ class NotFoundService extends Component
 
         $redirect->where(['and',
             Db::parseParam('pattern', $parsedUrl['path'], '='),
-            Db::parseParam('sourceMatch', 'pathWithoutParams', '=')
+            Db::parseParam('sourceMatch', 'pathWithoutParams', '='),
         ]);
 
         if ($redirect->one()) {
@@ -172,7 +168,7 @@ class NotFoundService extends Component
         $record = false;
         if (isset($model->id)) {
             $record = NotFoundRecord::findOne([
-                'id' => $model->id
+                'id' => $model->id,
             ]);
         }
 
@@ -226,7 +222,6 @@ class NotFoundService extends Component
         foreach ($toDelete->all() as $record) {
             $this->deletetById($record->id);
         }
-
     }
 
     private function getAllRegexRedirects(NotFoundModel $model): array

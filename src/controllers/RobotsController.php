@@ -6,9 +6,7 @@ use Craft;
 use craft\helpers\Template;
 use craft\web\Controller;
 use studioespresso\seofields\models\SeoDefaultsModel;
-use studioespresso\seofields\records\DefaultsRecord;
 use studioespresso\seofields\SeoFields;
-use yii\helpers\StringHelper;
 
 class RobotsController extends Controller
 {
@@ -25,7 +23,7 @@ class RobotsController extends Controller
         $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($siteHandle);
         return $this->renderTemplate('seo-fields/_robots', [
             'data' => $data,
-            'robotsPerSite' => SeoFields::$plugin->getSettings()->robotsPerSite
+            'robotsPerSite' => SeoFields::$plugin->getSettings()->robotsPerSite,
         ]);
     }
 
@@ -40,13 +38,13 @@ class RobotsController extends Controller
         $data['enableRobots'] = Craft::$app->getRequest()->getBodyParam('enableRobots');
         $data['robots'] = Craft::$app->getRequest()->getBodyParam('robots');
         $data['siteId'] = Craft::$app->getRequest()->getBodyParam('siteId', Craft::$app->getSites()->getPrimarySite()->id);
-         $model->setAttributes($data);
+        $model->setAttributes($data);
         SeoFields::$plugin->defaultsService->saveDefaults($model, Craft::$app->sites->currentSite->id);
     }
 
     public function actionRender()
     {
-        if(SeoFields::$plugin->getSettings()->robotsPerSite) {
+        if (SeoFields::$plugin->getSettings()->robotsPerSite) {
             $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getCurrentSite());
         } else {
             $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getPrimarySite());
@@ -56,8 +54,7 @@ class RobotsController extends Controller
             $headers = Craft::$app->response->headers;
             $headers->add('Content-Type', 'text/plain; charset=utf-8');
             return $this->asRaw($string);
-        } catch(\Exception $e) {
-
+        } catch (\Exception $e) {
         }
         return;
     }

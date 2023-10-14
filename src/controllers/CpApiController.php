@@ -5,24 +5,16 @@ namespace studioespresso\seofields\controllers;
 use Craft;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\Db;
-use craft\helpers\Template;
 use craft\helpers\UrlHelper;
 use craft\i18n\Locale;
 use craft\web\Controller;
-use studioespresso\seofields\models\SeoDefaultsModel;
-use studioespresso\seofields\records\DefaultsRecord;
 use studioespresso\seofields\records\NotFoundRecord;
 use studioespresso\seofields\records\RedirectRecord;
-use studioespresso\seofields\SeoFields;
-use yii\helpers\StringHelper;
-use yii\web\NotFoundHttpException;
-use function React\Promise\all;
 
 class CpApiController extends Controller
 {
-
-    const NOT_FOUND_BASE = "seo-fields/cp-api/not-found";
-    const REDIRECT_BASE = "seo-fields/cp-api/redirect";
+    public const NOT_FOUND_BASE = "seo-fields/cp-api/not-found";
+    public const REDIRECT_BASE = "seo-fields/cp-api/redirect";
 
     /**
      * @param null $siteHandle
@@ -30,7 +22,6 @@ class CpApiController extends Controller
      */
     public function actionNotFound()
     {
-
         $sort = $this->request->getQueryParam('sort');
         $search = $this->request->getQueryParam('search');
         if (!$sort) {
@@ -54,7 +45,7 @@ class CpApiController extends Controller
             $query->andWhere([
                 'or',
                 "urlPath LIKE '%{$search}%'",
-                "fullUrl LIKE '%{$search}%'"
+                "fullUrl LIKE '%{$search}%'",
             ]);
         }
         if ($total > $limit) {
@@ -97,7 +88,7 @@ class CpApiController extends Controller
                 'from' => (int)(($page * $limit) - $limit) + 1,
                 'to' => (int)$to,
             ],
-            'data' => $rows
+            'data' => $rows,
         ]);
     }
 
@@ -126,7 +117,7 @@ class CpApiController extends Controller
             $query->andWhere([
                 'or',
                 "pattern LIKE '%{$search}%'",
-                "redirect LIKE '%{$search}%'"
+                "redirect LIKE '%{$search}%'",
             ]);
         }
         if ($total > $limit) {
@@ -177,9 +168,7 @@ class CpApiController extends Controller
                 'from' => (int)(($page * $limit) - $limit) + 1,
                 'to' => (int)$to,
             ],
-            'data' => $rows
+            'data' => $rows,
         ]);
     }
-
-
 }

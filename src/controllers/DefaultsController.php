@@ -5,13 +5,10 @@ namespace studioespresso\seofields\controllers;
 use Craft;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
-use studioespresso\seofields\models\SeoDefaultsModel;
-use studioespresso\seofields\records\DefaultsRecord;
 use studioespresso\seofields\SeoFields;
 
 class DefaultsController extends Controller
 {
-
     public function actionIndex()
     {
         $params = Craft::$app->getRequest()->getQueryParams();
@@ -20,7 +17,6 @@ class DefaultsController extends Controller
         $primarySite = Craft::$app->sites->getPrimarySite();
         if ($currentUser->can('seo-fields:default')) {
             $this->redirect(UrlHelper::cpUrl("seo-fields/defaults/$primarySite->handle", $params));
-
         } elseif ($currentUser->can('seo-fields:notfound')) {
             $this->redirect(UrlHelper::cpUrl("seo-fields/not-found/$primarySite->handle", $params));
         } elseif ($currentUser->can('seo-fields:redirects')) {
@@ -39,9 +35,8 @@ class DefaultsController extends Controller
         $data = SeoFields::$plugin->defaultsService->getDataBySite($site);
         return $this->renderTemplate('seo-fields/_defaults', [
             'data' => $data,
-            'selectedSite' => $site
+            'selectedSite' => $site,
         ]);
-
     }
 
     public function actionSave()

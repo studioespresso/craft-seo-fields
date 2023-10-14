@@ -49,7 +49,7 @@ class Settings extends Model
     public function rules(): array
     {
         return [
-            ['titleSeperator', 'string']
+            ['titleSeperator', 'string'],
         ];
     }
 }

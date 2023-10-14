@@ -6,7 +6,6 @@ use Craft;
 use craft\base\Component;
 use craft\base\Element;
 use craft\commerce\elements\Product;
-use craft\commerce\models\ProductTypeSite;
 use craft\commerce\Plugin as Commerce;
 use craft\commerce\services\ProductTypes;
 use craft\db\Query;
@@ -16,7 +15,6 @@ use craft\helpers\Db;
 use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use craft\models\Site;
-use studioespresso\seofields\events\RegisterSeoSitemapEvent;
 use studioespresso\seofields\SeoFields;
 use yii\caching\TagDependency;
 
@@ -27,8 +25,7 @@ use yii\caching\TagDependency;
  */
 class SitemapService extends Component
 {
-
-    const SITEMAP_CACHE_KEY = 'seofields_cache_sitemaps';
+    public const SITEMAP_CACHE_KEY = 'seofields_cache_sitemaps';
 
     public function shouldRenderBySiteId(Site $site)
     {
@@ -71,13 +68,12 @@ class SitemapService extends Component
 
     public function getSitemapIndex($data)
     {
-
         $currentSite = Craft::$app->getSites()->getCurrentSite();
         $cacheDependency = new TagDependency([
             'tags' => [
                 self::SITEMAP_CACHE_KEY,
-                self::SITEMAP_CACHE_KEY . '_index_site' . $currentSite->id
-            ]
+                self::SITEMAP_CACHE_KEY . '_index_site' . $currentSite->id,
+            ],
         ]);
         if (!Craft::$app->getConfig()->general->devMode) {
             $duration = null;
@@ -87,7 +83,7 @@ class SitemapService extends Component
 
         $xml = Craft::$app->getCache()->getOrSet(
             self::SITEMAP_CACHE_KEY . '_index_site' . $currentSite->id,
-            function () use ($data, $currentSite) {
+            function() use ($data, $currentSite) {
                 $xml[] = '<?xml version="1.0" encoding="UTF-8"?>';
                 $xml[] = '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
                 if (isset($data['sections'])) {
@@ -141,14 +137,13 @@ class SitemapService extends Component
         $cacheDependency = new TagDependency([
             'tags' => [
                 self::SITEMAP_CACHE_KEY,
-                self::SITEMAP_CACHE_KEY . "_" . $siteId . "_" . $sectionId
-            ]
+                self::SITEMAP_CACHE_KEY . "_" . $siteId . "_" . $sectionId,
+            ],
         ]);
         if (!Craft::$app->getConfig()->general->devMode) {
-
             $data = Craft::$app->getCache()->getOrSet(
                 self::SITEMAP_CACHE_KEY . "_" . $siteId . "_" . $sectionId,
-                function () use ($data, $type, $settings, $sectionId) {
+                function() use ($data, $type, $settings, $sectionId) {
                     return $this->_addElementsToSitemap($data, $settings[$type][$sectionId]);
                 },
                 null,
@@ -187,7 +182,7 @@ class SitemapService extends Component
         if ($id) {
             $this->clearCaches([
                 self::SITEMAP_CACHE_KEY . '_index_site' . $element->siteId,
-                self::SITEMAP_CACHE_KEY . "_" . $element->siteId . "_" . $id
+                self::SITEMAP_CACHE_KEY . "_" . $element->siteId . "_" . $id,
             ]);
         }
     }
@@ -207,7 +202,7 @@ class SitemapService extends Component
         $handle = SeoFields::getInstance()->getSettings()->fieldHandle;
         $seoField = Craft::$app->getFields()->getFieldByHandle($handle);
         $field = "field_{$handle}";
-        if($seoField->columnSuffix) {
+        if ($seoField->columnSuffix) {
             $field = $field . "_{$seoField->columnSuffix}";
         }
         /** @var $entry Element */
@@ -221,13 +216,13 @@ class SitemapService extends Component
                     ->andWhere([
                         'or',
                         Db::parseParam("JSON_EXTRACT(content.$field, '$.allowIndexing')", "yes"),
-                        Db::parseParam("JSON_EXTRACT(content.$field, '$.allowIndexing')", ":empty:")
+                        Db::parseParam("JSON_EXTRACT(content.$field, '$.allowIndexing')", ":empty:"),
                     ])
                     ->andWhere('sites.enabled = true')->all();
             if (!$siteEntries) {
                 continue;
             }
-            $sites = array_filter($siteEntries, function ($item) use ($currentSite) {
+            $sites = array_filter($siteEntries, function($item) use ($currentSite) {
                 if ($item['siteId'] != $currentSite->id) {
                     return true;
                 }
@@ -308,7 +303,7 @@ class SitemapService extends Component
 
     private function _shouldRenderEntries($sitemapSettings)
     {
-        $shouldRenderSections = array_filter($sitemapSettings['entry'], function ($sectionId) use ($sitemapSettings) {
+        $shouldRenderSections = array_filter($sitemapSettings['entry'], function($sectionId) use ($sitemapSettings) {
             $section = Craft::$app->getSections()->getSectionById($sectionId);
             if (!$section) {
                 return false;
@@ -329,7 +324,7 @@ class SitemapService extends Component
 
     private function _shouldRenderCategories($sitemapSettings)
     {
-        $shouldRenderCategories = array_filter($sitemapSettings['category'], function ($group) use ($sitemapSettings) {
+        $shouldRenderCategories = array_filter($sitemapSettings['category'], function($group) use ($sitemapSettings) {
             if (isset($sitemapSettings['category'][$group]['enabled'])) {
                 $site = Craft::$app->getSites()->getCurrentSite();
                 $groupSites = Craft::$app->getCategories()->getGroupById($group)->siteSettings;
@@ -349,7 +344,7 @@ class SitemapService extends Component
             return false;
         }
 
-        $shouldRenderProducts = array_filter($sitemapSettings['product'], function ($productType) use ($sitemapSettings) {
+        $shouldRenderProducts = array_filter($sitemapSettings['product'], function($productType) use ($sitemapSettings) {
             if (isset($sitemapSettings['product'][$productType]['enabled'])) {
                 $productTypeService = new ProductTypes();
                 $site = Craft::$app->getSites()->getCurrentSite();
@@ -363,6 +358,5 @@ class SitemapService extends Component
             }
         }, ARRAY_FILTER_USE_KEY);
         return $shouldRenderProducts;
-
     }
 }

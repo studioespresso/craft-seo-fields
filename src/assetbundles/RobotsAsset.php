@@ -25,7 +25,7 @@ class RobotsAsset extends AssetBundle
         ];
 
         $this->css = [
-            'robots.css'
+            'robots.css',
         ];
 
         parent::init();

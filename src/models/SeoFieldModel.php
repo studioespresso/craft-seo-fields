@@ -81,7 +81,7 @@ class SeoFieldModel extends Model
     public function getCanonical()
     {
         $request = Craft::$app->getRequest();
-        return $request->hostInfo .'/' . $request->getPathInfo(true);
+        return $request->hostInfo . '/' . $request->getPathInfo(true);
     }
 
     public function getOgTitle($element = null)
@@ -105,7 +105,6 @@ class SeoFieldModel extends Model
     public function getMetaDescription()
     {
         return $this->metaDescription ? $this->metaDescription : $this->siteDefault->defaultMetaDescription;
-
     }
 
     public function getOgDescription()
@@ -190,7 +189,7 @@ class SeoFieldModel extends Model
             if ($site['uri']) {
                 $data[] = [
                     'url' => UrlHelper::siteUrl($site['uri'] === '__home__' ? '' : $site['uri'], null, null, $site['siteId']),
-                    'language' => $site['language']
+                    'language' => $site['language'],
                 ];
             }
         }
@@ -270,7 +269,7 @@ class SeoFieldModel extends Model
                     'twitterTitle',
                     'twitterDescription',
                     'twitterImage',
-                    'allowIndexing'
+                    'allowIndexing',
                 ],
                 'safe',
             ],

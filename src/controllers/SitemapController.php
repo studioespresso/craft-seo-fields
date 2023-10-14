@@ -3,13 +3,12 @@
 namespace studioespresso\seofields\controllers;
 
 use Craft;
-use craft\helpers\Template;
+use craft\db\Query;
+use craft\helpers\Db;
 use craft\records\Section_SiteSettings;
 use craft\web\Controller;
 use studioespresso\seofields\models\SeoDefaultsModel;
-use studioespresso\seofields\records\DefaultsRecord;
 use studioespresso\seofields\SeoFields;
-use yii\helpers\StringHelper;
 use yii\web\NotFoundHttpException;
 
 class SitemapController extends Controller
@@ -26,17 +25,23 @@ class SitemapController extends Controller
     {
         $site = Craft::$app->getSites()->getSiteByHandle($siteHandle);
         Craft::$app->getSites()->getSiteByHandle($site);
-        $sectionsForSite = Section_SiteSettings::findAll(['siteId' => $site->id]);
+        $query = new Query();
+        $query->select('sectionId as id')
+            ->from('{{%sections_sites}}')
+            ->leftJoin('{{%sections}}', 'sections.id = sections_sites.sectionId')
+            ->where(Db::parseParam('siteId', $site->id))
+            ->andWhere(['sections.dateDeleted' => null]);
         $sections = [];
-        foreach($sectionsForSite as $s) {
-            $sections[] = Craft::$app->getSections()->getSectionById($s->sectionId);
+        foreach ($query->all() as $s) {
+            $sections[] = Craft::$app->getSections()->getSectionById($s['id']);
         }
+
         $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($siteHandle);
         return $this->renderTemplate('seo-fields/_sitemap', [
             'data' => $data,
             'sitemapPerSite' => SeoFields::$plugin->getSettings()->sitemapPerSite,
             'sections' => $sections,
-            'selectedSite' => $site
+            'selectedSite' => $site,
         ]);
     }
 
@@ -66,13 +71,12 @@ class SitemapController extends Controller
         if (!$data) {
             throw new NotFoundHttpException(Craft::t('app', 'Page not found'), 404);
         }
-        
+
         $xml = SeoFields::$plugin->sitemapSerivce->getSitemapIndex(array_filter($data));
 
         $headers = Craft::$app->response->headers;
         $headers->add('Content-Type', 'text/xml; charset=utf-8');
         $this->asRaw($xml);
-
     }
 
     public function actionDetail($siteId, $type, $sectionId, $handle)

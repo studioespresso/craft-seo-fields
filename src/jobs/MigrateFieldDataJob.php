@@ -9,7 +9,6 @@ use studioespresso\seofields\models\SeoFieldModel;
 
 class MigrateFieldDataJob extends BaseJob
 {
-
     public $entry;
     public $fieldHandle;
     public $entryId;
@@ -19,8 +18,7 @@ class MigrateFieldDataJob extends BaseJob
 
     public function init()
     {
-        if(!$this->fieldHandle)
-        {
+        if (!$this->fieldHandle) {
             throw new InvalidFieldException('Field handle not provided');
         }
         $this->entry = Entry::findOne(['id' => $this->entryId]);
@@ -31,21 +29,20 @@ class MigrateFieldDataJob extends BaseJob
     public function execute($queue)
     {
         $model = new SeoFieldModel();
-        if($this->entry->metaTitle) {
+        if ($this->entry->metaTitle) {
             $model->metaTitle = $this->entry->metaTitle;
         }
-        if($this->entry->metaDescription) {
+        if ($this->entry->metaDescription) {
             $model->metaDescription = $this->entry->metaDescription;
         }
-        if($this->entry->metaImage) {
+        if ($this->entry->metaImage) {
             if ($this->entry->metaImage->one()) {
                 $model->facebookImage = [$this->entry->metaImage->one()->id];
             }
         }
         $this->entry->setFieldValue($this->fieldHandle, $model);
-        if($this->entry->validate()) {
+        if ($this->entry->validate()) {
             \Craft::$app->getElements()->saveElement($this->entry);
         }
     }
-
 }

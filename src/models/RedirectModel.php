@@ -11,7 +11,6 @@
 namespace studioespresso\seofields\models;
 
 use craft\base\Model;
-use craft\validators\DateTimeValidator;
 
 /**
  * @author    Studio Espresso
@@ -64,7 +63,7 @@ class RedirectModel extends Model
         return [
             [['pattern', 'redirect', 'method'], 'required'],
             [
-                ['id', 'pattern','sourceMatch' , 'redirect', 'matchType', 'method', 'siteId', 'counter', 'dateLastHit', 'dateLastHit', 'dateCreated', 'dateUpdated'], 'safe'
+                ['id', 'pattern', 'sourceMatch', 'redirect', 'matchType', 'method', 'siteId', 'counter', 'dateLastHit', 'dateLastHit', 'dateCreated', 'dateUpdated'], 'safe',
             ],
         ];
     }

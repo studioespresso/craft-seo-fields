@@ -40,7 +40,7 @@ class m191114_182559_addNotFoundTable extends Migration
             );
         }
 
-        if($tablesCreated) {
+        if ($tablesCreated) {
             $this->addForeignKey(
                 $this->db->getForeignKeyName(NotFoundRecord::tableName(), 'siteId'),
                 NotFoundRecord::tableName(),

@@ -40,7 +40,7 @@ class m191114_201532_addRedirectsTable extends Migration
             );
         }
 
-        if($tablesCreated) {
+        if ($tablesCreated) {
             $this->addForeignKey(
                 $this->db->getForeignKeyName(RedirectRecord::tableName(), 'siteId'),
                 RedirectRecord::tableName(),

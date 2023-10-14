@@ -10,16 +10,14 @@
 
 namespace studioespresso\seofields\fields;
 
-use studioespresso\seofields\models\SeoFieldModel;
-use studioespresso\seofields\SeoFields;
-use studioespresso\seofields\assetbundles\seofieldfield\SeoFieldFieldAsset;
-
 use Craft;
 use craft\base\ElementInterface;
+
 use craft\base\Field;
-use craft\helpers\Db;
-use yii\db\Schema;
 use craft\helpers\Json;
+use studioespresso\seofields\models\SeoFieldModel;
+use studioespresso\seofields\SeoFields;
+use yii\db\Schema;
 
 /**
  * SeoField Field
@@ -73,7 +71,7 @@ class SeoField extends Field
      *
      * @return array
      */
-    public function rules() : array
+    public function rules(): array
     {
         $rules = parent::rules();
         $rules = array_merge($rules, [
@@ -138,7 +136,7 @@ class SeoField extends Field
      *
      * @return string|null
      */
-    public function getSettingsHtml() :? string
+    public function getSettingsHtml(): ? string
     {
         // Render the settings template
         return Craft::$app->getView()->renderTemplate(

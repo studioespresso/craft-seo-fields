@@ -20,26 +20,24 @@ use yii\base\Event;
  */
 class RenderService extends Component
 {
-
     // Public Methods
     // =========================================================================
     public function renderMeta($context, $handle = 'seo')
     {
-
         Craft::beginProfile('renderMeta', __METHOD__);
         $data = $this->getSeoFromContent($context, $handle);
         $oldTemplateMode = Craft::$app->getView()->getTemplateMode();
 
 
-            Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_CP);
-            $template = Craft::$app->getView()->renderTemplate(
+        Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_CP);
+        $template = Craft::$app->getView()->renderTemplate(
                 'seo-fields/_meta',
                 ['meta' => $data['meta'], 'element' => $data['entry']]
             );
 
-            Craft::endProfile('renderMeta', __METHOD__);
-            Craft::$app->getView()->setTemplateMode($oldTemplateMode);
-            return $template;
+        Craft::endProfile('renderMeta', __METHOD__);
+        Craft::$app->getView()->setTemplateMode($oldTemplateMode);
+        return $template;
 
         try {
         } catch (\Exception $e) {
@@ -77,7 +75,6 @@ class RenderService extends Component
             }
 
             return ['meta' => $meta, 'entry' => $element, 'element' => $element];
-
         } catch (\Exception $e) {
             return null;
         }
@@ -98,5 +95,4 @@ class RenderService extends Component
 
         return $registeredElements;
     }
-
 }
