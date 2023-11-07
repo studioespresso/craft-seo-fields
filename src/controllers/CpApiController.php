@@ -103,7 +103,6 @@ class CpApiController extends Controller
         $page = $this->request->getQueryParam('page', 1);
         list($key, $direction) = explode("|", $sort);
 
-        $total = RedirectRecord::find()->count();
         $limit = 20;
 
         $query = RedirectRecord::find();
@@ -119,10 +118,6 @@ class CpApiController extends Controller
                 "pattern LIKE '%{$search}%'",
                 "redirect LIKE '%{$search}%'",
             ]);
-        }
-        if ($total > $limit) {
-            $query->offset($page * 10);
-            $query->limit($limit);
         }
         $query->orderBy($key . " " . $direction);
         $rows = [];
@@ -154,8 +149,13 @@ class CpApiController extends Controller
         }
         $nextPageUrl = self::REDIRECT_BASE;
         $prevPageUrl = self::REDIRECT_BASE;
-        $lastPage = (int)ceil($total / $limit);
-        $to = $page === $lastPage ? $total : ($total < $limit ? $total : ($page * $limit));
+
+        $from = ($page - 1) * $limit + 1;
+        $total = count($rows);
+        $lastPage = (int) ceil($total / $limit);
+        $to = $page === $lastPage ? $total : ($page * $limit);
+
+        $rows = array_slice($rows, $from - 1, $limit);
 
         return $this->asJson([
             'pagination' => [
@@ -165,7 +165,7 @@ class CpApiController extends Controller
                 'last_page' => (int)$lastPage,
                 'next_page_url' => $nextPageUrl,
                 'prev_page_url' => $prevPageUrl,
-                'from' => (int)(($page * $limit) - $limit) + 1,
+                'from' => (int)$from,
                 'to' => (int)$to,
             ],
             'data' => $rows,
