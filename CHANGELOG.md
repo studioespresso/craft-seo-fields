@@ -4,9 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.3.5 - 2023-11-09
+### Fixed
+- Temporary fix for incomplete pagination on redirects ([#85](https://github.com/studioespresso/craft-seo-fields/pull/85))
+
+
 ## 3.3.4 - 2023-10-14
 ### Fixed
-- Fixed an an error where deleted sections were still shown in the sitemap settings ([#82](https://github.com/studioespresso/craft-seo-fields/issues/82))
+- Fixed an error where deleted sections were still shown in the sitemap settings ([#82](https://github.com/studioespresso/craft-seo-fields/issues/82))
 
 
 ## 3.3.3 - 2023-09-18
