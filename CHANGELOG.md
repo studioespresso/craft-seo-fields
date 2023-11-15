@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.3.6 - 2023-11-15
+### Fixed
+- Final fix for pagination on redirects & 404's ([#85](https://github.com/studioespresso/craft-seo-fields/pull/85))
+
 ## 3.3.5 - 2023-11-09
 ### Fixed
 - Temporary fix for incomplete pagination on redirects ([#85](https://github.com/studioespresso/craft-seo-fields/pull/85))
