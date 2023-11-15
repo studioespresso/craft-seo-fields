@@ -31,10 +31,13 @@ class CpApiController extends Controller
         $page = $this->request->getQueryParam('page', 1);
         list($key, $direction) = explode("|", $sort);
 
-        $total = NotFoundRecord::find()->count();
         $limit = 20;
+        $offset = ($page - 1) *  $limit;
 
         $query = NotFoundRecord::find();
+        $query->limit($limit);
+        $query->offset($offset);
+
         $site = $this->request->getQueryParam('site');
         if ($site) {
             $site = Craft::$app->getSites()->getSiteByHandle($site);
@@ -48,16 +51,15 @@ class CpApiController extends Controller
                 "fullUrl LIKE '%{$search}%'",
             ]);
         }
-        if ($total > $limit) {
-            $query->offset($page * 10);
-            $query->limit($limit);
-        }
+
         $query->orderBy($key . " " . $direction);
+
+        $total =   clone  $query;
+        $total =  $total->count();
+
         $rows = [];
-
-        $allSites = Craft::$app->getSites()->getAllSites();
-
         $formatter = Craft::$app->getFormatter();
+
         foreach ($query->all() as $row) {
             $lastHit = DateTimeHelper::toDateTime($row->dateLastHit);
             $row = [
@@ -72,10 +74,10 @@ class CpApiController extends Controller
 
             $rows[] = $row;
         }
-        $nextPageUrl = self::NOT_FOUND_BASE;
-        $prevPageUrl = self::NOT_FOUND_BASE;
-        $lastPage = (int)ceil($total / $limit);
-        $to = $page === $lastPage ? $total : ($total < $limit ? $total : ($page * $limit));
+
+        $from = ($page - 1) * $limit + 1;
+        $lastPage = (int) ceil($total / $limit);
+        $to = intval($page) ===  intval($lastPage) ? $total : ($page * $limit);
 
         return $this->asJson([
             'pagination' => [
@@ -83,8 +85,8 @@ class CpApiController extends Controller
                 'per_page' => (int)$limit,
                 'current_page' => (int)$page,
                 'last_page' => (int)$lastPage,
-                'next_page_url' => $nextPageUrl,
-                'prev_page_url' => $prevPageUrl,
+                'next_page_url' => self::NOT_FOUND_BASE,
+                'prev_page_url' => self::NOT_FOUND_BASE,
                 'from' => (int)(($page * $limit) - $limit) + 1,
                 'to' => (int)$to,
             ],
@@ -104,14 +106,19 @@ class CpApiController extends Controller
         list($key, $direction) = explode("|", $sort);
 
         $limit = 20;
+        $offset = ($page - 1) *  $limit;
 
         $query = RedirectRecord::find();
+        $query->limit($limit);
+        $query->offset($offset);
 
         $site = $this->request->getQueryParam('site');
+
         if ($site) {
             $site = Craft::$app->getSites()->getSiteByHandle($site);
             $query->orWhere(Db::parseParam('siteId', $site->id));
         }
+
         if ($search) {
             $query->andWhere([
                 'or',
@@ -120,10 +127,11 @@ class CpApiController extends Controller
             ]);
         }
         $query->orderBy($key . " " . $direction);
+
+        $total =   clone  $query;
+        $total =  $total->count();
+
         $rows = [];
-
-        $allSites = Craft::$app->getSites()->getAllSites();
-
         $formatter = Craft::$app->getFormatter();
 
         $types = [
@@ -147,15 +155,10 @@ class CpApiController extends Controller
 
             $rows[] = $row;
         }
-        $nextPageUrl = self::REDIRECT_BASE;
-        $prevPageUrl = self::REDIRECT_BASE;
 
         $from = ($page - 1) * $limit + 1;
-        $total = count($rows);
         $lastPage = (int) ceil($total / $limit);
-        $to = $page === $lastPage ? $total : ($page * $limit);
-
-        $rows = array_slice($rows, $from - 1, $limit);
+        $to = intval($page) ===  intval($lastPage) ? $total : ($page * $limit);
 
         return $this->asJson([
             'pagination' => [
@@ -163,8 +166,8 @@ class CpApiController extends Controller
                 'per_page' => (int)$limit,
                 'current_page' => (int)$page,
                 'last_page' => (int)$lastPage,
-                'next_page_url' => $nextPageUrl,
-                'prev_page_url' => $prevPageUrl,
+                'next_page_url' => self::REDIRECT_BASE,
+                'prev_page_url' => self::REDIRECT_BASE,
                 'from' => (int)$from,
                 'to' => (int)$to,
             ],
