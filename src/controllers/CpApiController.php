@@ -158,7 +158,7 @@ class CpApiController extends Controller
 
         $from = ($page - 1) * $limit + 1;
         $lastPage = (int) ceil($total / $limit);
-        $to = intval($page) ===  intval($lastPage) ? $total : ($page * $limit);
+        $to = (int)$page === $lastPage ? $total : ($page * $limit);
 
         return $this->asJson([
             'pagination' => [
