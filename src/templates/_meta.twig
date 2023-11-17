@@ -5,14 +5,13 @@
 {#{% set element = seoFields.element %}#}
 {#{% set meta = seoFields.meta %}#}
 
-{% if meta %}
-
+{% if meta and element %}
     <title>{{ meta.getPageTitle(element) }}</title>
     <meta name="description" content="{{ meta.getMetaDescription() }}">
     {# Facebook #}
     <meta property="og:url" content="{{ craft.app.request.absoluteUrl }}"/>
     <meta property="og:type" content="website"/>
-    <meta property="og:title" content="{{ meta.getOgTitle() }}"/>
+    <meta property="og:title" content="{{ meta.getOgTitle(element ?? '') }}"/>
     {% set ogImage = meta.getOgImage() %}
     {% if ogImage %}
         <meta property="og:image" content="{{ ogImage.url }}"/>
@@ -26,9 +25,9 @@
     {# Twitter #}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="" />
-    <meta name="twitter:url" content="{{ craft.app.request.absoluteUrl }}" />
-    <meta name="twitter:title" content="{{ meta.getTwitterTitle() }}" />
+    <meta name="twitter:title" content="{{ meta.getTwitterTitle(element ?? '') }}" />
     <meta name="twitter:description" content="{{ meta.getTwitterDescription() }}" />
+    <meta name="twitter:url" content="{{ craft.app.request.absoluteUrl }}" />
     {% if ogImage %}
         <meta name="twitter:image" content="{{ meta.getTwitterImage().url ?? ogImage.url }}" />
     {% endif %}
