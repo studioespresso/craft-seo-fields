@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.3.8 - 2023-11-23
+### Fixed
+- Redirects and 404's now works for users that only have access to 1 site. ([#87](https://github.com/studioespresso/craft-seo-fields/issues/87))
+
+
+
 ## 3.3.7 - 2023-11-19
 ### Fixed
 - Fixed an issue where page title wouldn't be used as fallback meta title ([#86](https://github.com/studioespresso/craft-seo-fields/issues/86))
