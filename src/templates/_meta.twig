@@ -36,6 +36,10 @@
         <link rel="canonical" href="{{ meta.getCanonical() }}" />
     {% endif %}
 
+    {% if meta.allowIndexing == 'no' %}
+        <meta name="robots" content="noindex">
+    {% endif %}
+
     {% for alt in meta.getAlternate(element) %}
         <link rel="alternate" hreflang="{{ alt.language }}" href="{{ alt.url }}" />
     {% endfor %}
