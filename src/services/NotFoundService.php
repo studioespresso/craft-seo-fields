@@ -61,7 +61,7 @@ class NotFoundService extends Component
         try {
             $notFoundRecord = NotFoundRecord::findOne(['fullUrl' => $request->getAbsoluteUrl(), 'urlPath' => $request->getUrl(), 'siteId' => $site->id]);
             if ($notFoundRecord) {
-                Craft::debug("Updating excisting 404", SeoFields::class);
+                Craft::debug("Updating excsisting 404", SeoFields::class);
                 $notFoundModel = new NotFoundModel($notFoundRecord->getAttributes());
                 $notFoundModel->counter++;
                 $notFoundModel->dateLastHit = DateTimeHelper::toIso8601(time());

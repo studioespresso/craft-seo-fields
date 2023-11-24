@@ -62,14 +62,16 @@ class CpApiController extends Controller
 
         foreach ($query->all() as $row) {
             $lastHit = DateTimeHelper::toDateTime($row->dateLastHit);
+
             $row = [
-                'id' => $row->id,
-                'title' => $row->urlPath,
-                'hits' => $row->counter,
-                'siteId' => $row->siteId,
+                'id' => $row->getAttribute('id'),
+                'title' => $row->getAttribute('urlPath'),
+                'urlPath' => $row->getAttribute('urlPath'),
+                'hits' => $row->getAttribute('counter'),
+                'siteId' => $row->getAttribute('siteId'),
                 'lastHit' => $formatter->asDatetime($lastHit, Locale::LENGTH_SHORT),
-                'site' => Craft::$app->getSites()->getSiteById($row->siteId)->name,
-                'hasRedirect' => $row->handled ? $row->handled : $row,
+                'site' => Craft::$app->getSites()->getSiteById($row->getAttribute('siteId'))->name,
+                'hasRedirect' => $row->getAttribute('handled') ? $row->getAttribute('handled') : $row,
             ];
 
             $rows[] = $row;

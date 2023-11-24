@@ -56,7 +56,7 @@
             label: "Facebook OG image"|t('seo-fields'),
             id: name ~ "-facebookImage",
             name: name ~ "[facebookImage]",
-            elements: [value.facebookImage|length ?craft.assets.id(value.facebookImage[0]).one() : null],
+            elements: value.facebookImage|length ? craft.assets.id(value.facebookImage|first).all() : null,
             elementType: "craft\\elements\\Asset",
             viewMode: "large",
             criteria: {

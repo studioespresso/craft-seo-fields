@@ -171,7 +171,11 @@ class SitemapService extends Component
         $typeHandle = end($typeHandle);
         switch (strtolower($typeHandle)) {
             case 'entry':
-                $section = Craft::$app->getSections()->getSectionById($element->sectionId);
+
+            /**
+             * @var Entry|null $element
+             */
+            $section = Craft::$app->getEntries()->getSectionById($element->sectionId);
                 $id = $section->id;
                 break;
             default:
@@ -202,16 +206,21 @@ class SitemapService extends Component
         $handle = SeoFields::getInstance()->getSettings()->fieldHandle;
         $seoField = Craft::$app->getFields()->getFieldByHandle($handle);
         $field = "field_{$handle}";
-        if ($seoField->columnSuffix) {
-            $field = $field . "_{$seoField->columnSuffix}";
-        }
-        /** @var $entry Element */
+
+
+        // TODO: Fix sitemap query
         foreach ($entries as $entry) {
+        /**
+         * @var Entry $entry
+         */
+            $type = $entry->getType();
+            $typeField = $type->getFieldLayout()->getFieldByHandle($handle);
+            $sql = $typeField->getValueSql();
+            
             $siteEntries =
                 (new Query())->select(['elements_sites.siteId', 'uri', 'language'])
                     ->from('{{%elements_sites}} as elements_sites')
                     ->leftJoin('{{%sites}} as sites', 'sites.id = elements_sites.siteId')
-                    ->leftJoin('{{%content}}', 'elements_sites.elementId = content.elementId')
                     ->where('[[elements_sites.elementId]] = ' . $entry->id)
                     ->andWhere([
                         'or',
@@ -252,7 +261,7 @@ class SitemapService extends Component
     {
         $data = [];
         foreach ($sections as $id => $settings) {
-            $type = Craft::$app->getSections()->getSectionById($id);
+            $type = Craft::$app->getEntries()->getSectionById($id);
             $entry = Entry::findOne(['sectionId' => $id, 'orderBy' => 'dateUpdated DESC']);
             if ($entry) {
                 $data[] = implode('', $this->_addItemToIndex($site, $type, $entry));
@@ -304,7 +313,7 @@ class SitemapService extends Component
     private function _shouldRenderEntries($sitemapSettings)
     {
         $shouldRenderSections = array_filter($sitemapSettings['entry'], function($sectionId) use ($sitemapSettings) {
-            $section = Craft::$app->getSections()->getSectionById($sectionId);
+            $section = Craft::$app->getEntries()->getSectionById($sectionId);
             if (!$section) {
                 return false;
             }

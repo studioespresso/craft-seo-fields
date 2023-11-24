@@ -60,8 +60,8 @@ class MigrateController extends Controller
 
         App::maxPowerCaptain();
         foreach ($query->all() as $data) {
-            $section = Craft::$app->getSections()->getSectionById($data['sectionId']);
-            $type = Craft::$app->getSections()->getEntryTypeById($data['typeId']);
+            $section = Craft::$app->getEntries()->getSectionById($data['sectionId']);
+            $type = Craft::$app->getEntries()->getEntryTypeById($data['typeId']);
             $entries = Entry::findAll(['sectionId' => $data['sectionId'], 'typeId' => $data['typeId']]);
             $this->stdout("Processing entries in {$section->name} ($type->name)" . PHP_EOL, Console::FG_GREEN);
             foreach ($entries as $entry) {

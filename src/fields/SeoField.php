@@ -82,6 +82,12 @@ class SeoField extends Field
         return $rules;
     }
 
+    public static function isMultiInstance(): bool
+    {
+        return false;
+    }
+
+
     /**
      * Returns the column type that this field should get within the content table.
      *
@@ -93,9 +99,9 @@ class SeoField extends Field
      * appended as well.
      * @see \yii\db\QueryBuilder::getColumnType()
      */
-    public function getContentColumnType(): string
+    public static function dbType(): string
     {
-        return Schema::TYPE_TEXT;
+        return Schema::TYPE_JSON;
     }
 
     /**

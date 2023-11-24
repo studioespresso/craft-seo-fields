@@ -33,7 +33,7 @@ class SitemapController extends Controller
             ->andWhere(['sections.dateDeleted' => null]);
         $sections = [];
         foreach ($query->all() as $s) {
-            $sections[] = Craft::$app->getSections()->getSectionById($s['id']);
+            $sections[] = Craft::$app->getEntries()->getSectionById($s->sectionId);
         }
 
         $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($siteHandle);

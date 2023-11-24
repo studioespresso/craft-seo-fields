@@ -52,6 +52,10 @@ class NotFoundModel extends Model
     // Public Methods
     // =========================================================================
 
+    public function init(): void
+    {
+        parent::init();
+    }
     /**
      * Returns the validation rules for attributes.
      *

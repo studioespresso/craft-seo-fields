@@ -32,6 +32,10 @@
         <meta name="twitter:image" content="{{ meta.getTwitterImage().url ?? ogImage.url }}" />
     {% endif %}
 
+    {% if meta.allowIndexing == 'no' %}
+        <meta name="robots" content="noindex">
+    {% endif %}
+
     {% if craft.app.response.statusCode < 400 %}
         <link rel="canonical" href="{{ meta.getCanonical() }}" />
     {% endif %}
