@@ -40,31 +40,6 @@
         </div>
         <input type="hidden" name="siteId" value="{{ currentSite.id }}">
     {% endif %}
-{#    <div id="handles-btn" class="btn menubtn"#}
-{#         data-icon="tool">{% if not craft.app.request.getParam('redirect') %}#}
-{#            {{ "All 404's"|t('seo-fields') }}{% else %}{{ craft.app.request.getParam('redirect') == "handled" ? "Handled" : "Not handled" }}{% endif %}</div>#}
-{#    <div class="menu">#}
-{#        <ul class="padded">#}
-{#            <li>#}
-{#                <a href="{{ url('seo-fields/not-found' ) }}"#}
-{#                   {% if not craft.app.request.getParam('redirect') %}class="sel" {% endif %}>#}
-{#                    {{ "All 404's"|t('seo-fields') }}#}
-{#                </a>#}
-{#            </li>#}
-{#            <li>#}
-{#                <a href="{{ url(craft.app.request.getUrl(), { redirect: "handled"}) }}"#}
-{#                   {% if craft.app.request.getParam("redirect") == "handled" %}class="sel"{% endif %}>#}
-{#                    {{ "Handled" }}#}
-{#                </a>#}
-{#            </li>#}
-{#            <li>#}
-{#                <a href="{{ url(craft.app.request.getUrl(), { redirect: "not-handled"}) }}"#}
-{#                   {% if craft.app.request.getParam("redirect") == "not-handled" %}class="sel"{% endif %}>#}
-{#                    {{ "Not handled" }}#}
-{#                </a>#}
-{#            </li>#}
-{#        </ul>#}
-{#    </div>#}
 {% endblock %}
 
 
@@ -115,10 +90,16 @@
 
     ];
 
+    {% if craft.app.sites.getEditableSites()|length < 2 %}
+        {% set site =  "" %}
+    {% else %}
+        {% set site = craft.app.request.getQueryParam('site', '') %}
+    {% endif %}
+
     new Craft.VueAdminTable({
     container: '#seofields-notfound',
     columns: columns,
-    tableDataEndpoint: "{{ cpUrl('seo-fields/cp-api/not-found', {site: craft.app.request.getQueryParam('site', '')} ) }}" ,
+    tableDataEndpoint: "{{ cpUrl('seo-fields/cp-api/not-found', {site: site}) }}" ,
     deleteAction: 'seo-fields/not-found/delete',
     checkboxes:  0,
     search: true,

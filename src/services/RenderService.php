@@ -24,22 +24,22 @@ class RenderService extends Component
     // =========================================================================
     public function renderMeta($context, $handle = 'seo')
     {
+        Craft::beginProfile('renderMeta', __METHOD__);
+        $data = $this->getSeoFromContent($context, $handle);
+        $oldTemplateMode = Craft::$app->getView()->getTemplateMode();
+
+
+        Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_CP);
+        $template = Craft::$app->getView()->renderTemplate(
+                'seo-fields/_meta',
+                ['meta' => $data['meta'], 'element' => $data['entry']]
+            );
+
+        Craft::endProfile('renderMeta', __METHOD__);
+        Craft::$app->getView()->setTemplateMode($oldTemplateMode);
+        return $template;
+
         try {
-            Craft::beginProfile('renderMeta', __METHOD__);
-            $data = $this->getSeoFromContent($context, $handle);
-            $oldTemplateMode = Craft::$app->getView()->getTemplateMode();
-
-
-            Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_CP);
-            $template = Craft::$app->getView()->renderTemplate(
-                    'seo-fields/_meta',
-                    ['meta' => $data['meta'], 'element' => $data['entry']]
-                );
-
-            Craft::endProfile('renderMeta', __METHOD__);
-            Craft::$app->getView()->setTemplateMode($oldTemplateMode);
-            return $template;
-
         } catch (\Exception $e) {
             Craft::$app->getView()->setTemplateMode($oldTemplateMode);
             return null;

@@ -15,11 +15,10 @@ class NotFoundController extends Controller
      */
     public function actionIndex($siteHandle = null)
     {
-        if ($siteHandle !== null) {
+        if ($siteHandle) {
             $site = Craft::$app->getSites()->getSiteByHandle($siteHandle);
             Craft::$app->getSites()->setCurrentSite($site);
         }
-        
         $handled = "all";
         if (Craft::$app->getRequest()->getParam('redirect')) {
             if (Craft::$app->getRequest()->getParam('redirect') === "handled") {

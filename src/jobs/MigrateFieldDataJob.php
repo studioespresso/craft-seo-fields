@@ -16,7 +16,7 @@ class MigrateFieldDataJob extends BaseJob
     public $metaDescription;
 
 
-    public function init(): void
+    public function init()
     {
         if (!$this->fieldHandle) {
             throw new InvalidFieldException('Field handle not provided');
@@ -26,7 +26,7 @@ class MigrateFieldDataJob extends BaseJob
     }
 
 
-    public function execute($queue): void
+    public function execute($queue)
     {
         $model = new SeoFieldModel();
         if ($this->entry->metaTitle) {

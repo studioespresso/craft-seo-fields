@@ -17,6 +17,7 @@ class CpApiController extends Controller
     public const REDIRECT_BASE = "seo-fields/cp-api/redirect";
 
     /**
+     * @param null $siteHandle
      * @return \yii\web\Response
      */
     public function actionNotFound()
@@ -30,10 +31,13 @@ class CpApiController extends Controller
         $page = $this->request->getQueryParam('page', 1);
         list($key, $direction) = explode("|", $sort);
 
-        $total = NotFoundRecord::find()->count();
         $limit = 20;
+        $offset = ($page - 1) *  $limit;
 
         $query = NotFoundRecord::find();
+        $query->limit($limit);
+        $query->offset($offset);
+
         $site = $this->request->getQueryParam('site');
         if ($site) {
             $site = Craft::$app->getSites()->getSiteByHandle($site);
@@ -47,19 +51,16 @@ class CpApiController extends Controller
                 "fullUrl LIKE '%{$search}%'",
             ]);
         }
-        if ($total > $limit) {
-            $query->offset($page * 10);
-            $query->limit($limit);
-        }
+
         $query->orderBy($key . " " . $direction);
+
+        $total =   clone  $query;
+        $total =  $total->count();
+
         $rows = [];
-
-
         $formatter = Craft::$app->getFormatter();
+
         foreach ($query->all() as $row) {
-            /**
-             * @var NotFoundRecord|null $row
-             */
             $lastHit = DateTimeHelper::toDateTime($row->dateLastHit);
             $row = [
                 'id' => $row->id,
@@ -73,10 +74,10 @@ class CpApiController extends Controller
 
             $rows[] = $row;
         }
-        $nextPageUrl = self::NOT_FOUND_BASE;
-        $prevPageUrl = self::NOT_FOUND_BASE;
-        $lastPage = (int)ceil($total / $limit);
-        $to = $page === $lastPage ? $total : ($total < $limit ? $total : ($page * $limit));
+
+        $from = ($page - 1) * $limit + 1;
+        $lastPage = (int) ceil($total / $limit);
+        $to = intval($page) ===  intval($lastPage) ? $total : ($page * $limit);
 
         return $this->asJson([
             'pagination' => [
@@ -84,8 +85,8 @@ class CpApiController extends Controller
                 'per_page' => (int)$limit,
                 'current_page' => (int)$page,
                 'last_page' => (int)$lastPage,
-                'next_page_url' => $nextPageUrl,
-                'prev_page_url' => $prevPageUrl,
+                'next_page_url' => self::NOT_FOUND_BASE,
+                'prev_page_url' => self::NOT_FOUND_BASE,
                 'from' => (int)(($page * $limit) - $limit) + 1,
                 'to' => (int)$to,
             ],
@@ -104,16 +105,20 @@ class CpApiController extends Controller
         $page = $this->request->getQueryParam('page', 1);
         list($key, $direction) = explode("|", $sort);
 
-        $total = RedirectRecord::find()->count();
         $limit = 20;
+        $offset = ($page - 1) *  $limit;
 
         $query = RedirectRecord::find();
+        $query->limit($limit);
+        $query->offset($offset);
 
         $site = $this->request->getQueryParam('site');
+
         if ($site) {
             $site = Craft::$app->getSites()->getSiteByHandle($site);
             $query->orWhere(Db::parseParam('siteId', $site->id));
         }
+
         if ($search) {
             $query->andWhere([
                 'or',
@@ -121,15 +126,12 @@ class CpApiController extends Controller
                 "redirect LIKE '%{$search}%'",
             ]);
         }
-        if ($total > $limit) {
-            $query->offset($page * 10);
-            $query->limit($limit);
-        }
         $query->orderBy($key . " " . $direction);
+
+        $total =   clone  $query;
+        $total =  $total->count();
+
         $rows = [];
-
-        $allSites = Craft::$app->getSites()->getAllSites();
-
         $formatter = Craft::$app->getFormatter();
 
         $types = [
@@ -138,9 +140,6 @@ class CpApiController extends Controller
         ];
 
         foreach ($query->all() as $row) {
-            /**
-             * @var RedirectRecord|null $row
-             */
             $lastHit = DateTimeHelper::toDateTime($row->dateLastHit);
             $row = [
                 'url' => UrlHelper::cpUrl("seo-fields/redirects/edit/{$row->id}"),
@@ -156,10 +155,10 @@ class CpApiController extends Controller
 
             $rows[] = $row;
         }
-        $nextPageUrl = self::REDIRECT_BASE;
-        $prevPageUrl = self::REDIRECT_BASE;
-        $lastPage = (int)ceil($total / $limit);
-        $to = $page === $lastPage ? $total : ($total < $limit ? $total : ($page * $limit));
+
+        $from = ($page - 1) * $limit + 1;
+        $lastPage = (int) ceil($total / $limit);
+        $to = (int)$page === $lastPage ? $total : ($page * $limit);
 
         return $this->asJson([
             'pagination' => [
@@ -167,9 +166,9 @@ class CpApiController extends Controller
                 'per_page' => (int)$limit,
                 'current_page' => (int)$page,
                 'last_page' => (int)$lastPage,
-                'next_page_url' => $nextPageUrl,
-                'prev_page_url' => $prevPageUrl,
-                'from' => (int)(($page * $limit) - $limit) + 1,
+                'next_page_url' => self::REDIRECT_BASE,
+                'prev_page_url' => self::REDIRECT_BASE,
+                'from' => (int)$from,
                 'to' => (int)$to,
             ],
             'data' => $rows,

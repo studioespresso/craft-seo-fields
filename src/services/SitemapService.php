@@ -15,7 +15,6 @@ use craft\helpers\Db;
 use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use craft\models\Site;
-use PhpCsFixer\DocBlock\Tag;
 use studioespresso\seofields\SeoFields;
 use yii\caching\TagDependency;
 
@@ -113,13 +112,11 @@ class SitemapService extends Component
         $data = [];
         switch ($type) {
             case 'product':
-                if(class_exists('craft\commerce\elements\Product')) {
-                    $data = Product::findAll([
-                        'siteId' => $siteId,
-                        'typeId' => $sectionId,
-                        'orderBy' => 'dateUpdated DESC',
-                    ]);
-                }
+                $data = Product::findAll([
+                    'siteId' => $siteId,
+                    'typeId' => $sectionId,
+                    'orderBy' => 'dateUpdated DESC',
+                ]);
                 break;
             case 'category':
                 $data = Category::findAll([
@@ -167,21 +164,14 @@ class SitemapService extends Component
         );
     }
 
-    /**
-     * @param Element|Entry|Category $element
-     * @return false|void
-     */
-    public function clearCacheForElement(Element|Entry|Category $element)
+    public function clearCacheForElement(Element $element)
     {
         $elementType = get_class($element);
         $typeHandle = explode('\\', $elementType);
         $typeHandle = end($typeHandle);
         switch (strtolower($typeHandle)) {
             case 'entry':
-            /**
-             * @var Entry|null $element
-             */
-            $section = Craft::$app->getSections()->getSectionById($element->sectionId);
+                $section = Craft::$app->getSections()->getSectionById($element->sectionId);
                 $id = $section->id;
                 break;
             default:
@@ -215,6 +205,7 @@ class SitemapService extends Component
         if ($seoField->columnSuffix) {
             $field = $field . "_{$seoField->columnSuffix}";
         }
+        /** @var $entry Element */
         foreach ($entries as $entry) {
             $siteEntries =
                 (new Query())->select(['elements_sites.siteId', 'uri', 'language'])
@@ -288,9 +279,7 @@ class SitemapService extends Component
     {
         $data = [];
         foreach ($productTypes as $id => $settings) {
-            /** @phpstan-ignore-next-line */
             $type = Commerce::getInstance()->productTypes->getProductTypeById($id);
-            /** @phpstan-ignore-next-line */
             $entry = Product::findOne(['typeId' => $type->id, 'orderBy' => 'dateUpdated DESC']);
             if ($entry) {
                 $data[] = implode('', $this->_addItemToIndex($site, $type, $entry));
@@ -357,10 +346,8 @@ class SitemapService extends Component
 
         $shouldRenderProducts = array_filter($sitemapSettings['product'], function($productType) use ($sitemapSettings) {
             if (isset($sitemapSettings['product'][$productType]['enabled'])) {
-                /** @phpstan-ignore-next-line */
                 $productTypeService = new ProductTypes();
                 $site = Craft::$app->getSites()->getCurrentSite();
-                /** @phpstan-ignore-next-line */
                 foreach ($productTypeService->getProductTypeSites($productType) as $productTypeSite) {
                     if ($productTypeSite->siteId == $site->id && $productTypeSite->hasUrls) {
                         return true;

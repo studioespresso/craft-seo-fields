@@ -11,7 +11,6 @@
 namespace studioespresso\seofields;
 
 use Craft;
-use craft\base\Model;
 use craft\base\Plugin;
 use craft\events\ElementEvent;
 use craft\events\EntryTypeEvent;
@@ -160,7 +159,11 @@ class SeoFields extends Plugin
         return $navItem;
     }
 
-    protected function createSettingsModel(): ? Model
+    // Protected Methods
+    // =========================================================================
+    // Protected Methods
+    // =========================================================================
+    protected function createSettingsModel(): ?craft\base\Model
     {
         return new Settings();
     }
@@ -387,14 +390,10 @@ class SeoFields extends Plugin
     {
         $elements = [];
         if (Craft::$app->getPlugins()->isPluginEnabled('calendar')) {
-            if(class_exists('Solspace\Calendar\Elements\Event')) {
-                $elements[] = \Solspace\Calendar\Elements\Event::class;
-            }
+            $elements[] = \Solspace\Calendar\Elements\Event::class;
         }
         if (Craft::$app->getPlugins()->isPluginEnabled('commerce')) {
-            if(class_exists('craft\commerce\elements\Product')) {
-                $elements[] = \craft\commerce\elements\Product::class;
-            }
+            $elements[] = \craft\commerce\elements\Product::class;
         }
 
         if ($elements) {

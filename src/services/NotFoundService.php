@@ -33,6 +33,29 @@ class NotFoundService extends Component
         $this->handleNotFound($request, $site);
     }
 
+    public function getAllNotFound($orderBy, $siteHandle = null, $handled)
+    {
+        $data = [];
+        $query = NotFoundRecord::find();
+        $query->orderBy("$orderBy DESC, dateLastHIT DESC");
+        $query->where(['in', 'siteId', Craft::$app->getSites()->getEditableSiteIds()]);
+        if ($siteHandle) {
+            $site = Craft::$app->getSites()->getSiteByHandle($siteHandle);
+            $query->andWhere(['siteId' => $site->id]);
+        }
+
+        if ($handled !== "all") {
+            $query->andWhere(Db::parseParam('handled', $handled));
+        }
+
+        foreach ($query->all() as $record) {
+            $model = new NotFoundModel();
+            $model->setAttributes($record->getAttributes());
+            $data[] = $model;
+        }
+        return $data;
+    }
+
     public function handleNotFound(Request $request, Site $site)
     {
         try {
@@ -93,6 +116,10 @@ class NotFoundService extends Component
         return;
     }
 
+    /**
+     * @param NotFoundModel $model
+     * @return RedirectModel|false
+     */
     private function getMatchingRedirect(NotFoundModel $model): RedirectRecord|array|bool
     {
         Craft::debug("Check if our 404 is matched to a redirect", SeoFields::class);
@@ -115,7 +142,7 @@ class NotFoundService extends Component
             Db::parseParam('sourceMatch', 'pathWithoutParams', '='),
         ]);
 
-        if ($redirect->one() !== null) {
+        if ($redirect->one()) {
             return $redirect->one();
         }
 
@@ -193,9 +220,6 @@ class NotFoundService extends Component
         $toDelete->limit($limit);
         $toDelete->orderBy("dateCreated ASC");
         foreach ($toDelete->all() as $record) {
-            /**
-             * @var NotFoundRecord|null $record
-             */
             $this->deletetById($record->id);
         }
     }

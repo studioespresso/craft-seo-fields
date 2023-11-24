@@ -95,14 +95,20 @@
         }
     ];
 
+    {% if craft.app.sites.getEditableSites()|length < 2 %}
+        {% set site =  "" %}
+    {% else %}
+        {% set site = craft.app.request.getQueryParam('site', '') %}
+    {% endif %}
+
     new Craft.VueAdminTable({
     container: '#seofields-redirects',
     columns: columns,
-    tableDataEndpoint: "{{ cpUrl('seo-fields/cp-api/redirects', {site: craft.app.request.getQueryParam('site', '')} ) }}" ,
+    tableDataEndpoint: "{{ cpUrl('seo-fields/cp-api/redirects', {site : site} ) }}" ,
     deleteAction: 'seo-fields/redirects/delete',
     checkboxes:  0,
     search: true,
-    allowMultipleSelections: false,
-    });
+    allowMultipleSelections: false
+});
 
 {% endjs %}
