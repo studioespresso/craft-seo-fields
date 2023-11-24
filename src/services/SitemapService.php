@@ -203,30 +203,19 @@ class SitemapService extends Component
         $data[] = '<?xml version="1.0" encoding="UTF-8"?>';
         $data[] = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xhtml="http://www.w3.org/1999/xhtml" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9">';
         $currentSite = Craft::$app->getSites()->getCurrentSite();
-        $handle = SeoFields::getInstance()->getSettings()->fieldHandle;
-        $seoField = Craft::$app->getFields()->getFieldByHandle($handle);
-        $field = "field_{$handle}";
 
-
-        // TODO: Fix sitemap query
         foreach ($entries as $entry) {
-        /**
-         * @var Entry $entry
-         */
-            $type = $entry->getType();
-            $typeField = $type->getFieldLayout()->getFieldByHandle($handle);
-            $sql = $typeField->getValueSql();
-            
+
+            if($entry->seo->allowIndexing === 'no') {
+                continue;
+            }
+
             $siteEntries =
-                (new Query())->select(['elements_sites.siteId', 'uri', 'language'])
+                (new Query())
+                    ->select(['elements_sites.siteId', 'uri', 'language'])
                     ->from('{{%elements_sites}} as elements_sites')
                     ->leftJoin('{{%sites}} as sites', 'sites.id = elements_sites.siteId')
                     ->where('[[elements_sites.elementId]] = ' . $entry->id)
-                    ->andWhere([
-                        'or',
-                        Db::parseParam("JSON_EXTRACT(content.$field, '$.allowIndexing')", "yes"),
-                        Db::parseParam("JSON_EXTRACT(content.$field, '$.allowIndexing')", ":empty:"),
-                    ])
                     ->andWhere('sites.enabled = true')->all();
             if (!$siteEntries) {
                 continue;

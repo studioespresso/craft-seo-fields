@@ -31,9 +31,10 @@ class SitemapController extends Controller
             ->leftJoin('{{%sections}}', 'sections.id = sections_sites.sectionId')
             ->where(Db::parseParam('siteId', $site->id))
             ->andWhere(['sections.dateDeleted' => null]);
+
         $sections = [];
         foreach ($query->all() as $s) {
-            $sections[] = Craft::$app->getEntries()->getSectionById($s->sectionId);
+            $sections[] = Craft::$app->getEntries()->getSectionById($s['id']);
         }
 
         $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($siteHandle);
