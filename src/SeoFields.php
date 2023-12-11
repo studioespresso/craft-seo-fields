@@ -143,6 +143,12 @@ class SeoFields extends Plugin
                 'url' => 'seo-fields/redirects',
             ];
         }
+        if ($currentUser->can('seo-fields:schema')) {
+            $subNavs['schema'] = [
+                'label' => 'Schema.org',
+                'url' => 'seo-fields/schema',
+            ];
+        }
         if ($currentUser->can('seo-fields:robots')) {
             $subNavs['robots'] = [
                 'label' => 'Robots.txt',
@@ -219,6 +225,9 @@ class SeoFields extends Plugin
                         'seo-fields:redirects' => [
                             'label' => Craft::t('seo-fields', "redirects"),
                         ],
+                        'seo-fields:schema' => [
+                            'label' => Craft::t('seo-fields', "Schema.org"),
+                        ],
                         'seo-fields:robots' => [
                             'label' => Craft::t('seo-fields', 'Robots'),
                         ],
@@ -278,11 +287,11 @@ class SeoFields extends Plugin
                     'seo-fields' => 'seo-fields/defaults/index',
                     'seo-fields/cp-api/<action>' => 'seo-fields/cp-api/<action>',
                     'seo-fields/<controller:(not-found)>/<siteHandle:{handle}>' => 'seo-fields/<controller>/index',
-                    'seo-fields/<controller:(defaults|robots|sitemap|not-found|redirects)>' => 'seo-fields/<controller>/index',
+                    'seo-fields/<controller:(defaults|robots|sitemap|not-found|redirects|schema)>' => 'seo-fields/<controller>/index',
                     'seo-fields/<controller:(redirects)>/<id:\d+>' => 'seo-fields/<controller>/<action>',
                     'seo-fields/<controller:(redirects|not-found)>/<action>' => 'seo-fields/<controller>/<action>',
                     'seo-fields/<controller:(redirects|not-found)>/<action>/<id:\d+>' => 'seo-fields/<controller>/<action>',
-                    'seo-fields/<controller:(defaults|robots|sitemap)>/<siteHandle:{handle}>' => 'seo-fields/<controller>/settings',
+                    'seo-fields/<controller:(defaults|robots|sitemap|schema)>/<siteHandle:{handle}>' => 'seo-fields/<controller>/settings',
                 ]);
             }
         );
