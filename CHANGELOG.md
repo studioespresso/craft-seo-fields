@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.3.8.1 - 2023-11-24
+### Fixed
+- Fixed a twig syntax error ([#88](https://github.com/studioespresso/craft-seo-fields/pull/88))
+
+
+
+## 3.3.8 - 2023-11-23
+### Fixed
+- Redirects and 404's now works for users that only have access to 1 site. ([#87](https://github.com/studioespresso/craft-seo-fields/issues/87))
+
+
+
+## 3.3.7 - 2023-11-19
+### Fixed
+- Fixed an issue where page title wouldn't be used as fallback meta title ([#86](https://github.com/studioespresso/craft-seo-fields/issues/86))
+
+
+## 3.3.6 - 2023-11-15
+### Fixed
+- Final fix for pagination on redirects & 404's ([#85](https://github.com/studioespresso/craft-seo-fields/pull/85))
+
+## 3.3.5 - 2023-11-09
+### Fixed
+- Temporary fix for incomplete pagination on redirects ([#85](https://github.com/studioespresso/craft-seo-fields/pull/85))
+
+
+## 3.3.4 - 2023-10-14
+### Fixed
+- Fixed an error where deleted sections were still shown in the sitemap settings ([#82](https://github.com/studioespresso/craft-seo-fields/issues/82))
+
+
 ## 3.3.3 - 2023-09-18
 ### Fixed
 - Fixed an error when using a custom meta template ([#81](https://github.com/studioespresso/craft-seo-fields/issues/81))
