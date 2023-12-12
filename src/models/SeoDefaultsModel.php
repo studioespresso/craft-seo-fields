@@ -3,6 +3,7 @@
 namespace studioespresso\seofields\models;
 
 use craft\base\Model;
+use craft\helpers\Json;
 
 class SeoDefaultsModel extends Model
 {
@@ -48,5 +49,10 @@ class SeoDefaultsModel extends Model
                 'safe',
             ],
         ];
+    }
+
+    public function getSchema()
+    {
+        return Json::decodeIfJson($this->schema);
     }
 }

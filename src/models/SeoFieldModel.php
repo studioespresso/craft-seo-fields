@@ -3,12 +3,17 @@
 namespace studioespresso\seofields\models;
 
 use Craft;
+use craft\base\Element;
 use craft\base\Model;
 use craft\db\Query;
 use craft\elements\Asset;
 use craft\elements\db\AssetQuery;
+use craft\elements\Entry;
+use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use craft\models\ImageTransform;
+use craft\web\View;
+use Spatie\SchemaOrg\Schema;
 use studioespresso\seofields\SeoFields;
 
 class SeoFieldModel extends Model
@@ -25,6 +30,7 @@ class SeoFieldModel extends Model
     public $hideSiteName;
     public $siteId;
     public $canonical;
+    public $schema;
     public $allowIndexing = 'yes';
 
     /**
@@ -52,6 +58,30 @@ class SeoFieldModel extends Model
         $this->siteDefault = SeoFields::getInstance()->defaultsService->getDataBySite($site);
     }
 
+    public function getSchema(Element $element = null)
+    {
+        $settings = $this->siteDefault->getSchema();
+        switch (get_class($element)) {
+            case Entry::class:
+                $schemaSettings = $settings['sections'];
+                $sectionId = $element->section->id;
+                $schemaClass = $schemaSettings[$sectionId];
+
+                /** @var $schema Schema */
+                $schema = Craft::createObject($schemaClass);
+                $schema->name($this->getPageTitle($element, false));
+                $schema->description($this->getMetaDescription());
+                $schema->url($element->getUrl());
+                break;
+        }
+        Craft::$app->getView()->registerScript(
+            Json::encode($schema),
+            View::POS_END, [
+                'type' => 'application/ld+json'
+            ]
+        );
+    }
+
     public function getSiteNameWithSeperator()
     {
         $this->getDefaults();
@@ -70,12 +100,13 @@ class SeoFieldModel extends Model
         return ' ' . $seperator . ' ' . $siteName;
     }
 
-    public function getPageTitle($element = null)
+
+    public function getPageTitle($element = null, $includeSiteName = true)
     {
         if ($element && !$this->metaTitle) {
-            return $element->title . $this->getSiteNameWithSeperator();
+            return $element->title . ($includeSiteName ? $this->getSiteNameWithSeperator() : '');
         }
-        return $this->metaTitle . $this->getSiteNameWithSeperator();
+        return $this->metaTitle . ($includeSiteName ? $this->getSiteNameWithSeperator() : '');
     }
 
     public function getCanonical()

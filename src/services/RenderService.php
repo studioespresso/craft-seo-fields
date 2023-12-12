@@ -6,7 +6,9 @@ use Craft;
 use craft\base\Component;
 use craft\elements\Category;
 use craft\elements\Entry;
+use craft\helpers\Json;
 use craft\web\View;
+use Spatie\SchemaOrg\Schema;
 use studioespresso\seofields\events\RegisterSeoElementEvent;
 use studioespresso\seofields\models\SeoFieldModel;
 use studioespresso\seofields\SeoFields;
@@ -26,31 +28,21 @@ class RenderService extends Component
     {
         Craft::beginProfile('renderMeta', __METHOD__);
         $data = $this->getSeoFromContent($context, $handle);
-        $oldTemplateMode = Craft::$app->getView()->getTemplateMode();
 
-
-        Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_CP);
         $template = Craft::$app->getView()->renderTemplate(
-                'seo-fields/_meta',
-                ['meta' => $data['meta'], 'element' => $data['entry']]
-            );
+            'seo-fields/_meta',
+            ['meta' => $data['meta'], 'element' => $data['entry']],
+            View::TEMPLATE_MODE_CP
+        );
 
         Craft::endProfile('renderMeta', __METHOD__);
-        Craft::$app->getView()->setTemplateMode($oldTemplateMode);
         return $template;
-
-        try {
-        } catch (\Exception $e) {
-            Craft::$app->getView()->setTemplateMode($oldTemplateMode);
-            return null;
-        }
     }
 
     public function getSeoFromContent($context, $handle)
     {
         $meta = null;
         $element = null;
-        $handle = SeoFields::$plugin->getSettings()->fieldHandle;
 
         Craft::beginProfile('renderMeta', __METHOD__);
 
