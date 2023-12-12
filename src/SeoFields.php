@@ -41,6 +41,7 @@ use studioespresso\seofields\services\DefaultsService;
 use studioespresso\seofields\services\NotFoundService;
 use studioespresso\seofields\services\RedirectService;
 use studioespresso\seofields\services\RenderService;
+use studioespresso\seofields\services\SchemaService;
 use studioespresso\seofields\services\SitemapService;
 use studioespresso\seofields\variables\SeoFieldsVariable;
 use yii\base\Event;
@@ -61,6 +62,7 @@ use yii\web\HttpException;
  * @property RenderService $renderService
  * @property RedirectService $redirectService
  * @property NotFoundService $notFoundService
+ * @property SchemaService $schemaService
  * @method    Settings getSettings()
  */
 class SeoFields extends Plugin
@@ -96,6 +98,7 @@ class SeoFields extends Plugin
             "renderService" => RenderService::class,
             "redirectService" => RedirectService::class,
             "notFoundService" => NotFoundService::class,
+            "schemaService" => SchemaService::class,
         ]);
 
         if (Craft::$app instanceof ConsoleApplication) {

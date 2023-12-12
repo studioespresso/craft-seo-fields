@@ -22,6 +22,8 @@ class SeoDefaultsModel extends Model
 
     public $robots;
 
+    public $schema;
+
     public $sitemap;
 
     /**
@@ -39,6 +41,7 @@ class SeoDefaultsModel extends Model
                     'siteId',
                     'enableRobots',
                     'robots',
+                    'schema',
                     'sitemap',
                     'id',
                 ],

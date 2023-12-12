@@ -10,57 +10,31 @@
         <thead>
         <tr>
             <th>{{ 'Section'|t('seo-fields') }}</th>
-            <th>{{ 'Update frequency'|t('seo-fields') }}
-                {#                <span class="info">#}
-                {#                    </span>#}
-            </th>
-            <th>Priority
-                <span class="info">
-                        {{ 'The priority of this URL relative to other URLs on your site. Valid values range from 0.0 to 1.0. This value does not affect how your pages are compared to pages on other sites—it only lets the search engines know which pages you deem most important for the crawlers.'|t('seo-fields') }}
-                    </span>
-            </th>
-            <th>{{ 'Enabled?'|t('seo-fields') }}</th>
+            <th>{{ 'Type'|t('seo-fields') }}</th>
         </tr>
         </thead>
         <tbody>
 
-        {% set sitemapSettings = data.sitemap|json_decode %}
+        {% set schemaSettings = data.schema|json_decode %}
+        {% set sectionSettings = schemaSettings.sections %}
         {% for section in sections %}
-            {% set settings = attribute(sitemapSettings.entry, section.id) ?? [] %}
+            {% set settings = attribute(sectionSettings, section.id) ?? [] %}
             <tr>
                 <th>{{ section.name }}</th>
                 <td>
                     <div class="field">
                         <div class="input ltr">
                             <div class="select">
-                                <select name="data[entry][{{ section.id }}][changefreq]" id="">
-                                    <option value="always"
-                                            {% if settings|length and settings.changefreq == 'always' %}selected{% endif %}>
-                                        {{ 'always'|t('seo-fields') }}
+                                <select name="data[sections][{{ section.id }}]" id="">
+                                    {% for class, label in options %}
+                                    <option value="{{ class }}" {% if settings|length and settings == class %}selected{% endif %}>
+                                        {{ label }}
                                     </option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
                     </div>
-                </td>
-                <td>
-                    <div class="field">
-                        <div class="input ltr">
-                            <div class="select">
-                                <select name="data[entry][{{ section.id }}][priority]">
-
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </td>
-                <td>
-                    <label for="section-{{ section.id }}-enabled">
-                        <input type="checkbox" id="section-{{ section.id }}-enabled"
-                               name="data[entry][{{ section.id }}][enabled]"
-                               {% if settings.enabled is defined %}checked{% endif %}>
-                        {{ 'Enabled?'|t('seo-fields') }}
-                    </label>
                 </td>
             </tr>
         {% endfor %}
