@@ -7,6 +7,7 @@ use craft\base\Element;
 use craft\base\Model;
 use craft\db\Query;
 use craft\elements\Asset;
+use craft\elements\Category;
 use craft\elements\db\AssetQuery;
 use craft\elements\Entry;
 use craft\helpers\Json;
@@ -60,26 +61,44 @@ class SeoFieldModel extends Model
 
     public function getSchema(Element $element = null)
     {
-        $settings = $this->siteDefault->getSchema();
-        switch (get_class($element)) {
-            case Entry::class:
-                $schemaSettings = $settings['sections'];
-                $sectionId = $element->section->id;
-                $schemaClass = $schemaSettings[$sectionId];
-
-                /** @var $schema Schema */
-                $schema = Craft::createObject($schemaClass);
-                $schema->name($this->getPageTitle($element, false));
-                $schema->description($this->getMetaDescription());
-                $schema->url($element->getUrl());
-                break;
+        if (!$element) {
+            return null;
         }
-        Craft::$app->getView()->registerScript(
-            Json::encode($schema),
-            View::POS_END, [
-                'type' => 'application/ld+json'
-            ]
-        );
+        try {
+            $settings = $this->siteDefault->getSchema();
+            switch (get_class($element)) {
+                case Entry::class:
+                    $schemaSettings = $settings['sections'];
+                    $sectionId = $element->section->id;
+                    $schemaClass = $schemaSettings[$sectionId];
+
+                    /** @var $schema Schema */
+                    $schema = Craft::createObject($schemaClass);
+                    $schema->name($this->getPageTitle($element, false) ?? "");
+                    $schema->description($this->getMetaDescription() ?? "");
+                    $schema->url($element->getUrl() ?? "");
+                    break;
+                case Category::class:
+                    $schemaSettings = $settings['groups'];
+                    $sectionId = $element->section->id;
+                    $schemaClass = $schemaSettings[$sectionId];
+
+                    /** @var $schema Schema */
+                    $schema = Craft::createObject($schemaClass);
+                    $schema->name($this->getPageTitle($element, false) ?? "");
+                    $schema->description($this->getMetaDescription() ?? "");
+                    $schema->url($element->getUrl() ?? "");
+                    break;
+            }
+            Craft::$app->getView()->registerScript(
+                Json::encode($schema),
+                View::POS_END, [
+                    'type' => 'application/ld+json'
+                ]
+            );
+        } catch (\Exception $e) {
+            Craft::error($e, SeoFields::class);
+        }
     }
 
     public function getSiteNameWithSeperator()
