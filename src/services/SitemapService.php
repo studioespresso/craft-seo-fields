@@ -11,7 +11,7 @@ use craft\commerce\services\ProductTypes;
 use craft\db\Query;
 use craft\elements\Category;
 use craft\elements\Entry;
-use craft\helpers\Db;
+use craft\helpers\ElementHelper;
 use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use craft\models\Site;
@@ -83,7 +83,7 @@ class SitemapService extends Component
 
         $xml = Craft::$app->getCache()->getOrSet(
             self::SITEMAP_CACHE_KEY . '_index_site' . $currentSite->id,
-            function() use ($data, $currentSite) {
+            function () use ($data, $currentSite) {
                 $xml[] = '<?xml version="1.0" encoding="UTF-8"?>';
                 $xml[] = '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
                 if (isset($data['sections'])) {
@@ -143,7 +143,7 @@ class SitemapService extends Component
         if (!Craft::$app->getConfig()->general->devMode) {
             $data = Craft::$app->getCache()->getOrSet(
                 self::SITEMAP_CACHE_KEY . "_" . $siteId . "_" . $sectionId,
-                function() use ($data, $type, $settings, $sectionId) {
+                function () use ($data, $type, $settings, $sectionId) {
                     return $this->_addElementsToSitemap($data, $settings[$type][$sectionId]);
                 },
                 null,
@@ -166,18 +166,23 @@ class SitemapService extends Component
 
     public function clearCacheForElement(Element $element)
     {
+        if (ElementHelper::isDraftOrRevision($element)) {
+            return false;
+        }
+
         $elementType = get_class($element);
         $typeHandle = explode('\\', $elementType);
         $typeHandle = end($typeHandle);
         switch (strtolower($typeHandle)) {
             case 'entry':
-
-            /**
-             * @var Entry|null $element
-             */
-            $section = Craft::$app->getEntries()->getSectionById($element->sectionId);
-                $id = $section->id;
-                break;
+                /**
+                 * @var Entry|null $element
+                 */
+                if ($element->sectionId) {
+                    $section = Craft::$app->getEntries()->getSectionById($element->sectionId);
+                    $id = $section->id;
+                    break;
+                }
             default:
                 return false;
                 break;
@@ -301,7 +306,7 @@ class SitemapService extends Component
 
     private function _shouldRenderEntries($sitemapSettings)
     {
-        $shouldRenderSections = array_filter($sitemapSettings['entry'], function($sectionId) use ($sitemapSettings) {
+        $shouldRenderSections = array_filter($sitemapSettings['entry'], function ($sectionId) use ($sitemapSettings) {
             $section = Craft::$app->getEntries()->getSectionById($sectionId);
             if (!$section) {
                 return false;
@@ -322,7 +327,7 @@ class SitemapService extends Component
 
     private function _shouldRenderCategories($sitemapSettings)
     {
-        $shouldRenderCategories = array_filter($sitemapSettings['category'], function($group) use ($sitemapSettings) {
+        $shouldRenderCategories = array_filter($sitemapSettings['category'], function ($group) use ($sitemapSettings) {
             if (isset($sitemapSettings['category'][$group]['enabled'])) {
                 $site = Craft::$app->getSites()->getCurrentSite();
                 $groupSites = Craft::$app->getCategories()->getGroupById($group)->siteSettings;
@@ -342,7 +347,7 @@ class SitemapService extends Component
             return false;
         }
 
-        $shouldRenderProducts = array_filter($sitemapSettings['product'], function($productType) use ($sitemapSettings) {
+        $shouldRenderProducts = array_filter($sitemapSettings['product'], function ($productType) use ($sitemapSettings) {
             if (isset($sitemapSettings['product'][$productType]['enabled'])) {
                 $productTypeService = new ProductTypes();
                 $site = Craft::$app->getSites()->getCurrentSite();
