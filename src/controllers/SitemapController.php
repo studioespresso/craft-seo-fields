@@ -38,12 +38,7 @@ class SitemapController extends Controller
         }
 
 
-        $crumbs = [
-            [
-                'label' => "Meta",
-                'url' => UrlHelper::cpUrl('seo-fields'),
-            ]
-        ];
+        $crumbs = [];
 
         if ($settings->sitemapPerSite) {
             $crumbs[] = [
@@ -63,7 +58,7 @@ class SitemapController extends Controller
                 'data' => $data,
                 'sitemapPerSite' => $settings->sitemapPerSite,
                 'sections' => $sections,
-                'selectedSite' => $currentSite,
+                'site' => $currentSite,
             ]);
 
     }

@@ -42,10 +42,6 @@ class DefaultsController extends Controller
             ->title(Craft::t('seo-fields', 'SEO Fields'))
             ->crumbs([
                 [
-                    'label' => "Meta",
-                    'url' => UrlHelper::cpUrl('seo-fields'),
-                ],
-                [
                     'label' => $currentSite->name,
                     'menu' => [
                         'label' => Craft::t('site', 'Select site'),
@@ -56,7 +52,7 @@ class DefaultsController extends Controller
             ->action('seo-fields/defaults/save')
             ->contentTemplate('seo-fields/_defaults/_content', [
                 'data' => SeoFields::$plugin->defaultsService->getDataBySite($currentSite),
-                'selectedSite' => $site,
+                'site' => $currentSite,
             ]);
 
     }

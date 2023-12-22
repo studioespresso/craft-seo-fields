@@ -23,12 +23,7 @@ class RobotsController extends Controller
 
         $settings = SeoFields::$plugin->getSettings();
 
-        $crumbs = [
-            [
-                'label' => "Meta",
-                'url' => UrlHelper::cpUrl('seo-fields'),
-            ]
-        ];
+        $crumbs = [];
 
         if ($settings->robotsPerSite) {
             $crumbs[] = [

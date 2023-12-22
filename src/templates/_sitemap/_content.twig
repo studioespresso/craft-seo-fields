@@ -1,7 +1,7 @@
 {% import "_includes/forms" as forms %}
 
 {% if sitemapPerSite %}
-    <input type="hidden" name="siteId" value="{{ selectedSite.id }}">
+    <input type="hidden" name="siteId" value="{{ site.id }}">
 {% endif %}
 
     {% if data.id is defined %}
