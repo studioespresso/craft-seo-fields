@@ -3,6 +3,7 @@
 namespace studioespresso\seofields\controllers;
 
 use Craft;
+use craft\helpers\Cp;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use studioespresso\seofields\SeoFields;
@@ -16,7 +17,7 @@ class DefaultsController extends Controller
         $currentUser = Craft::$app->getUser()->getIdentity();
         $primarySite = Craft::$app->sites->getPrimarySite();
         if ($currentUser->can('seo-fields:default')) {
-            $this->redirect(UrlHelper::cpUrl("seo-fields/defaults/$primarySite->handle", $params));
+            $this->redirect(UrlHelper::cpUrl("seo-fields/defaults/settings", $params));
         } elseif ($currentUser->can('seo-fields:notfound')) {
             $this->redirect(UrlHelper::cpUrl("seo-fields/not-found/$primarySite->handle", $params));
         } elseif ($currentUser->can('seo-fields:redirects')) {
@@ -28,15 +29,34 @@ class DefaultsController extends Controller
         }
     }
 
-    public function actionSettings($siteHandle = null)
+    public function actionSettings()
     {
-        $site = Craft::$app->sites->getSiteByHandle($siteHandle);
+        $site = $this->request->getRequiredQueryParam('site');
+        $currentSite = Craft::$app->getSites()->getSiteByHandle($site);
+
+        $sites = Craft::$app->getSites()->getEditableSites();
         Craft::$app->sites->setCurrentSite($site);
-        $data = SeoFields::$plugin->defaultsService->getDataBySite($site);
-        return $this->renderTemplate('seo-fields/_defaults', [
-            'data' => $data,
-            'selectedSite' => $site,
-        ]);
+        return $this->asCpScreen()
+            ->title(Craft::t('seo-fields', 'SEO Fields'))
+            ->crumbs([
+                [
+                    'label' => "SEO Fields",
+                    'url' => UrlHelper::cpUrl('seo-fields'),
+                ],
+                [
+                    'label' => $currentSite->name,
+                    'menu' => [
+                        'label' => Craft::t('site', 'Select site'),
+                        'items' => Cp::siteMenuItems($sites, $currentSite),
+                    ]
+                ]
+            ])
+            ->action('seo-fields/defaults/save')
+            ->contentTemplate('seo-fields/_defaults/_content', [
+                'data' => SeoFields::$plugin->defaultsService->getDataBySite($currentSite),
+                'selectedSite' => $site,
+            ]);
+
     }
 
     public function actionSave()

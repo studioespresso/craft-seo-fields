@@ -1,0 +1,75 @@
+{% import "_includes/forms" as forms %}
+
+<input type="hidden" name="siteId" value="{{ currentSite.id }}">
+
+<style>
+    .seo-introduction {
+        border-radius: .25rem;
+        color: #155724;
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        padding: .95rem 1rem;
+    }
+</style>
+{% set showIntroduction = craft.app.request.getParam('showIntroduction') %}
+    {% if showIntroduction %}
+        <div class="seo-introduction">
+            <h2>{{ "Thanks for trying out SEO Fields"|t }}</h2>
+            <p>{{ "Set default meta data for your site(s) here and you're good to go. For further install instruction, make sure you check the documentation <a href='https://studioespresso.github.io/craft-seo-fields/general.html' target='_blank'>here</a>."|t|raw }}</p>
+            <p>{{ "If you run into any problems you can create an issue <a href='https://github.com/studioespresso/craft-seo-fields/issues' target='_blank'>here</a> or contact me <a href='mailto:jan@henckens.be' target='_blank'>directly</a>."|t|raw }}</p>
+        </div>
+    {% endif %}
+
+    {{ forms.textField({
+        label: 'Default site title'|t('seo-fields'),
+        id: 'defaultSiteTitle',
+        name: 'defaultSiteTitle',
+        size: 80,
+        value: data['defaultSiteTitle']}) }}
+<div class="field" id="defaultMetaDescription">
+    <div class="heading">
+        <label id="defaultMetaDescription"
+               for="defaultMetaDescription">{{ "Default meta description"|t("seo-fields") }}</label>
+    </div>
+    <div class="input ltr">
+        {{ forms.textArea({
+            id: "defaultMetaDescription",
+            name: "defaultMetaDescription",
+            value: data["defaultMetaDescription"],
+            class: "nicetext",
+            maxlength: 300,
+            showCharsLeft: true,
+            warning: false,
+        }) }}
+    </div>
+</div>
+
+{{ forms.textField({
+    label: 'Title seperator'|t('seo-fields'),
+    instructions: 'A character used to seperate your entry title from the site name'|t('seo-fields'),
+    id: 'titleSeperator',
+    name: 'titleSeperator',
+    size: 3,
+    value: data['titleSeperator']}) }}
+
+
+    {% if craft.app.volumes.getAllVolumes()|length %}
+        {{ forms.elementSelectField({
+            label: "Default meta image"|t('seo-fields'),
+            id: "defaultImage",
+            name: "defaultImage",
+            elements: data.defaultImage|length ? craft.assets.id(data.defaultImage|first).all() : null,
+            elementType: "craft\\elements\\Asset",
+            criteria: {
+                kind: ["image"],
+            },
+            viewMode: "large",
+            limit: 1,
+            selectionLabel: "Select an image"|t('seo-fields'),
+        }) }}
+    {% else %}
+        <div class="field">
+            <h3>{{ "Default Meta image"|t("seo-fields") }}</h3>
+            <p class="warning">{{ "No asset volumes defined"|t("seo-fields") }}.</p>
+        </div>
+    {% endif %}
