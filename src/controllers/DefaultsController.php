@@ -19,13 +19,13 @@ class DefaultsController extends Controller
         if ($currentUser->can('seo-fields:default')) {
             $this->redirect(UrlHelper::cpUrl("seo-fields/defaults/settings", $params));
         } elseif ($currentUser->can('seo-fields:notfound')) {
-            $this->redirect(UrlHelper::cpUrl("seo-fields/not-found/$primarySite->handle", $params));
+            $this->redirect(UrlHelper::cpUrl("seo-fields/not-found", $params));
         } elseif ($currentUser->can('seo-fields:redirects')) {
-            $this->redirect(UrlHelper::cpUrl("seo-fields/redirects/$primarySite->handle", $params));
+            $this->redirect(UrlHelper::cpUrl("seo-fields/redirects", $params));
         } elseif ($currentUser->can('seo-fields:robots')) {
-            $this->redirect(UrlHelper::cpUrl("seo-fields/robots/$primarySite->handle", $params));
+            $this->redirect(UrlHelper::cpUrl("seo-fields/robots", $params));
         } elseif ($currentUser->can('seo-fields:sitemap')) {
-            $this->redirect(UrlHelper::cpUrl("seo-fields/sitemap/$primarySite->handle", $params));
+            $this->redirect(UrlHelper::cpUrl("seo-fields/sitemap", $params));
         }
     }
 
@@ -36,11 +36,13 @@ class DefaultsController extends Controller
 
         $sites = Craft::$app->getSites()->getEditableSites();
         Craft::$app->sites->setCurrentSite($site);
+
+
         return $this->asCpScreen()
             ->title(Craft::t('seo-fields', 'SEO Fields'))
             ->crumbs([
                 [
-                    'label' => "SEO Fields",
+                    'label' => "Meta",
                     'url' => UrlHelper::cpUrl('seo-fields'),
                 ],
                 [

@@ -3,7 +3,9 @@
 namespace studioespresso\seofields\controllers;
 
 use Craft;
+use craft\helpers\Cp;
 use craft\helpers\Template;
+use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\SeoFields;
@@ -14,17 +16,39 @@ class RobotsController extends Controller
 
     public function actionIndex()
     {
-        $primarySite = Craft::$app->sites->getPrimarySite();
-        $this->redirect("seo-fields/robots/$primarySite->handle");
-    }
-
-    public function actionSettings($siteHandle = null)
-    {
+        $siteHandle = $this->request->getRequiredQueryParam('site');
+        $currentSite = Craft::$app->getSites()->getSiteByHandle($siteHandle);
+        $sites = Craft::$app->getSites()->getEditableSites();
         $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($siteHandle);
-        return $this->renderTemplate('seo-fields/_robots', [
-            'data' => $data,
-            'robotsPerSite' => SeoFields::$plugin->getSettings()->robotsPerSite,
-        ]);
+
+        $settings = SeoFields::$plugin->getSettings();
+
+        $crumbs = [
+            [
+                'label' => "Meta",
+                'url' => UrlHelper::cpUrl('seo-fields'),
+            ]
+        ];
+
+        if ($settings->robotsPerSite) {
+            $crumbs[] = [
+                'label' => $currentSite->name,
+                'menu' => [
+                    'label' => Craft::t('site', 'Select site'),
+                    'items' => Cp::siteMenuItems($sites, $currentSite),
+                ]
+            ];
+        }
+
+        return $this->asCpScreen()
+            ->title(Craft::t('seo-fields', 'Robots.txt'))
+            ->crumbs($crumbs)
+            ->action('seo-fields/robots/save')
+            ->contentTemplate('seo-fields/_robots/_content', [
+                'data' => $data,
+                'site' => $currentSite,
+                'robotsPerSite' => $settings->robotsPerSite,
+            ]);
     }
 
     public function actionSave()
@@ -42,7 +66,7 @@ class RobotsController extends Controller
         SeoFields::$plugin->defaultsService->saveDefaults($model, Craft::$app->sites->currentSite->id);
     }
 
-    public function actionRender()
+    public function actionRender(): \yii\web\Response
     {
         if (SeoFields::$plugin->getSettings()->robotsPerSite) {
             $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getCurrentSite());
@@ -56,6 +80,6 @@ class RobotsController extends Controller
             return $this->asRaw($string);
         } catch (\Exception $e) {
         }
-        return;
+
     }
 }

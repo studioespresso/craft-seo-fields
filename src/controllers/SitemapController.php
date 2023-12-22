@@ -4,7 +4,9 @@ namespace studioespresso\seofields\controllers;
 
 use Craft;
 use craft\db\Query;
+use craft\helpers\Cp;
 use craft\helpers\Db;
+use craft\helpers\UrlHelper;
 use craft\records\Section_SiteSettings;
 use craft\web\Controller;
 use studioespresso\seofields\models\SeoDefaultsModel;
@@ -17,19 +19,17 @@ class SitemapController extends Controller
 
     public function actionIndex()
     {
-        $primarySite = Craft::$app->getSites()->getPrimarySite();
-        $this->redirect("seo-fields/sitemap/$primarySite->handle");
-    }
+        $siteHandle = $this->request->getRequiredQueryParam('site');
+        $currentSite = Craft::$app->getSites()->getSiteByHandle($siteHandle);
+        $sites = Craft::$app->getSites()->getEditableSites();
+        $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($siteHandle);
+        $settings = SeoFields::$plugin->getSettings();
 
-    public function actionSettings($siteHandle = null)
-    {
-        $site = Craft::$app->getSites()->getSiteByHandle($siteHandle);
-        Craft::$app->getSites()->getSiteByHandle($site);
         $query = new Query();
         $query->select('sectionId as id')
             ->from('{{%sections_sites}}')
             ->leftJoin('{{%sections}}', 'sections.id = sections_sites.sectionId')
-            ->where(Db::parseParam('siteId', $site->id))
+            ->where(Db::parseParam('siteId', $currentSite->id))
             ->andWhere(['sections.dateDeleted' => null]);
 
         $sections = [];
@@ -37,14 +37,37 @@ class SitemapController extends Controller
             $sections[] = Craft::$app->getEntries()->getSectionById($s['id']);
         }
 
-        $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($siteHandle);
-        return $this->renderTemplate('seo-fields/_sitemap', [
-            'data' => $data,
-            'sitemapPerSite' => SeoFields::$plugin->getSettings()->sitemapPerSite,
-            'sections' => $sections,
-            'selectedSite' => $site,
-        ]);
+
+        $crumbs = [
+            [
+                'label' => "Meta",
+                'url' => UrlHelper::cpUrl('seo-fields'),
+            ]
+        ];
+
+        if ($settings->sitemapPerSite) {
+            $crumbs[] = [
+                'label' => $currentSite->name,
+                'menu' => [
+                    'label' => Craft::t('site', 'Select site'),
+                    'items' => Cp::siteMenuItems($sites, $currentSite),
+                ]
+            ];
+        }
+
+        return $this->asCpScreen()
+            ->title(Craft::t('seo-fields', 'Sitemap.xml'))
+            ->crumbs($crumbs)
+            ->action('seo-fields/sitemap/save')
+            ->contentTemplate('seo-fields/_sitemap/_content', [
+                'data' => $data,
+                'sitemapPerSite' => $settings->sitemapPerSite,
+                'sections' => $sections,
+                'selectedSite' => $currentSite,
+            ]);
+
     }
+
 
     public function actionSave()
     {

@@ -1,0 +1,39 @@
+{% import "_includes/forms" as forms %}
+
+{% if robotsPerSite %}
+    <input type="hidden" name="siteId" value="{{ site.id }}">
+{% endif %}
+
+    {% if data.id is defined %}
+        {{ forms.hidden({
+            name: 'id',
+            value: data.id
+        }) }}
+    {% endif %}
+
+<div class="field">
+    <div class="heading">
+        <h2>{{ "What does a robots.txt file do?"|t('seo-fields') }}</h2>
+        <div class="instructions">
+            {{ "A robots.txt file tells search engine crawlers which pages or files the crawler can or can't request from your site. This is used mainly to avoid overloading your site with requests; it is not a mechanism for keeping a web page out of Google."|t('seo-fields') }}
+        </div>
+    </div>
+</div>
+
+
+{{ forms.lightswitchField({
+    label: 'Enable robots.txt'|t('seo-fields'),
+    instructions: 'Let the plugin handle your robots.txt'|t('seo-fields'),
+    id: 'enableRobots',
+    name: 'enableRobots',
+    value: 1,
+    on: data.enableRobots is not null ? data.enableRobots,
+}) }}
+
+    {{ forms.textareaField({
+        label: 'Robots.txt content'|t('seo-fields'),
+        id: 'robots',
+        name: 'robots',
+        value: data.robots,
+        rows: 25,
+    }) }}
