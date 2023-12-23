@@ -55,6 +55,8 @@ class SitemapController extends Controller
             ->selectedSubnavItem('sitemap')
             ->crumbs($crumbs)
             ->action('seo-fields/sitemap/save')
+            ->additionalButtonsTemplate('seo-fields/_sitemap/_buttons')
+
             ->contentTemplate('seo-fields/_sitemap/_content', [
                 'data' => $data,
                 'sitemapPerSite' => $settings->sitemapPerSite,

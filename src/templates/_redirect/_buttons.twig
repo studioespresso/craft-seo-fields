@@ -1,0 +1,9 @@
+<form method="post" accept-charset="UTF-8" enctype="multipart/form-data">
+    {{ csrfInput() }}
+    {{ actionInput('seo-fields/redirects/upload') }}
+    <input type="file" name="file" id="file" class="btn" accept=".csv" onchange="this.form.submit();"
+           style="display: none;">
+    <label class="btn" for="file">{{ "Import CSV File"|t('seo-fields') }}</label>
+</form>
+<a href="{{ cpUrl('seo-fields/redirects/add') }}"
+   class="btn submit add icon">{{ 'New redirect'|t('seo-fields') }}</a>

@@ -4,8 +4,10 @@ namespace studioespresso\seofields\controllers;
 
 use Craft;
 use craft\enums\MenuItemType;
+use craft\fields\Url;
 use craft\helpers\App;
 use craft\helpers\Cp;
+use craft\helpers\Html;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use League\Csv\Reader;
@@ -33,18 +35,9 @@ class RedirectsController extends Controller
             ]
         ];
 
-
-
         return $this->asCpScreen()
             ->selectedSubnavItem('redirects')
-            ->actionMenuItems(function() {
-               return [
-                 [
-                     'label' => 'lbaaa',
-                     'action' => '/'
-                 ]
-               ];
-            })
+            ->additionalButtonsTemplate('seo-fields/_redirect/_buttons')
             ->title(Craft::t('seo-fields', 'Redirects'))
             ->crumbs($crumbs)
             ->contentTemplate('seo-fields/_redirect/_content');
@@ -215,6 +208,7 @@ class RedirectsController extends Controller
         } catch (\Throwable $e) {
         }
     }
+
     private function getRows(Reader $reader)
     {
         try {
