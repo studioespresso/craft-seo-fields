@@ -115,10 +115,9 @@ class CpApiController extends Controller
         $query->offset($offset);
 
         $site = $this->request->getQueryParam('site');
-
         if ($site) {
             $site = Craft::$app->getSites()->getSiteByHandle($site);
-            $query->orWhere(Db::parseParam('siteId', $site->id));
+            $query->orWhere(Db::parseParam('siteId', [$site->id, null], 'IN'));
         }
 
         if ($search) {

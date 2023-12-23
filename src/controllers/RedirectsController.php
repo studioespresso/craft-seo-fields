@@ -4,6 +4,7 @@ namespace studioespresso\seofields\controllers;
 
 use Craft;
 use craft\helpers\App;
+use craft\helpers\Cp;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use League\Csv\Reader;
@@ -19,7 +20,22 @@ class RedirectsController extends Controller
     {
         $searchParam = Craft::$app->getRequest()->getParam('search');
         $redirects = SeoFields::getInstance()->redirectService->getAllRedirects($searchParam);
-        return $this->renderTemplate('seo-fields/_redirect/_index', ['redirects' => $redirects]);
+
+        $siteHandle = $this->request->getRequiredQueryParam('site');
+        $currentSite = Craft::$app->getSites()->getSiteByHandle($siteHandle);
+        $sites = Craft::$app->getSites()->getEditableSites();
+        $crumbs[] = [
+            'label' => $currentSite->name,
+            'menu' => [
+                'label' => Craft::t('site', 'Select site'),
+                'items' => Cp::siteMenuItems($sites, $currentSite),
+            ]
+        ];
+
+        return $this->asCpScreen()
+            ->title(Craft::t('seo-fields', 'Redirects'))
+            ->crumbs($crumbs)
+            ->contentTemplate('seo-fields/_redirect/_content');
     }
 
     public function actionAdd()

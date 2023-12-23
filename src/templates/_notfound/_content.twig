@@ -1,0 +1,67 @@
+{% do view.registerAssetBundle('craft\\web\\assets\\admintable\\AdminTableAsset') -%}
+
+{#{% block actionButton %}#}
+{#    {% set confirmation = "Are you sure you want to remove all tracked 404's?"|t('seo-fields') %}#}
+{#    <a href="{{ actionUrl('seo-fields/not-found/clear-all') }}" class="btn"#}
+{#       onclick='return confirm("{{ confirmation }}")'>{{ "Clear all"|t('seo-fields') }}</a>#}
+{#{% endblock %}#}
+
+    {% import "_includes/forms" as forms %}
+<div id="seofields-notfound"></div>
+
+
+{% js %}
+    var columns = [
+        {
+            name: '__slot:title',
+            title: Craft.t('seo-fields', 'URL'),
+        },
+        {
+            name: 'hits',
+            title: Craft.t('seo-fields', 'Hits'),
+            sortField: 'counter'
+        },
+        {
+            name: 'site',
+            title: Craft.t('seo-fields', 'Site'),
+
+        },
+        {
+            name: 'lastHit',
+            title: Craft.t('seo-fields', 'Last visit'),
+
+        },
+        {
+            name: 'hasRedirect',
+            title: 'Redirect?',
+            sortField: 'handled',
+            callback: function(value) {
+                if (typeof value != 'object') {
+                    return '<span data-icon="check" style="color: green;"></span>';
+                }
+
+                var url = "{{ cpUrl('seo-fields/redirects/add') }}" + "&pattern=" + value.urlPath + "&site=" + value.siteId + "&record=" + value.id;
+                return '<a class="add icon" href="' + url + '" title="Add"></a>';
+            }
+        }
+
+    ];
+
+    {% if craft.app.sites.getEditableSites()|length < 2 %}
+        {% set site =  "" %}
+    {% else %}
+        {% set site = craft.app.request.getQueryParam('site', '') %}
+    {% endif %}
+
+    new Craft.VueAdminTable({
+    container: '#seofields-notfound',
+    columns: columns,
+    tableDataEndpoint: "{{ cpUrl('seo-fields/cp-api/not-found', {site: site}) }}" ,
+    deleteAction: 'seo-fields/not-found/delete',
+    checkboxes:  0,
+    search: true,
+    allowMultipleSelections: false,
+    perPage: 10,
+    });
+
+{% endjs %}

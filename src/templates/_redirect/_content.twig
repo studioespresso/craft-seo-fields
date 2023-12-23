@@ -1,0 +1,69 @@
+{% do view.registerAssetBundle('craft\\web\\assets\\admintable\\AdminTableAsset') -%}
+
+{# {% block actionButton %} #}
+{#    <form method="post" accept-charset="UTF-8" enctype="multipart/form-data"> #}
+{#        {{ csrfInput() }} #}
+{#        {{ actionInput('seo-fields/redirects/upload') }} #}
+{#        <input type="file" name="file" id="file" class="btn" accept=".csv" onchange="this.form.submit();" #}
+{#               style="display: none;"> #}
+{#        <label class="btn" for="file">{{ "Import CSV File"|t('seo-fields') }}</label> #}
+{#    </form> #}
+{#    <a href="{{ cpUrl('seo-fields/redirects/add') }}" #}
+{#       class="btn submit add icon">{{ 'New redirect'|t('seo-fields') }}</a> #}
+{# {% endblock %} #}
+
+<div id="seofields-redirects"></div>
+
+{% js %}
+    var columns = [
+    {
+    name: '__slot:title',
+    title: Craft.t('seo-fields', 'Pattern/URL'),
+    },
+    {
+    name: 'redirect',
+    title: Craft.t('seo-fields', 'Redirect to'),
+    },
+    {
+    name: 'site',
+    title: Craft.t('seo-fields', 'Site'),
+    },
+    {
+    name: 'counter',
+    title: Craft.t('seo-fields', 'Hits'),
+    sortField: 'counter'
+    },
+    {
+    name: 'matchType',
+    title: Craft.t('seo-fields', 'Matched by')
+    },
+    {
+    name: 'lastHit',
+    title: Craft.t('seo-fields', 'Last hit at'),
+    sortField: 'dateLastHit'
+
+    },
+    {
+    name: 'method',
+    title: Craft.t('seo-fields', 'Method'),
+    sortField: 'method'
+    }
+    ];
+
+    {% if craft.app.sites.getEditableSites()|length < 2 %}
+        {% set site =  "" %}
+    {% else %}
+        {% set site = craft.app.request.getQueryParam('site', '') %}
+    {% endif %}
+
+    new Craft.VueAdminTable({
+    container: '#seofields-redirects',
+    columns: columns,
+    tableDataEndpoint: "{{ cpUrl('seo-fields/cp-api/redirects', {site : site} ) }}" ,
+    deleteAction: 'seo-fields/redirects/delete',
+    checkboxes:  0,
+    search: true,
+    allowMultipleSelections: false
+    });
+
+{% endjs %}
