@@ -52,6 +52,7 @@ class SitemapController extends Controller
 
         return $this->asCpScreen()
             ->title(Craft::t('seo-fields', 'Sitemap.xml'))
+            ->selectedSubnavItem('sitemap')
             ->crumbs($crumbs)
             ->action('seo-fields/sitemap/save')
             ->contentTemplate('seo-fields/_sitemap/_content', [

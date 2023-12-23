@@ -3,6 +3,7 @@
 namespace studioespresso\seofields\controllers;
 
 use Craft;
+use craft\enums\MenuItemType;
 use craft\helpers\App;
 use craft\helpers\Cp;
 use craft\helpers\UrlHelper;
@@ -32,7 +33,18 @@ class RedirectsController extends Controller
             ]
         ];
 
+
+
         return $this->asCpScreen()
+            ->selectedSubnavItem('redirects')
+            ->actionMenuItems(function() {
+               return [
+                 [
+                     'label' => 'lbaaa',
+                     'action' => '/'
+                 ]
+               ];
+            })
             ->title(Craft::t('seo-fields', 'Redirects'))
             ->crumbs($crumbs)
             ->contentTemplate('seo-fields/_redirect/_content');

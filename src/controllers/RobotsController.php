@@ -36,6 +36,8 @@ class RobotsController extends Controller
         }
 
         return $this->asCpScreen()
+            ->selectedSubnavItem('robots')
+
             ->title(Craft::t('seo-fields', 'Robots.txt'))
             ->crumbs($crumbs)
             ->action('seo-fields/robots/save')

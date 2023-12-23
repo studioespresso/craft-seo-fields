@@ -40,6 +40,7 @@ class DefaultsController extends Controller
 
         return $this->asCpScreen()
             ->title(Craft::t('seo-fields', 'SEO Fields'))
+            ->selectedSubnavItem('defaults')
             ->crumbs([
                 [
                     'label' => $currentSite->name,
