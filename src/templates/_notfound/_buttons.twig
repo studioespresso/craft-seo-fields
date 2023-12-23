@@ -1,0 +1,3 @@
+{% set confirmation = "Are you sure you want to remove all tracked 404's?"|t('seo-fields') %}
+<a href="{{ actionUrl('seo-fields/not-found/clear-all') }}" class="btn"
+   onclick='return confirm("{{ confirmation }}")'>{{ "Clear all"|t('seo-fields') }}</a>

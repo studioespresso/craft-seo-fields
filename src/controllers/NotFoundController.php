@@ -28,8 +28,9 @@ class NotFoundController extends Controller
         ];
 
         return $this->asCpScreen()
-            ->selectedSubnavItem('notfound')
             ->title(Craft::t('seo-fields', '404 Overview'))
+            ->selectedSubnavItem('notfound')
+            ->additionalButtonsTemplate('seo-fields/_notfound/_buttons')
             ->crumbs($crumbs)
             ->contentTemplate('seo-fields/_notfound/_content');
     }
