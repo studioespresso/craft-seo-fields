@@ -5,5 +5,9 @@
            style="display: none;">
     <label class="btn" for="file">{{ "Import CSV File"|t('seo-fields') }}</label>
 </form>
-<a href="{{ cpUrl('seo-fields/redirects/add') }}"
-   class="btn submit add icon">{{ 'New redirect'|t('seo-fields') }}</a>
+{% tag 'a' with {
+    href: cpUrl('seo-fields/redirects/add'),
+    class: 'btn submit add icon',
+} %}
+    {{ 'New redirect'|t('seo-fields') }}
+{% endtag %}
