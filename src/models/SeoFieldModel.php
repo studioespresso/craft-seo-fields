@@ -21,16 +21,20 @@ class SeoFieldModel extends Model
 {
     public $metaTitle;
     public $metaDescription;
+
     public $facebookTitle;
     public $facebookDescription;
     public $facebookImage;
+
     public $twitterTitle;
     public $twitterDescription;
     public $twitterImage;
+
     public $siteName;
     public $hideSiteName;
     public $siteId;
     public $canonical;
+
     public $schema;
     public $allowIndexing = 'yes';
 
@@ -38,6 +42,8 @@ class SeoFieldModel extends Model
      * @var SeoDefaultsModel
      */
     public $siteDefault;
+
+    public $element;
 
     public function init(): void
     {
@@ -64,6 +70,11 @@ class SeoFieldModel extends Model
         if (!$element) {
             return null;
         }
+
+        if (!$element->getShouldRenderSchema()) {
+            return null;
+        }
+
         try {
             $settings = $this->siteDefault->getSchema();
             switch (get_class($element)) {
@@ -122,6 +133,10 @@ class SeoFieldModel extends Model
 
     public function getPageTitle($element = null, $includeSiteName = true)
     {
+        if ($element) {
+            $this->element = $element;
+        }
+
         if ($element && !$this->metaTitle) {
             return $element->title . ($includeSiteName ? $this->getSiteNameWithSeperator() : '');
         }
@@ -136,41 +151,37 @@ class SeoFieldModel extends Model
 
     public function getOgTitle($element = null)
     {
-        if ($this->facebookTitle) {
-            return $this->facebookTitle . $this->getSiteNameWithSeperator();
-        } else {
-            return $this->getPageTitle($element);
-        }
+        $title = ($element->getFacebookTitle() ?? $this->facebookTitle) ?? $this->getPageTitle($element, false);
+        return $title . $this->getSiteNameWithSeperator();
     }
 
     public function getTwitterTitle($element = null)
     {
-        if ($this->twitterTitle) {
-            return $this->twitterTitle . $this->getSiteNameWithSeperator();
-        } else {
-            return $this->getPageTitle($element);
-        }
+        $title = ($element->getTwitterTitle() ?? $this->twitterTitle) ?? $this->getPageTitle($element, false);
+        return $title . $this->getSiteNameWithSeperator();
     }
 
     public function getMetaDescription()
     {
-        return $this->metaDescription ? $this->metaDescription : $this->siteDefault->defaultMetaDescription;
+        return ($this->element->getMetaDescription() ?? $this->metaDescription) ?? $this->siteDefault->defaultMetaDescription;
     }
 
     public function getOgDescription()
     {
-        return $this->facebookDescription ? $this->facebookDescription : $this->getMetaDescription();
+        return ($this->element->getFacebookDescription() ?? $this->facebookDescription) ?? $this->siteDefault->defaultMetaDescription;
     }
 
     public function getTwitterDescription()
     {
-        return $this->twitterDescription ? $this->twitterDescription : $this->getMetaDescription();
+        return ($this->element->getTwitterDescription() ?? $this->twitterDescription) ?? $this->siteDefault->defaultMetaDescription;
     }
 
     public function getOgImage(Asset $asset = null)
     {
         if ($asset) {
             $asset = $asset;
+        } elseif ($this->element->getFacebookImage()) {
+            $asset = $this->element->getFacebookImage();
         } elseif ($this->facebookImage) {
             $asset = Craft::$app->getAssets()->getAssetById($this->facebookImage[0]);
         } elseif ($this->siteDefault->defaultImage) {
@@ -190,10 +201,12 @@ class SeoFieldModel extends Model
         ];
     }
 
-    public function getTwitterImage(Asset $asset = null)
+    public function getTwitterImage(Asset $value = null)
     {
-        if ($asset) {
-            $asset = $asset;
+        if ($value) {
+            $asset = $value;
+        } elseif ($this->element->getTwitterImage()) {
+            $asset = $this->element->getTwitterImage();
         } elseif ($this->twitterImage) {
             $asset = Craft::$app->getAssets()->getAssetById($this->twitterImage[0]);
         } elseif ($this->siteDefault->defaultImage) {
@@ -247,7 +260,7 @@ class SeoFieldModel extends Model
         return $data;
     }
 
-    public function setMetaTitle($value)
+    public function setMetaTitle($value = null)
     {
         $this->metaTitle = $value;
     }

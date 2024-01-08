@@ -12,6 +12,8 @@ namespace studioespresso\seofields;
 
 use Craft;
 use craft\base\Plugin;
+use craft\elements\Entry;
+use craft\events\DefineBehaviorsEvent;
 use craft\events\ElementEvent;
 use craft\events\EntryTypeEvent;
 use craft\events\ExceptionEvent;
@@ -32,6 +34,7 @@ use craft\utilities\ClearCaches;
 use craft\web\ErrorHandler;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
+use studioespresso\seofields\behaviors\EntrySeoBehavior;
 use studioespresso\seofields\events\RegisterSeoElementEvent;
 use studioespresso\seofields\extensions\SeoFieldsExtension;
 use studioespresso\seofields\fields\SeoField;
@@ -119,6 +122,11 @@ class SeoFields extends Plugin
         $this->_registerCacheOptions();
         $this->_registerCustomElements();
         $this->_registerTwigVariable();
+
+        Event::on(Entry::class, Entry::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $event) {
+            $event->behaviors[$this->id] = EntrySeoBehavior::class;
+        });
+
     }
 
     public function getCpNavItem(): ?array
