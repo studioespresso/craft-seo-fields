@@ -154,10 +154,10 @@ class SeoFieldModel extends Model
         $element = $element ?? $this->element;
         $title = $this->getPageTitle($element, false);
 
-        if ($element->getFacebookTitle()) {
-            $title = $element->getFacebookTitle();
-        } elseif ($this->facebookTitle) {
-            $title = $this->facebookTitle;
+        if ($element->getMetaTitle()) {
+            $title = $element->getMetaTitle();
+        } elseif ($this->metaTitle) {
+            $title = $this->metaTitle;
         }
         return $title;
     }
