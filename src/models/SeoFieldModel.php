@@ -85,7 +85,7 @@ class SeoFieldModel extends Model
 
                     /** @var $schema Schema */
                     $schema = Craft::createObject($schemaClass);
-                    $schema->name($this->getPageTitle($element, false) ?? "");
+                    $schema->name($this->getMetaTitle($element, false) ?? "");
                     $schema->description($this->getMetaDescription() ?? "");
                     $schema->url($element->getUrl() ?? "");
                     break;
@@ -96,7 +96,7 @@ class SeoFieldModel extends Model
 
                     /** @var $schema Schema */
                     $schema = Craft::createObject($schemaClass);
-                    $schema->name($this->getPageTitle($element, false) ?? "");
+                    $schema->name($this->getMetaTitle($element, false) ?? "");
                     $schema->description($this->getMetaDescription() ?? "");
                     $schema->url($element->getUrl() ?? "");
                     break;
@@ -149,31 +149,82 @@ class SeoFieldModel extends Model
         return $request->hostInfo . '/' . $request->getPathInfo(true);
     }
 
+    public function getMetaTitle($element)
+    {
+        $element = $element ?? $this->element;
+        $title = $this->getPageTitle($element, false);
+
+        if ($element->getFacebookTitle()) {
+            $title = $element->getFacebookTitle();
+        } elseif ($this->facebookTitle) {
+            $title = $this->facebookTitle;
+        }
+        return $title;
+    }
+
     public function getOgTitle($element = null)
     {
-        $title = ($element->getFacebookTitle() ?? $this->facebookTitle) ?? $this->getPageTitle($element, false);
+        $title = $this->getPageTitle($element, false);
+
+        if ($element->getFacebookTitle()) {
+            $title = $element->getFacebookTitle();
+        } elseif ($this->facebookTitle) {
+            $title = $this->facebookTitle;
+        }
+
         return $title . $this->getSiteNameWithSeperator();
     }
 
     public function getTwitterTitle($element = null)
     {
-        $title = ($element->getTwitterTitle() ?? $this->twitterTitle) ?? $this->getPageTitle($element, false);
+        $title = $this->getPageTitle($element, false);
+
+        if ($element->getTwitterTitle()) {
+            $title = $element->getTwitterTitle();
+        } elseif ($this->twitterTitle) {
+            $title = $this->twitterTitle;
+        }
+
         return $title . $this->getSiteNameWithSeperator();
     }
 
     public function getMetaDescription()
     {
-        return ($this->element->getMetaDescription() ?? $this->metaDescription) ?? $this->siteDefault->defaultMetaDescription;
+        if ($this->element->getMetaDescription()) {
+            return $this->element->getMetaDescription();
+        }
+
+        if ($this->metaDescription) {
+            return $this->element->getMetaDescription();
+        }
+
+        return $this->siteDefault->defaultMetaDescription;
     }
 
     public function getOgDescription()
     {
-        return ($this->element->getFacebookDescription() ?? $this->facebookDescription) ?? $this->siteDefault->defaultMetaDescription;
+        if ($this->element->getFacebookDescription()) {
+            return $this->element->getFacebookDescription();
+        }
+
+        if ($this->facebookDescription) {
+            return $this->facebookDescription;
+        }
+
+        return $this->siteDefault->defaultMetaDescription;
     }
 
     public function getTwitterDescription()
     {
-        return ($this->element->getTwitterDescription() ?? $this->twitterDescription) ?? $this->siteDefault->defaultMetaDescription;
+        if ($this->element->getTwitterDescription()) {
+            return $this->element->getTwitterDescription();
+        }
+
+        if ($this->twitterDescription) {
+            return $this->twitterDescription;
+        }
+
+        return $this->siteDefault->defaultMetaDescription;
     }
 
     public function getOgImage(Asset $asset = null)
@@ -286,11 +337,13 @@ class SeoFieldModel extends Model
 
     public function setTwitterTitle($value)
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterTitle', "Overwriting SOE properties through `entry.seo.setTwitterTitle` no longer works. Please see the docs for an upgrading guide ");    }
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterTitle', "Overwriting SOE properties through `entry.seo.setTwitterTitle` no longer works. Please see the docs for an upgrading guide ");
+    }
 
     public function setTwitterDescription($value)
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterDescription', "Overwriting SOE properties through `entry.seo.setTwitterDescription` no longer works. Please see the docs for an upgrading guide ");    }
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterDescription', "Overwriting SOE properties through `entry.seo.setTwitterDescription` no longer works. Please see the docs for an upgrading guide ");
+    }
 
     public function setTwitterImage($value)
     {
