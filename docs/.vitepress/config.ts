@@ -1,9 +1,9 @@
 module.exports = {
-    title: 'SEO Fields for Craft',
+    title: 'SEO Fields',
     base: '/craft-seo-fields',
     themeConfig: {
 
-        logo: {light: '/icon-vuepress.svg', dark: '/icon-vuepress-light.svg'},
+        logo: '/img/plugin-logo.svg',
         sidebar: [
             {
                 items: [
