@@ -7,6 +7,7 @@ use craft\commerce\elements\Product;
 use craft\commerce\Plugin as Commerce;
 use craft\commerce\services\ProductTypes;
 use Spatie\SchemaOrg\Schema;
+use studioespresso\seofields\SeoFields;
 
 /**
  * @author    Studio Espresso
@@ -17,13 +18,14 @@ class SchemaService extends Component
 {
     public function getDefaultOptions()
     {
-        return [
+        $options = SeoFields::getInstance()->getSettings()->schemaOptions;
+        return array_merge([
             get_class(Schema::webPage()) => 'WebPage',
             get_class(Schema::article()) => 'Article',
             get_class(Schema::creativeWork()) => 'Creative Work',
             get_class(Schema::review()) => 'Review',
             get_class(Schema::organization()) => 'Organisation',
 
-        ];
+        ], $options);
     }
 }

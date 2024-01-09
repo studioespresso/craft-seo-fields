@@ -31,6 +31,8 @@ class Settings extends Model
 
     public $fieldHandle = 'seo';
 
+    public $schemaOptions = [];
+
     public $notFoundLimit = 10000;
 
     // Public Methods
