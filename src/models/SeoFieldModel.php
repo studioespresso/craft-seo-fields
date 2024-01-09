@@ -192,7 +192,6 @@ class SeoFieldModel extends Model
         }
 
         $transform = $this->_getPreviewTransform($asset);
-        $transformed = $asset->setTransform($transform);
         return [
             'height' => $asset->getHeight($transform),
             'width' => $asset->getWidth($transform),
@@ -217,7 +216,6 @@ class SeoFieldModel extends Model
         }
 
         $transform = $this->_getPreviewTransform($asset);
-        $transformed = $asset->setTransform($transform);
         return [
             'height' => $asset->getHeight($transform),
             'width' => $asset->getWidth($transform),
@@ -260,58 +258,43 @@ class SeoFieldModel extends Model
         return $data;
     }
 
+
     public function setMetaTitle($value = null)
     {
-        $this->metaTitle = $value;
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setMetaTitle', "Overwriting SOE properties through `entry.seo.setMetaTitle` no longer works. Please see the docs for an upgrading guide ");
     }
 
     public function setMetaDescription($value)
     {
-        $this->metaDescription = $value;
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setMetaDescription', "Overwriting SOE properties through `entry.seo.setMetaDescription` no longer works. Please see the docs for an upgrading guide ");
     }
 
     public function setFacebookTitle($value)
     {
-        $this->facebookTitle = $value;
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookTitle', "Overwriting SOE properties through `entry.seo.setFacebookTitle` no longer works. Please see the docs for an upgrading guide ");
     }
 
     public function setFacebookDescription($value)
     {
-        $this->facebookDescription = $value;
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookDescription', "Overwriting SOE properties through `entry.seo.setFacebookDescription` no longer works. Please see the docs for an upgrading guide ");
     }
 
     public function setFacebookImage($value)
     {
-        if (is_object($value) && get_class($value) === AssetQuery::class) {
-            $asset = $value->one()->id;
-        } elseif (is_object($value) && get_class($value) === Asset::class) {
-            $asset = $value->id;
-        } else {
-            $asset = $value;
-        }
-        $this->facebookImage = [$asset];
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookImage', "Overwriting SOE properties through `entry.seo.setFacebookImage` no longer works. Please see the docs for an upgrading guide ");
     }
 
     public function setTwitterTitle($value)
     {
-        $this->twitterTitle = $value;
-    }
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterTitle', "Overwriting SOE properties through `entry.seo.setTwitterTitle` no longer works. Please see the docs for an upgrading guide ");    }
 
     public function setTwitterDescription($value)
     {
-        $this->twitterDescription = $value;
-    }
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterDescription', "Overwriting SOE properties through `entry.seo.setTwitterDescription` no longer works. Please see the docs for an upgrading guide ");    }
 
     public function setTwitterImage($value)
     {
-        if (is_object($value) && get_class($value) === AssetQuery::class) {
-            $asset = $value->one()->id;
-        } elseif (is_object($value) && get_class($value) === Asset::class) {
-            $asset = $value->id;
-        } else {
-            $asset = $value;
-        }
-        $this->twitterImage = [$asset];
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterImage', "Overwriting SOE properties through `entry.seo.setTwitterImage` no longer works. Please see the docs for an upgrading guide ");
     }
 
     /**
