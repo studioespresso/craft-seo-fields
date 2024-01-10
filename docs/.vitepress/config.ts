@@ -7,7 +7,7 @@ module.exports = {
         sidebar: [
             {
                 items: [
-                    {text: 'General', link: '/general'},
+                    {text: 'Usage', link: '/general'},
                     {text: 'Field & settings', link: '/field'},
                     {text: 'Templating', link: '/templating'},
                     {text: 'Robots.txt', link: '/robots'},
