@@ -6,17 +6,23 @@ module.exports = {
         logo: '/img/plugin-logo.svg',
         sidebar: [
             {
-                items: [
-                    {text: 'Usage', link: '/general'},
-                    {text: 'Field & settings', link: '/field'},
-                    {text: 'Templating', link: '/templating'},
-                    {text: 'Robots.txt', link: '/robots'},
-                    {text: 'Sitemap.xml', link: '/sitemap'},
-                    {text: 'Extra', link: '/extra'},
-                ]
+                text: 'General',
+                items:
+                    [
+                        {text: 'Usage', link: '/general'},
+                        {text: 'Field & settings', link: '/field'},
+                        {text: 'Templating', link: '/templating'},
+
+                    ]
             },
-
-
+            {
+                text: 'Features',
+                items:
+                    [
+                        {text: 'Robots.txt', link: '/robots'},
+                        {text: 'Sitemap.xml', link: '/sitemap'},
+                    ]
+            }
         ],
         nav: [
             {
@@ -34,4 +40,5 @@ module.exports = {
         ]
 
     }
-};
+}
+;
