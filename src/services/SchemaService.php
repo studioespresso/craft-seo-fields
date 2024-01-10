@@ -28,4 +28,9 @@ class SchemaService extends Component
 
         ], $options);
     }
+
+    public function schema()
+    {
+        return new Schema();
+    }
 }

@@ -91,8 +91,8 @@ class SeoFieldModel extends Model
                     break;
                 case Category::class:
                     $schemaSettings = $settings['groups'];
-                    $sectionId = $element->section->id;
-                    $schemaClass = $schemaSettings[$sectionId];
+                    $groupId = $element->group->id;
+                    $schemaClass = $schemaSettings[$groupId];
 
                     /** @var $schema Schema */
                     $schema = Craft::createObject($schemaClass);
@@ -101,12 +101,14 @@ class SeoFieldModel extends Model
                     $schema->url($element->getUrl() ?? "");
                     break;
             }
+
             Craft::$app->getView()->registerScript(
                 Json::encode($schema),
                 View::POS_END, [
                     'type' => 'application/ld+json'
                 ]
             );
+
         } catch (\Exception $e) {
             Craft::error($e, SeoFields::class);
         }
