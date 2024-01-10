@@ -17,6 +17,14 @@ Note that the field looks for a field called `seo`. If it doesn't find that, it 
 
 ## Overwriting field values
 
+::: danger Upgrading to version 4.0.0
+The way to overwrite field values changes in version 4.0.
+For example: instead of calling `entry.seo.setTwitterTitle()`, you should now call `entry.setTwitterTitle()`.
+The same goes for other methods.
+
+Both ``entry.setFacebookImage()`` and `entry.setTwitterImage()` now only take an Asset object, where they previously accept an Asset, an id or on AssetQuery.
+:::
+
 Next to the site defaults and the field, you might also want to use text and images from another fields.
  
 To do this, use the following twig functions:
