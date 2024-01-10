@@ -21,6 +21,9 @@ module.exports = {
                     [
                         {text: 'Robots.txt', link: '/robots'},
                         {text: 'Sitemap.xml', link: '/sitemap'},
+                        {text: 'Redirects', link: '/redirects'},
+                        {text: '404 tracking', link: '/notfound'},
+                        {text: 'Schema.org markup', link: '/schema'},
                     ]
             }
         ],

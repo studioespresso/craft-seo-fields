@@ -3,6 +3,7 @@ title: SEO Fields
 ---
 # SEO Fields for Craft CMS
 Fields for your meta & OG data, sitemaps & robots.txt. _**Fast to set up, easy to customize.**_
+But also includes: **redirects, 404 tracking, JSON-LD Schema.org data**
 
 ![Banner](./img/banner.png)
 
