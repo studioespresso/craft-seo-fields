@@ -38,7 +38,7 @@ module.exports = {
             },
             {
                 text: 'GitHub',
-                link: 'https://github.com/studioespresso/craft-seo-fields/issues'
+                link: 'https://github.com/studioespresso/craft-seo-fields'
             }
         ]
 
