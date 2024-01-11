@@ -17,21 +17,29 @@ Note that the field looks for a field called `seo`. If it doesn't find that, it 
 
 ## Overwriting field values
 
+::: danger Upgrading to version 4.0.0
+The way to overwrite field values changes in version 4.0.
+For example: instead of calling `entry.seo.setTwitterTitle()`, you should now call `entry.setTwitterTitle()`.
+The same goes for other methods.
+
+Both ``entry.setFacebookImage()`` and `entry.setTwitterImage()` now only take an Asset object, where they previously accept an Asset, an id or on AssetQuery.
+:::
+
 Next to the site defaults and the field, you might also want to use text and images from another fields.
  
 To do this, use the following twig functions:
 
 ````twig
-{% do entry.seo.setMetaTitle('New title') %}
-{% do entry.seo.setMetaDescription('custom meta description') %}
-{% do entry.seo.setFacebookTitle('Facebook title') %}
-{% do entry.seo.setFacebookDescription('custom description') %}
-{% do entry.seo.setTwitterTitle('Twitter title') %}
-{% do entry.seo.setTwitterDescription('Just for twitter') %}
+{% do entry.setMetaTitle('New title') %}
+{% do entry.setMetaDescription('custom meta description') %}
+{% do entry.setFacebookTitle('Facebook title') %}
+{% do entry.setFacebookDescription('custom description') %}
+{% do entry.setTwitterTitle('Twitter title') %}
+{% do entry.setTwitterDescription('Just for twitter') %}
 
-// Overwriting the image fields can be done with an AssetQuery, an Asset itself, or with and Asset id
-{% do entry.seo.setFacebookImage(entry.assetField) %}
-{% do entry.seo.setTwitterImage(entry.assetField.one()) %}
+// Overwriting the image fields can be done by passing an Asset elemnt
+{% do entry.setFacebookImage(entry.assetField.one()) %}
+{% do entry.setTwitterImage(entry.assetField.one()) %}
 ````
 
 This is a normal Twig template so the usual conditionals and operators work here. You can use these for the fields that need a text value. For the OG and Twitter images, you can pass an ``Asset`` to ``meta.getOgImage()``, eg: ```{% set ogImage = meta.getOgImage(entry.overviewImage.one()) %}```.

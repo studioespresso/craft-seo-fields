@@ -44,6 +44,8 @@
         <meta name="robots" content="noindex">
     {% endif %}
 
+    {% do meta.getSchema(element) %}
+
     {% for alt in meta.getAlternate(element) %}
         <link rel="alternate" hreflang="{{ alt.language }}" href="{{ alt.url }}" />
     {% endfor %}
