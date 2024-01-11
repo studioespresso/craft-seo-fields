@@ -1,22 +1,31 @@
 module.exports = {
-    title: 'SEO Fields for Craft',
+    title: 'SEO Fields',
     base: '/craft-seo-fields',
     themeConfig: {
 
-        logo: {light: '/icon-vuepress.svg', dark: '/icon-vuepress-light.svg'},
+        logo: '/img/plugin-logo.svg',
         sidebar: [
             {
-                items: [
-                    {text: 'General', link: '/general'},
-                    {text: 'Field & settings', link: '/field'},
-                    {text: 'Templating', link: '/templating'},
-                    {text: 'Robots.txt', link: '/robots'},
-                    {text: 'Sitemap.xml', link: '/sitemap'},
-                    {text: 'Extra', link: '/extra'},
-                ]
+                text: 'General',
+                items:
+                    [
+                        {text: 'Usage', link: '/general'},
+                        {text: 'Field & settings', link: '/field'},
+                        {text: 'Templating', link: '/templating'},
+
+                    ]
             },
-
-
+            {
+                text: 'Features',
+                items:
+                    [
+                        {text: 'Robots.txt', link: '/robots'},
+                        {text: 'Sitemap.xml', link: '/sitemap'},
+                        {text: 'Redirects', link: '/redirects'},
+                        {text: '404 tracking', link: '/notfound'},
+                        {text: 'Schema.org markup', link: '/schema'},
+                    ]
+            }
         ],
         nav: [
             {
@@ -34,4 +43,5 @@ module.exports = {
         ]
 
     }
-};
+}
+;

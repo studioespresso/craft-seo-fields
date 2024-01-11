@@ -1,0 +1,44 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{% if not currentUser.can('seo-fields:sitemap') %}
+    {% exit 401 %}
+{% endif %}
+
+{% extends "_layouts/cp" %}
+{% set fullPageForm = true %}
+
+{% block header %}
+    {{ block('pageTitle') }}
+    {{ block('actionButton') }}
+{% endblock %}
+
+{% set crumbs = [
+    {'label': 'SEO Fields'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields')},
+    {'label': 'Schema'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields/schema')},
+] %}
+
+{% import "_includes/forms" as forms %}
+
+{% set selectedSubnavItem = 'schema' %}
+{% set title = 'Schema.org' %}
+
+
+{% block content %}
+    {{ actionInput('seo-fields/schema/save') }}
+    {% if data.id is defined %}
+        {{ forms.hidden({
+            name: 'id',
+            value: data.id
+        }) }}
+    {% endif %}
+
+    <div class="field">
+        <div class="heading">
+            <h2>{{ 'What is Schema Markup?'|t('seo-fields') }}</h2>
+            <div class="instructions">
+                Schema markup, also known as structured data, is the language search engines use to read and understand the content on your pages. By language, we mean a semantic vocabulary (code) that helps search engines characterize and categorize the content of web pages.
+            </div>
+        </div>
+    </div>
+    {% include 'seo-fields/_includes/_schema/_sections' %}
+
+{% endblock %}

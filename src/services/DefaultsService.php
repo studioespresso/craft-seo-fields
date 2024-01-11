@@ -33,6 +33,7 @@ class DefaultsService extends Component
         $record->setAttribute('siteId', $model->siteId ?? $siteId);
         $record->setAttribute('enableRobots', $model->enableRobots);
         $record->setAttribute('robots', $model->robots);
+        $record->setAttribute('schema', $model->schema);
         $record->setAttribute('sitemap', $model->sitemap);
 
         if ($record->validate()) {
@@ -68,6 +69,7 @@ class DefaultsService extends Component
                     'id' => $record->id,
                     'enableRobots' => $record->enableRobots,
                     'robots' => $record->robots,
+                    'schema' => $record->schema,
                     'sitemap' => $record->sitemap,
                 ]);
             $model->setAttributes($fields);
