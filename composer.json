@@ -23,6 +23,7 @@
   ],
   "require": {
     "craftcms/cms": "^5.0.0-alpha",
+    "spatie/schema-org": "^3.0.0",
     "league/csv": "^9.0"
   },
   "require-dev": {
