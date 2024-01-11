@@ -5,7 +5,7 @@ title: SEO Fields
 Fields for your meta & OG data, sitemaps & robots.txt. _**Fast to set up, easy to customize.**_
 Also includes: **redirects, 404 tracking, JSON-LD Schema.org data**
 
-![Banner](./img/banner.png)
+![Banner](./images/banner.png)
 
 ## Requirements
 This plugin works with Craft 3 or 4.
