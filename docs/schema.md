@@ -6,4 +6,4 @@ next: false
  
 # Schema markup
 
-// TODO
+## Schema type per section

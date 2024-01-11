@@ -25,7 +25,8 @@ class SchemaService extends Component
             get_class(Schema::creativeWork()) => 'Creative Work',
             get_class(Schema::review()) => 'Review',
             get_class(Schema::organization()) => 'Organisation',
-
+            get_class(Schema::recipe()) => 'Recipe',
+            get_class(Schema::person()) => 'Person',
         ], $options);
     }
 
