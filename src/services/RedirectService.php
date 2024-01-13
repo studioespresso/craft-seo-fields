@@ -4,8 +4,10 @@ namespace studioespresso\seofields\services;
 
 use Craft;
 use craft\base\Component;
+use craft\base\Element;
 use craft\helpers\App;
 use craft\helpers\DateTimeHelper;
+use craft\helpers\ElementHelper;
 use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use studioespresso\seofields\models\RedirectModel;
@@ -20,6 +22,48 @@ use yii\base\ExitException;
  */
 class RedirectService extends Component
 {
+
+    public $oldUris = [];
+
+
+    public function trackElementUris(Element $element)
+    {
+        if (empty($this->oldUris[$element->id])) {
+            $this->oldUris[$element->id] = $this->getElementUrls($element);
+        }
+    }
+
+    public function handleUriChange(Element $element)
+    {
+        if (empty($this->oldUris[$element->id])) {
+            return;
+        }
+
+        foreach ($this->oldUris[$element->id] as $siteId => $oldUri) {
+            $newUri = Craft::$app->getElements()->getElementUriForSite($element->id, $siteId);
+            // Should be keep trailing slashes into account here (or when the old one have those as well)
+            if(Craft::$app->config->general->addTrailingSlashesToUrls) {
+                $oldUri = rtrim($oldUri, '/') . '/';
+                $newUri = rtrim($newUri, '/') . '/';
+            }
+
+            if ($newUri !== $oldUri) {
+                // Let's add a redirect
+                $oldUrl = UrlHelper::siteUrl($oldUri, null, null, $siteId);
+                $newUrl = UrlHelper::siteUrl($newUri, null, null, $siteId);
+                $redirect = new RedirectModel();
+                $redirect->pattern = $oldUri;
+                $redirect->sourceMatch = 'path';
+                $redirect->redirect = $newUrl;
+                $redirect->matchType = 'exact';
+                $redirect->siteId = $siteId;
+                $redirect->method = 301;
+                $this->saveRedirect($redirect);
+            }
+        }
+    }
+
+
     public function handleRedirect(RedirectRecord|array $redirect)
     {
         if (is_array($redirect)) {
@@ -159,12 +203,28 @@ class RedirectService extends Component
 
             $response = Craft::$app->response;
             if (Craft::$app->getRequest()->getQueryStringWithoutPath()) {
-                $response->redirect($url . "?" . Craft::$app->getRequest()->getQueryStringWithoutPath() , $method)->send();
+                $response->redirect($url . "?" . Craft::$app->getRequest()->getQueryStringWithoutPath(), $method)->send();
             }
 
             $response->redirect($url, $method)->send();
         } catch (\Exception $e) {
         }
         return;
+    }
+
+    private function getElementUrls(Element $element)
+    {
+        $uris = [];
+        if (!ElementHelper::isDraftOrRevision($element)) {
+
+            foreach (Craft::$app->getSites()->getAllSites(true) as $site) {
+                $uri = Craft::$app->getElements()->getElementUriForSite($element->id, $site->id);
+                if ($uri) {
+                    $uris[$site->id] = $uri;
+                }
+            }
+        }
+
+        return $uris;
     }
 }
