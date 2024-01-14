@@ -11,6 +11,7 @@
 namespace studioespresso\seofields;
 
 use Craft;
+use craft\base\Element;
 use craft\base\Plugin;
 use craft\elements\Entry;
 use craft\events\DefineBehaviorsEvent;
@@ -23,6 +24,7 @@ use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
 use craft\events\SectionEvent;
 use craft\events\SiteEvent;
+use craft\helpers\ElementHelper;
 use craft\helpers\UrlHelper;
 use craft\services\Elements;
 use craft\services\Fields;
@@ -122,8 +124,9 @@ class SeoFields extends Plugin
         $this->_registerCacheOptions();
         $this->_registerCustomElements();
         $this->_registerTwigVariable();
+        $this->_registerUrlChangeListeners();
 
-        Event::on(Entry::class, Entry::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $event) {
+        Event::on(Entry::class, Entry::EVENT_DEFINE_BEHAVIORS, function (DefineBehaviorsEvent $event) {
             $event->behaviors[$this->id] = EntrySeoBehavior::class;
         });
 
@@ -387,6 +390,47 @@ class SeoFields extends Plugin
                 }
             }
         );
+    }
+
+    private function _registerUrlChangeListeners()
+    {
+        if (self::getInstance()->getSettings()->createRedirectForUriChange) {
+            $beforeEvents = [
+                Elements::EVENT_BEFORE_SAVE_ELEMENT,
+                Elements::EVENT_BEFORE_UPDATE_SLUG_AND_URI
+            ];
+
+            $afterEvents = [
+                Elements::EVENT_AFTER_SAVE_ELEMENT,
+                Elements::EVENT_AFTER_UPDATE_SLUG_AND_URI
+            ];
+
+            foreach ($beforeEvents as $event) {
+                Event::on(Elements::class, $event, function (ElementEvent $event) {
+                    $shouldCheckSlug = true;
+                    if(ElementHelper::isDraftOrRevision($event->element)) {
+                        $shouldCheckSlug = false;
+                    }
+
+                    if ($shouldCheckSlug  && !$event->element->propagating) {
+                        self::getInstance()->redirectService->trackElementUris($event->element);
+                    }
+                });
+            }
+
+            foreach ($afterEvents as $event) {
+                Event::on(Elements::class, $event, function (ElementEvent $event) {
+                    $shouldCheckSlug = true;
+                    if(ElementHelper::isDraftOrRevision($event->element)) {
+                        $shouldCheckSlug = false;
+                    }
+
+                    if ($shouldCheckSlug  && !$event->element->propagating) {
+                        self::getInstance()->redirectService->handleUriChange($event->element);
+                    }
+                });
+            }
+        }
     }
 
     private function _registerCacheOptions()

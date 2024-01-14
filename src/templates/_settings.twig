@@ -17,4 +17,12 @@
     value: settings['titleSeperator']})
 }}
 
+<hr>
 
+<h2>{{ "Redirects"|t }}</h2>
+{{ forms.lightswitchField({
+    label: 'Should redirects be created automatically when uri\'s change?'|t('seo-fields'),
+    id: 'createRedirectForUriChange',
+    name: 'createRedirectForUriChange',
+    on: settings.createRedirectForUriChange
+}) }}

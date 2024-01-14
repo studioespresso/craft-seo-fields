@@ -31,9 +31,12 @@ class Settings extends Model
 
     public $fieldHandle = 'seo';
 
+    public $createRedirectForUriChange = true;
+
     public $schemaOptions = [];
 
     public $notFoundLimit = 10000;
+
 
     // Public Methods
     // =========================================================================
