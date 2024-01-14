@@ -75,43 +75,16 @@ class SeoFieldModel extends Model
             return null;
         }
 
-        try {
-            $settings = $this->siteDefault->getSchema();
-            switch (get_class($element)) {
-                case Entry::class:
-                    $schemaSettings = $settings['sections'];
-                    $sectionId = $element->section->id;
-                    $schemaClass = $schemaSettings[$sectionId];
-
-                    /** @var $schema Schema */
-                    $schema = Craft::createObject($schemaClass);
-                    $schema->name($this->getMetaTitle($element, false) ?? "");
-                    $schema->description($this->getMetaDescription() ?? "");
-                    $schema->url($element->getUrl() ?? "");
-                    break;
-                case Category::class:
-                    $schemaSettings = $settings['groups'];
-                    $groupId = $element->group->id;
-                    $schemaClass = $schemaSettings[$groupId];
-
-                    /** @var $schema Schema */
-                    $schema = Craft::createObject($schemaClass);
-                    $schema->name($this->getMetaTitle($element, false) ?? "");
-                    $schema->description($this->getMetaDescription() ?? "");
-                    $schema->url($element->getUrl() ?? "");
-                    break;
-            }
-
-            Craft::$app->getView()->registerScript(
+        $schema = SeoFields::getInstance()->schemaService->getSchemaForElement($element);
+        if ($schema) {
+            \Craft::$app->getView()->registerScript(
                 Json::encode($schema),
                 View::POS_END, [
                     'type' => 'application/ld+json'
                 ]
             );
-
-        } catch (\Exception $e) {
-            Craft::error($e, SeoFields::class);
         }
+
     }
 
     public function getSiteNameWithSeperator()
@@ -310,7 +283,7 @@ class SeoFieldModel extends Model
 
         return $data;
     }
-    
+
     /**
      * @param $value
      * @return void
