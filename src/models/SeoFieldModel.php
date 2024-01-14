@@ -7,14 +7,10 @@ use craft\base\Element;
 use craft\base\Model;
 use craft\db\Query;
 use craft\elements\Asset;
-use craft\elements\Category;
-use craft\elements\db\AssetQuery;
-use craft\elements\Entry;
 use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use craft\models\ImageTransform;
 use craft\web\View;
-use Spatie\SchemaOrg\Schema;
 use studioespresso\seofields\SeoFields;
 
 class SeoFieldModel extends Model
@@ -75,43 +71,14 @@ class SeoFieldModel extends Model
             return null;
         }
 
-        try {
-            $settings = $this->siteDefault->getSchema();
-            switch (get_class($element)) {
-                case Entry::class:
-                    $schemaSettings = $settings['sections'];
-                    $sectionId = $element->section->id;
-                    $schemaClass = $schemaSettings[$sectionId];
+        $schema = SeoFields::getInstance()->schemaService->getSchema($element);
 
-                    /** @var $schema Schema */
-                    $schema = Craft::createObject($schemaClass);
-                    $schema->name($this->getMetaTitle($element, false) ?? "");
-                    $schema->description($this->getMetaDescription() ?? "");
-                    $schema->url($element->getUrl() ?? "");
-                    break;
-                case Category::class:
-                    $schemaSettings = $settings['groups'];
-                    $groupId = $element->group->id;
-                    $schemaClass = $schemaSettings[$groupId];
-
-                    /** @var $schema Schema */
-                    $schema = Craft::createObject($schemaClass);
-                    $schema->name($this->getMetaTitle($element, false) ?? "");
-                    $schema->description($this->getMetaDescription() ?? "");
-                    $schema->url($element->getUrl() ?? "");
-                    break;
-            }
-
-            Craft::$app->getView()->registerScript(
-                Json::encode($schema),
-                View::POS_END, [
-                    'type' => 'application/ld+json'
-                ]
-            );
-
-        } catch (\Exception $e) {
-            Craft::error($e, SeoFields::class);
-        }
+        Craft::$app->getView()->registerScript(
+            Json::encode($schema),
+            View::POS_END, [
+                'type' => 'application/ld+json'
+            ]
+        );
     }
 
     public function getSiteNameWithSeperator()
@@ -310,7 +277,7 @@ class SeoFieldModel extends Model
 
         return $data;
     }
-    
+
     /**
      * @param $value
      * @return void
