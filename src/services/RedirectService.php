@@ -215,7 +215,7 @@ class RedirectService extends Component
     private function getElementUrls(Element $element)
     {
         $uris = [];
-        if (!ElementHelper::isDraftOrRevision($element)) {
+        if (!ElementHelper::isDraftOrRevision($element) && $element->id) {
 
             foreach (Craft::$app->getSites()->getAllSites(true) as $site) {
                 $uri = Craft::$app->getElements()->getElementUriForSite($element->id, $site->id);
