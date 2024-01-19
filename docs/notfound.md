@@ -8,7 +8,7 @@ next: false
 
 The plugin will keep track of visits and requests that resulted in a 404 (or "page not found") response.
 
-<img src="images/notfound.png" alt="">
+<img src="./images/notfound.png" alt="">
 
 These are tracked per site, with the number of times the specific url was visited (hits), when it was last visited - and show wether the "page not found" has a related redirect.
 
