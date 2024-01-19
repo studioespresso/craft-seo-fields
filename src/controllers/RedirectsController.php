@@ -24,6 +24,7 @@ class RedirectsController extends Controller
 
     public function actionAdd()
     {
+        dd('hier?');
         return $this->renderTemplate('seo-fields/_redirect/_entry', [
             'pattern' => Craft::$app->getRequest()->getParam('pattern') ?? null,
             'record' => Craft::$app->getRequest()->getParam('record') ?? null,
