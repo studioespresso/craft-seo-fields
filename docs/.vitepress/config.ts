@@ -23,6 +23,7 @@ module.exports = {
                         {text: 'Usage', link: '/general'},
                         {text: 'Field & settings', link: '/field'},
                         {text: 'Templating', link: '/templating'},
+                        {text: 'Settings', link: '/settings'},
 
                     ]
             },
