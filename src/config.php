@@ -17,5 +17,6 @@ return [
     "sitemapPerSite" => false,
     "fieldHandle" => "seo",
     "notFoundLimit" => 10000,
+    "createRedirectForUriChange" => true,
     'schemaOptions' => []
 ];

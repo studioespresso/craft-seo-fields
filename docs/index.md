@@ -33,4 +33,4 @@ If you need help setting things up or you want to get in touch privately, [get i
 
 ---
 
-Brought to you by [Studio Espresso](https://studioespresso.co/)
+Brought to you by [Studio Espresso ☕️](https://www.studioespresso.co/)
