@@ -2,7 +2,7 @@
     "name": "studioespresso/craft-seo-fields",
     "description": "Fields for your SEO & OG meta data",
     "type": "craft-plugin",
-    "version": "3.3.8.1",
+    "version": "4.0.0",
     "keywords": [
         "craft",
         "cms",
@@ -27,7 +27,8 @@
     ],
     "require": {
         "craftcms/cms": "^4.0.0-RC1",
-        "league/csv": "^9.0"
+        "league/csv": "^9.0",
+        "spatie/schema-org": "^3.0.0"
     },
     "require-dev": {
         "codeception/codeception": "^4.0.0",

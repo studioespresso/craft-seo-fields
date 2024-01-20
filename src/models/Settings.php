@@ -21,7 +21,7 @@ class Settings extends Model
 {
     // Public Properties
     // =========================================================================
-    public $pluginLabel = 'SEO Fields';
+    public $pluginLabel = 'SEO';
 
     public $titleSeperator = '-';
 
@@ -31,7 +31,12 @@ class Settings extends Model
 
     public $fieldHandle = 'seo';
 
+    public $createRedirectForUriChange = true;
+
+    public $schemaOptions = [];
+
     public $notFoundLimit = 10000;
+
 
     // Public Methods
     // =========================================================================

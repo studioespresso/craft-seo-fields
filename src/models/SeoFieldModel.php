@@ -3,34 +3,47 @@
 namespace studioespresso\seofields\models;
 
 use Craft;
+use craft\base\Element;
 use craft\base\Model;
 use craft\db\Query;
 use craft\elements\Asset;
+use craft\elements\Category;
 use craft\elements\db\AssetQuery;
+use craft\elements\Entry;
+use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use craft\models\ImageTransform;
+use craft\web\View;
+use Spatie\SchemaOrg\Schema;
 use studioespresso\seofields\SeoFields;
 
 class SeoFieldModel extends Model
 {
     public $metaTitle;
     public $metaDescription;
+
     public $facebookTitle;
     public $facebookDescription;
     public $facebookImage;
+
     public $twitterTitle;
     public $twitterDescription;
     public $twitterImage;
+
     public $siteName;
     public $hideSiteName;
     public $siteId;
     public $canonical;
+
+    public $schema;
     public $allowIndexing = 'yes';
 
     /**
      * @var SeoDefaultsModel
      */
     public $siteDefault;
+
+    public $element;
 
     public function init(): void
     {
@@ -52,6 +65,28 @@ class SeoFieldModel extends Model
         $this->siteDefault = SeoFields::getInstance()->defaultsService->getDataBySite($site);
     }
 
+    public function getSchema(Element $element = null)
+    {
+        if (!$element) {
+            return null;
+        }
+
+        if (!$element->getShouldRenderSchema()) {
+            return null;
+        }
+
+        $schema = SeoFields::getInstance()->schemaService->getSchemaForElement($element);
+        if ($schema) {
+            \Craft::$app->getView()->registerScript(
+                Json::encode($schema),
+                View::POS_END, [
+                    'type' => 'application/ld+json'
+                ]
+            );
+        }
+
+    }
+
     public function getSiteNameWithSeperator()
     {
         $this->getDefaults();
@@ -70,12 +105,17 @@ class SeoFieldModel extends Model
         return ' ' . $seperator . ' ' . $siteName;
     }
 
-    public function getPageTitle($element = null)
+
+    public function getPageTitle($element = null, $includeSiteName = true)
     {
-        if ($element && !$this->metaTitle) {
-            return $element->title . $this->getSiteNameWithSeperator();
+        if ($element) {
+            $this->element = $element;
         }
-        return $this->metaTitle . $this->getSiteNameWithSeperator();
+
+        if ($element && !$this->metaTitle) {
+            return $element->title . ($includeSiteName ? $this->getSiteNameWithSeperator() : '');
+        }
+        return $this->metaTitle . ($includeSiteName ? $this->getSiteNameWithSeperator() : '');
     }
 
     public function getCanonical()
@@ -84,43 +124,90 @@ class SeoFieldModel extends Model
         return $request->hostInfo . '/' . $request->getPathInfo(true);
     }
 
+    public function getMetaTitle($element)
+    {
+        $element = $element ?? $this->element;
+        $title = $this->getPageTitle($element, false);
+
+        if ($element->getMetaTitle()) {
+            $title = $element->getMetaTitle();
+        } elseif ($this->metaTitle) {
+            $title = $this->metaTitle;
+        }
+        return $title;
+    }
+
     public function getOgTitle($element = null)
     {
-        if ($this->facebookTitle) {
-            return $this->facebookTitle . $this->getSiteNameWithSeperator();
-        } else {
-            return $this->getPageTitle($element);
+        $title = $this->getPageTitle($element, false);
+
+        if ($element->getFacebookTitle()) {
+            $title = $element->getFacebookTitle();
+        } elseif ($this->facebookTitle) {
+            $title = $this->facebookTitle;
         }
+
+        return $title . $this->getSiteNameWithSeperator();
     }
 
     public function getTwitterTitle($element = null)
     {
-        if ($this->twitterTitle) {
-            return $this->twitterTitle . $this->getSiteNameWithSeperator();
-        } else {
-            return $this->getPageTitle($element);
+        $title = $this->getPageTitle($element, false);
+
+        if ($element->getTwitterTitle()) {
+            $title = $element->getTwitterTitle();
+        } elseif ($this->twitterTitle) {
+            $title = $this->twitterTitle;
         }
+
+        return $title . $this->getSiteNameWithSeperator();
     }
 
     public function getMetaDescription()
     {
-        return $this->metaDescription ? $this->metaDescription : $this->siteDefault->defaultMetaDescription;
+        if ($this->element->getMetaDescription()) {
+            return $this->element->getMetaDescription();
+        }
+
+        if ($this->metaDescription) {
+            return $this->element->getMetaDescription();
+        }
+
+        return $this->siteDefault->defaultMetaDescription;
     }
 
     public function getOgDescription()
     {
-        return $this->facebookDescription ? $this->facebookDescription : $this->getMetaDescription();
+        if ($this->element->getFacebookDescription()) {
+            return $this->element->getFacebookDescription();
+        }
+
+        if ($this->facebookDescription) {
+            return $this->facebookDescription;
+        }
+
+        return $this->siteDefault->defaultMetaDescription;
     }
 
     public function getTwitterDescription()
     {
-        return $this->twitterDescription ? $this->twitterDescription : $this->getMetaDescription();
+        if ($this->element->getTwitterDescription()) {
+            return $this->element->getTwitterDescription();
+        }
+
+        if ($this->twitterDescription) {
+            return $this->twitterDescription;
+        }
+
+        return $this->siteDefault->defaultMetaDescription;
     }
 
     public function getOgImage(Asset $asset = null)
     {
         if ($asset) {
             $asset = $asset;
+        } elseif ($this->element->getFacebookImage()) {
+            $asset = $this->element->getFacebookImage();
         } elseif ($this->facebookImage) {
             $asset = Craft::$app->getAssets()->getAssetById($this->facebookImage[0]);
         } elseif ($this->siteDefault->defaultImage) {
@@ -131,7 +218,6 @@ class SeoFieldModel extends Model
         }
 
         $transform = $this->_getPreviewTransform($asset);
-        $transformed = $asset->setTransform($transform);
         return [
             'height' => $asset->getHeight($transform),
             'width' => $asset->getWidth($transform),
@@ -140,10 +226,12 @@ class SeoFieldModel extends Model
         ];
     }
 
-    public function getTwitterImage(Asset $asset = null)
+    public function getTwitterImage(Asset $value = null)
     {
-        if ($asset) {
-            $asset = $asset;
+        if ($value) {
+            $asset = $value;
+        } elseif ($this->element->getTwitterImage()) {
+            $asset = $this->element->getTwitterImage();
         } elseif ($this->twitterImage) {
             $asset = Craft::$app->getAssets()->getAssetById($this->twitterImage[0]);
         } elseif ($this->siteDefault->defaultImage) {
@@ -154,7 +242,6 @@ class SeoFieldModel extends Model
         }
 
         $transform = $this->_getPreviewTransform($asset);
-        $transformed = $asset->setTransform($transform);
         return [
             'height' => $asset->getHeight($transform),
             'width' => $asset->getWidth($transform),
@@ -197,58 +284,92 @@ class SeoFieldModel extends Model
         return $data;
     }
 
-    public function setMetaTitle($value)
+    /**
+     * @param $value
+     * @return void
+     * @throws \craft\errors\DeprecationException
+     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     */
+    public function setMetaTitle($value = null)
     {
-        $this->metaTitle = $value;
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setMetaTitle', "Overwriting SEO properties through `entry.seo.setMetaTitle` no longer works. Please see the docs for an upgrading guide ");
     }
 
+    /**
+     * @param $value
+     * @return void
+     * @throws \craft\errors\DeprecationException
+     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     */
     public function setMetaDescription($value)
     {
-        $this->metaDescription = $value;
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setMetaDescription', "Overwriting SEO properties through `entry.seo.setMetaDescription` no longer works. Please see the docs for an upgrading guide ");
     }
 
+    /**
+     * @param $value
+     * @return void
+     * @throws \craft\errors\DeprecationException
+     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     */
     public function setFacebookTitle($value)
     {
-        $this->facebookTitle = $value;
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookTitle', "Overwriting SEO properties through `entry.seo.setFacebookTitle` no longer works. Please see the docs for an upgrading guide ");
     }
 
+    /**
+     * @param $value
+     * @return void
+     * @throws \craft\errors\DeprecationException
+     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     */
     public function setFacebookDescription($value)
     {
-        $this->facebookDescription = $value;
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookDescription', "Overwriting SEO properties through `entry.seo.setFacebookDescription` no longer works. Please see the docs for an upgrading guide ");
     }
 
+    /**
+     * @param $value
+     * @return void
+     * @throws \craft\errors\DeprecationException
+     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     */
     public function setFacebookImage($value)
     {
-        if (is_object($value) && get_class($value) === AssetQuery::class) {
-            $asset = $value->one()->id;
-        } elseif (is_object($value) && get_class($value) === Asset::class) {
-            $asset = $value->id;
-        } else {
-            $asset = $value;
-        }
-        $this->facebookImage = [$asset];
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookImage', "Overwriting SEO properties through `entry.seo.setFacebookImage` no longer works. Please see the docs for an upgrading guide ");
     }
 
+    /**
+     * @param $value
+     * @return void
+     * @throws \craft\errors\DeprecationException
+     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     */
     public function setTwitterTitle($value)
     {
-        $this->twitterTitle = $value;
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterTitle', "Overwriting SEO properties through `entry.seo.setTwitterTitle` no longer works. Please see the docs for an upgrading guide ");
     }
 
+    /**
+     * @param $value
+     * @return void
+     * @throws \craft\errors\DeprecationException
+     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     */
     public function setTwitterDescription($value)
     {
-        $this->twitterDescription = $value;
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterDescription', "Overwriting SEO properties through `entry.seo.setTwitterDescription` no longer works. Please see the docs for an upgrading guide ");
     }
 
+    /**
+     * @param $value
+     * @return void
+     * @throws \craft\errors\DeprecationException
+     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     */
     public function setTwitterImage($value)
     {
-        if (is_object($value) && get_class($value) === AssetQuery::class) {
-            $asset = $value->one()->id;
-        } elseif (is_object($value) && get_class($value) === Asset::class) {
-            $asset = $value->id;
-        } else {
-            $asset = $value;
-        }
-        $this->twitterImage = [$asset];
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterImage', "Overwriting SEO properties through `entry.seo.setTwitterImage` no longer works. Please see the docs for an upgrading guide ");
     }
 
     /**

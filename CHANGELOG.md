@@ -4,10 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.0.0 - 2024-01-20
+### Added
+- JSON-LD Schema.org markup
+- Automatic redirect creation on URI change
+
+### Fixed
+- Fixed overriding meta values in templates ([new docs here](https://studioespresso.github.io/craft-seo-fields/templating.html#overwriting-field-values))
+
 ## 3.3.8.1 - 2023-11-24
 ### Fixed
 - Fixed a twig syntax error ([#88](https://github.com/studioespresso/craft-seo-fields/pull/88))
-
 
 
 ## 3.3.8 - 2023-11-23

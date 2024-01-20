@@ -3,6 +3,7 @@
 namespace studioespresso\seofields\models;
 
 use craft\base\Model;
+use craft\helpers\Json;
 
 class SeoDefaultsModel extends Model
 {
@@ -22,6 +23,8 @@ class SeoDefaultsModel extends Model
 
     public $robots;
 
+    public $schema;
+
     public $sitemap;
 
     /**
@@ -39,11 +42,17 @@ class SeoDefaultsModel extends Model
                     'siteId',
                     'enableRobots',
                     'robots',
+                    'schema',
                     'sitemap',
                     'id',
                 ],
                 'safe',
             ],
         ];
+    }
+
+    public function getSchema()
+    {
+        return Json::decodeIfJson($this->schema);
     }
 }

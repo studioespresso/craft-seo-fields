@@ -71,6 +71,7 @@ class Install extends Migration
                     'defaultMeta' => $this->text(),
                     'enableRobots' => $this->boolean()->defaultValue(1),
                     'robots' => $this->text(),
+                    'schema' => $this->text(),
                     'sitemap' => $this->text(),
                     'dateCreated' => $this->dateTime()->notNull(),
                     'dateUpdated' => $this->dateTime()->notNull(),

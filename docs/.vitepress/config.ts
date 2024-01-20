@@ -1,22 +1,43 @@
 module.exports = {
-    title: 'SEO Fields for Craft',
+    title: 'SEO Fields',
+    description: "SEO Fields for Craft CMS",
     base: '/craft-seo-fields',
+    head: [
+        ['meta', {content: 'https://github.com/studioespresso', property: 'og:see_also',}],
+        [
+            'script',
+            {
+                defer: '',
+                'data-domain': 'studioespresso.github.io',
+                src: 'https://stats.studioespresso.co/js/script.tagged-events.outbound-links.js'
+            }
+        ],
+    ],
     themeConfig: {
-
-        logo: {light: '/icon-vuepress.svg', dark: '/icon-vuepress-light.svg'},
+        logo: '/img/plugin-logo.svg',
         sidebar: [
             {
-                items: [
-                    {text: 'General', link: '/general'},
-                    {text: 'Field & settings', link: '/field'},
-                    {text: 'Templating', link: '/templating'},
-                    {text: 'Robots.txt', link: '/robots'},
-                    {text: 'Sitemap.xml', link: '/sitemap'},
-                    {text: 'Extra', link: '/extra'},
-                ]
+                text: 'General',
+                items:
+                    [
+                        {text: 'Usage', link: '/general'},
+                        {text: 'Field & settings', link: '/field'},
+                        {text: 'Templating', link: '/templating'},
+                        {text: 'Settings', link: '/settings'},
+
+                    ]
             },
-
-
+            {
+                text: 'Features',
+                items:
+                    [
+                        {text: 'Robots.txt', link: '/robots'},
+                        {text: 'Sitemap.xml', link: '/sitemap'},
+                        {text: 'Redirects', link: '/redirects'},
+                        {text: '404 tracking', link: '/notfound'},
+                        {text: 'Schema.org markup', link: '/schema'},
+                    ]
+            }
         ],
         nav: [
             {
@@ -29,9 +50,10 @@ module.exports = {
             },
             {
                 text: 'GitHub',
-                link: 'https://github.com/studioespresso/craft-seo-fields/issues'
+                link: 'https://github.com/studioespresso/craft-seo-fields'
             }
         ]
 
     }
-};
+}
+;
