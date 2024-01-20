@@ -36,7 +36,7 @@ The maximum number of "not found" or 404 items to track, defaults to 10000.
 ## schemaOptions
 Additional options to be listed in the Schema options per section.
 This take an array of :
-- the class of the Schema object (base on [spatie/schema-org](github.com/spatie/schema-org))
+- the class of the Schema object (base on [spatie/schema-org](https://github.com/spatie/schema-org))
 - the label you want it be listed as
 
 For example:
