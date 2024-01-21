@@ -12,9 +12,9 @@
         <tbody>
 
         {% set schemaSettings = data.schema|json_decode %}
-        {% set sectionSettings = schemaSettings.sections %}
+        {% set sectionSettings = schemaSettings.sections ?? [] %}
         {% for section in sections %}
-            {% set settings = attribute(sectionSettings, section.id) ?? [] %}
+            {% set settings = attribute(sectionSettings, section.id) ??  null %}
             <tr>
                 <th>{{ section.name }}</th>
                 <td>
@@ -24,7 +24,7 @@
                         options: options,
                         includeEnvVars: false,
                         allowedEnvValues: false,
-                        value: settings,
+                        value: settings ,
                     }) }}
                 </td>
             </tr>
