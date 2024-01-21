@@ -77,7 +77,10 @@ class SeoFieldModel extends Model
 
         try {
             $schema = null;
-            $settings = $this->siteDefault->getSchema();
+            $primarySite = Craft::$app->getSites()->getPrimarySite();
+            $defaults = SeoFields::getInstance()->defaultsService->getDataBySite($primarySite);
+            $settings = $defaults->getSchema();
+
             switch (get_class($element)) {
                 case Entry::class:
                     $schemaSettings = $settings['sections'];
