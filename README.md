@@ -1,14 +1,16 @@
-# SEO Fields for Craft CMS 3.1
+# SEO Fields for Craft CMS
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/4830460a89c377da75ed/maintainability)](https://codeclimate.com/github/studioespresso/craft-seo-fields/maintainability)
 
-Fields for your meta & OG data, sitemaps & robots.txt
 
-![Screenshot](https://www.studioespresso.co/resources/seofields/banner.png)
+Fields for your meta & OG data, sitemaps & robots.txt. Fast to set up, easy to customize. <br>
+Also includes: redirects, 404 tracking, JSON-LD Schema.org data
+
+
+![Screenshot](https://www.studioespresso.co/assets/SEO-Fields-GitHub-banner.png)
 
 ## Requirements
 
-This plugin requires Craft CMS 3.1.0 or later.
+This plugin requires Craft CMS 3 or 4.
 
 ## Installation
 
@@ -27,16 +29,10 @@ composer require studioespresso/craft-seo-fields
 ./craft install/plugin seo-fields
 ```
 
-## Features overview
+## Documentation & feature overview
 
-SEO Fields lets you set default title & description for your site (or sites) and gives you a field to overwrite those defaults per entry.
+📔 [More information & documentation is available here](https://studioespresso.github.io/craft-seo-fields/)
 
-Additionally, you can configure your robots.txt and your sitemaps as well.
-
-
-
-| 📑 [More information & documentation is available here](https://studioespresso.github.io/craft-seo-fields/) |
-| --- |
 
 ---
 Brought to you by [Studio Espresso](https://studioespresso.co)
