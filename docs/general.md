@@ -12,7 +12,7 @@ You can set:
 - a title seperator to go between to entry title and the site title
 - a default meta image.
 
-<img src="./img/defaults.png">
+<img src="./images/defaults.png">
 
 If you have multiple sites in your install, you can specify different defaults for each site.
 

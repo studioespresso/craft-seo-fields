@@ -76,7 +76,11 @@ class SeoFieldModel extends Model
         }
 
         try {
-            $settings = $this->siteDefault->getSchema();
+            $schema = null;
+            $primarySite = Craft::$app->getSites()->getPrimarySite();
+            $defaults = SeoFields::getInstance()->defaultsService->getDataBySite($primarySite);
+            $settings = $defaults->getSchema();
+
             switch (get_class($element)) {
                 case Entry::class:
                     $schemaSettings = $settings['sections'];
@@ -84,7 +88,7 @@ class SeoFieldModel extends Model
                     $schemaClass = $schemaSettings[$sectionId];
 
                     /** @var $schema Schema */
-                    $schema = Craft::createObject($schemaClass);
+                    $schema = \Craft::createObject($schemaClass);
                     $schema->name($this->getMetaTitle($element, false) ?? "");
                     $schema->description($this->getMetaDescription() ?? "");
                     $schema->url($element->getUrl() ?? "");
@@ -101,17 +105,22 @@ class SeoFieldModel extends Model
                     $schema->url($element->getUrl() ?? "");
                     break;
             }
+            if ($schema) {
+                \Craft::$app->getView()->registerScript(
+                    Json::encode($schema),
+                    View::POS_END, [
+                        'type' => 'application/ld+json'
+                    ]
+                );
+            }
 
-            Craft::$app->getView()->registerScript(
-                Json::encode($schema),
-                View::POS_END, [
-                    'type' => 'application/ld+json'
-                ]
-            );
 
         } catch (\Exception $e) {
-            Craft::error($e, SeoFields::class);
+            \Craft::error($e, SeoFields::class);
+            return null;
         }
+
+
     }
 
     public function getSiteNameWithSeperator()
@@ -311,45 +320,92 @@ class SeoFieldModel extends Model
         return $data;
     }
 
-
+    /**
+     * @param $value
+     * @return void
+     * @throws \craft\errors\DeprecationException
+     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     */
     public function setMetaTitle($value = null)
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setMetaTitle', "Overwriting SOE properties through `entry.seo.setMetaTitle` no longer works. Please see the docs for an upgrading guide ");
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setMetaTitle', "Overwriting SEO properties through `entry.seo.setMetaTitle` no longer works. Please see the docs for an upgrading guide ");
     }
 
+    /**
+     * @param $value
+     * @return void
+     * @throws \craft\errors\DeprecationException
+     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     */
     public function setMetaDescription($value)
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setMetaDescription', "Overwriting SOE properties through `entry.seo.setMetaDescription` no longer works. Please see the docs for an upgrading guide ");
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setMetaDescription', "Overwriting SEO properties through `entry.seo.setMetaDescription` no longer works. Please see the docs for an upgrading guide ");
     }
 
+    /**
+     * @param $value
+     * @return void
+     * @throws \craft\errors\DeprecationException
+     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     */
     public function setFacebookTitle($value)
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookTitle', "Overwriting SOE properties through `entry.seo.setFacebookTitle` no longer works. Please see the docs for an upgrading guide ");
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookTitle', "Overwriting SEO properties through `entry.seo.setFacebookTitle` no longer works. Please see the docs for an upgrading guide ");
     }
 
+    /**
+     * @param $value
+     * @return void
+     * @throws \craft\errors\DeprecationException
+     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     */
     public function setFacebookDescription($value)
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookDescription', "Overwriting SOE properties through `entry.seo.setFacebookDescription` no longer works. Please see the docs for an upgrading guide ");
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookDescription', "Overwriting SEO properties through `entry.seo.setFacebookDescription` no longer works. Please see the docs for an upgrading guide ");
     }
 
+    /**
+     * @param $value
+     * @return void
+     * @throws \craft\errors\DeprecationException
+     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     */
     public function setFacebookImage($value)
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookImage', "Overwriting SOE properties through `entry.seo.setFacebookImage` no longer works. Please see the docs for an upgrading guide ");
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookImage', "Overwriting SEO properties through `entry.seo.setFacebookImage` no longer works. Please see the docs for an upgrading guide ");
     }
 
+    /**
+     * @param $value
+     * @return void
+     * @throws \craft\errors\DeprecationException
+     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     */
     public function setTwitterTitle($value)
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterTitle', "Overwriting SOE properties through `entry.seo.setTwitterTitle` no longer works. Please see the docs for an upgrading guide ");
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterTitle', "Overwriting SEO properties through `entry.seo.setTwitterTitle` no longer works. Please see the docs for an upgrading guide ");
     }
 
+    /**
+     * @param $value
+     * @return void
+     * @throws \craft\errors\DeprecationException
+     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     */
     public function setTwitterDescription($value)
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterDescription', "Overwriting SOE properties through `entry.seo.setTwitterDescription` no longer works. Please see the docs for an upgrading guide ");
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterDescription', "Overwriting SEO properties through `entry.seo.setTwitterDescription` no longer works. Please see the docs for an upgrading guide ");
     }
 
+    /**
+     * @param $value
+     * @return void
+     * @throws \craft\errors\DeprecationException
+     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     */
     public function setTwitterImage($value)
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterImage', "Overwriting SOE properties through `entry.seo.setTwitterImage` no longer works. Please see the docs for an upgrading guide ");
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterImage', "Overwriting SEO properties through `entry.seo.setTwitterImage` no longer works. Please see the docs for an upgrading guide ");
     }
 
     /**

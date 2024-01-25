@@ -1,0 +1,109 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{% if not currentUser.can('seo-fields:notfound') %}
+    {% exit 401 %}
+{% endif %}
+
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% set selectedSubnavItem = 'notfound' %}
+{% set title = "404 Overview"|t('seo-fields') %}
+
+{% set crumbs = [
+    {'label': 'SEO Fields'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields')},
+    {'label': '404 Overview'|t('seo-fields'), 'url' : cpUrl('admin/seo-fields/not-found')},
+] %}
+
+{% do view.registerAssetBundle('craft\\web\\assets\\admintable\\AdminTableAsset') -%}
+
+{% block contextMenu %}
+    {% if craft.app.sites.getEditableSites()|length > 1 %}
+        <div id="sites-btn" class="btn menubtn"
+             data-icon="world">{% if craft.app.request.getSegment(-1) == 'not-found' %}{{ "All sites"|t('seo-fields') }}{% else %}{{ currentSite.name }}{% endif %}</div>
+        <div class="menu">
+            <ul class="padded">
+                <li>
+                    <a href="{{ url('seo-fields/not-found', {site: ''}) }}"
+                       {% if not craft.app.request.getQueryParam('site') %}class="sel" {% endif %}>
+                        {{ "All sites"|t('seo-fields') }}
+                    </a>
+                </li>
+                {% for site in craft.app.sites.getEditableSites() %}
+                    <li>
+                        <a href="{{ url('seo-fields/not-found/', {site: site.handle} ) }}"
+                           {% if site.handle == craft.app.request.getQueryParam('site') %}class="sel"{% endif %}>
+                            {{ site.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <input type="hidden" name="siteId" value="{{ currentSite.id }}">
+    {% endif %}
+{% endblock %}
+
+
+{% block actionButton %}
+    {% set confirmation = "Are you sure you want to remove all tracked 404's?"|t('seo-fields') %}
+    <a href="{{ actionUrl('seo-fields/not-found/clear-all') }}" class="btn"
+       onclick='return confirm("{{ confirmation }}")'>{{ "Clear all"|t('seo-fields') }}</a>
+{% endblock %}
+
+{% block content %}
+<div id="seofields-notfound"></div>
+{% endblock %}
+
+{% js %}
+    var columns = [
+        {
+            name: '__slot:title',
+            title: Craft.t('seo-fields', 'URL'),
+        },
+        {
+            name: 'hits',
+            title: Craft.t('seo-fields', 'Hits'),
+            sortField: 'counter'
+        },
+        {
+            name: 'site',
+            title: Craft.t('seo-fields', 'Site'),
+
+        },
+        {
+            name: 'lastHit',
+            title: Craft.t('seo-fields', 'Last visit'),
+
+        },
+        {
+            name: 'hasRedirect',
+            title: 'Redirect?',
+            sortField: 'handled',
+            callback: function(value) {
+                if (typeof value != 'object') {
+                    return '<span data-icon="check" style="color: green;"></span>';
+                }
+
+                var url = "{{ cpUrl('seo-fields/redirects/add') }}" + "&pattern=" + value.urlPath + "&site=" + value.siteId + "&record=" + value.id;
+                return '<a class="add icon" href="' + url + '" title="Add"></a>';
+            }
+        }
+
+    ];
+
+    {% if craft.app.sites.getEditableSites()|length < 2 %}
+        {% set site =  "" %}
+    {% else %}
+        {% set site = craft.app.request.getQueryParam('site', '') %}
+    {% endif %}
+
+    new Craft.VueAdminTable({
+    container: '#seofields-notfound',
+    columns: columns,
+    tableDataEndpoint: "{{ cpUrl('seo-fields/cp-api/not-found', {site: site}) }}" ,
+    deleteAction: 'seo-fields/not-found/delete',
+    checkboxes:  0,
+    search: true,
+    allowMultipleSelections: false,
+    perPage: 10,
+    });
+{% endjs %}

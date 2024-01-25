@@ -12,7 +12,10 @@ Based on the environment you've set in your site's ``.env`` file, it will only a
 
 You can modify the template with your own enviroments, conditions and settings in the CP.
 
-⚠️ Note that this will not stop Google from indexing your staging/dev site if and when someone else has a link to it. Always add another level of authentication to make sure Google can't index it. 
+
+::: warning
+Note that this will not stop Google from indexing your staging/dev site if and when someone else has a link to it. Always add another level of authentication to make sure Google can't index it. 
+:::
 
 ### Multisite
 
