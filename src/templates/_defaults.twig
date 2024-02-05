@@ -23,7 +23,8 @@
 {% block content %}
     {{ actionInput('seo-fields/defaults/save') }}
 
-    <input type="hidden" name="siteId" value="{{ currentSite.id }}">
+
+    <input type="hidden" name="siteId" value="{{ selectedSite.id }}">
 
     <style>
         .seo-introduction {
