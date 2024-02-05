@@ -29,13 +29,16 @@
             name: name ~ "[siteName]",
             value: value.siteName,
         }) }}
+    {% endif %}
 
+
+    {% if field.allowSitenameDisable %}
         {{ forms.checkboxField({
-            label: "Hide site name"|t("seo-fields"),
-            id: name ~ "-hideSiteName",
-            name: name ~ "[hideSiteName]",
-            checked: value.hideSiteName,
-        }) }}
+        label: "Hide site name"|t("seo-fields"),
+        id: name ~ "-hideSiteName",
+        name: name ~ "[hideSiteName]",
+        checked: value.hideSiteName,
+    }) }}
     {% endif %}
 
     <div class="field" id="{{ name ~ "-metaDescription" }}-field">
