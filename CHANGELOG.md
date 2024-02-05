@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.0.4 - 2024-02-05
+### Fixed
+- Fixed an issue where the "Allow sitename to be hidden" option would not work ([#90](https://github.com/studioespresso/craft-seo-fields/issues/90))
+
+
 ## 4.0.3 - 2024-02-05
 ### Fixed
 - Fixed a permissions issue on sites with multiple users and user groups
