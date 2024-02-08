@@ -6,8 +6,6 @@ use Craft;
 use craft\db\Query;
 use craft\helpers\Cp;
 use craft\helpers\Db;
-use craft\helpers\UrlHelper;
-use craft\records\Section_SiteSettings;
 use craft\web\Controller;
 use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\SeoFields;

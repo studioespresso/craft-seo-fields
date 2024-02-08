@@ -15,7 +15,7 @@ class DefaultsController extends Controller
         $params = Craft::$app->getRequest()->getQueryParams();
         unset($params['p']);
         $currentUser = Craft::$app->getUser()->getIdentity();
-        $primarySite = Craft::$app->sites->getPrimarySite();
+        $editableSite = Craft::$app->getSites()->getEditableSites();
         if ($currentUser->can('seo-fields:default')) {
             $this->redirect(UrlHelper::cpUrl("seo-fields/defaults/settings", $params));
         } elseif ($currentUser->can('seo-fields:notfound')) {
@@ -26,6 +26,7 @@ class DefaultsController extends Controller
             $this->redirect(UrlHelper::cpUrl("seo-fields/robots", $params));
         } elseif ($currentUser->can('seo-fields:sitemap')) {
             $this->redirect(UrlHelper::cpUrl("seo-fields/sitemap", $params));
+
         }
     }
 
@@ -36,7 +37,6 @@ class DefaultsController extends Controller
 
         $sites = Craft::$app->getSites()->getEditableSites();
         Craft::$app->sites->setCurrentSite($site);
-
 
         return $this->asCpScreen()
             ->title(Craft::t('seo-fields', 'SEO Fields'))

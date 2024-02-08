@@ -4,7 +4,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
 ## 5.0.0-alpha.1 - 2023-12-24
+### Added
+- Initial Craft 5 support 🚀
+
+## 4.0.4 - 2024-02-05
+### Fixed
+- Fixed an issue where the "Allow sitename to be hidden" option would not work ([#90](https://github.com/studioespresso/craft-seo-fields/issues/90))
+
+
+## 4.0.3 - 2024-02-05
+### Fixed
+- Fixed a permissions issue on sites with multiple users and user groups
+
+
+## 4.0.2 - 2024-01-21
+### Fixed
+- Fixed getting schema data for multi-site setups
+
+## 4.0.1 - 2024-01-21
+### Fixed
+- Fixed on issue on the schema settings screen, when no settings had been defined yet
+
+## 4.0.0 - 2024-01-20
 ### Added
 - Initial Craft 5 support 🚀
 

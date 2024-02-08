@@ -198,7 +198,7 @@ class RedirectsController extends Controller
     {
         // Support for league/csv v8 with a header
         try {
-            return $csv->fetchOne(0);
+            return $reader->fetchOne(0);
         } catch (\Throwable $e) {
         }
 

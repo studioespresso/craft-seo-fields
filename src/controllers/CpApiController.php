@@ -32,7 +32,7 @@ class CpApiController extends Controller
         list($key, $direction) = explode("|", $sort);
 
         $limit = 20;
-        $offset = ($page - 1) *  $limit;
+        $offset = ($page - 1) * $limit;
 
         $query = NotFoundRecord::find();
         $query->limit($limit);
@@ -54,8 +54,8 @@ class CpApiController extends Controller
 
         $query->orderBy($key . " " . $direction);
 
-        $total =   clone  $query;
-        $total =  $total->count();
+        $total = clone  $query;
+        $total = $total->count();
 
         $rows = [];
         $formatter = Craft::$app->getFormatter();
@@ -79,7 +79,7 @@ class CpApiController extends Controller
 
         $from = ($page - 1) * $limit + 1;
         $lastPage = (int) ceil($total / $limit);
-        $to = intval($page) ===  intval($lastPage) ? $total : ($page * $limit);
+        $to = intval($page) === intval($lastPage) ? $total : ($page * $limit);
 
         return $this->asJson([
             'pagination' => [
@@ -108,7 +108,7 @@ class CpApiController extends Controller
         list($key, $direction) = explode("|", $sort);
 
         $limit = 20;
-        $offset = ($page - 1) *  $limit;
+        $offset = ($page - 1) * $limit;
 
         $query = RedirectRecord::find();
         $query->limit($limit);
@@ -129,8 +129,8 @@ class CpApiController extends Controller
         }
         $query->orderBy($key . " " . $direction);
 
-        $total =   clone  $query;
-        $total =  $total->count();
+        $total = clone  $query;
+        $total = $total->count();
 
         $rows = [];
         $formatter = Craft::$app->getFormatter();

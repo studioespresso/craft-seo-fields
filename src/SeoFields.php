@@ -11,7 +11,6 @@
 namespace studioespresso\seofields;
 
 use Craft;
-use craft\base\Element;
 use craft\base\Plugin;
 use craft\elements\Entry;
 use craft\events\DefineBehaviorsEvent;
@@ -30,12 +29,10 @@ use craft\services\Elements;
 use craft\services\Entries;
 use craft\services\Fields;
 use craft\services\Gc;
-use craft\services\Sections;
 use craft\services\Sites;
 use craft\services\UserPermissions;
 use craft\utilities\ClearCaches;
 use craft\web\ErrorHandler;
-use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use studioespresso\seofields\behaviors\EntrySeoBehavior;
 use studioespresso\seofields\events\RegisterSeoElementEvent;
@@ -49,7 +46,6 @@ use studioespresso\seofields\services\RedirectService;
 use studioespresso\seofields\services\RenderService;
 use studioespresso\seofields\services\SchemaService;
 use studioespresso\seofields\services\SitemapService;
-use studioespresso\seofields\variables\SeoFieldsVariable;
 use yii\base\Event;
 use yii\base\Exception;
 use yii\console\Application as ConsoleApplication;
@@ -124,13 +120,11 @@ class SeoFields extends Plugin
         $this->_registerSiteListeners();
         $this->_registerCacheOptions();
         $this->_registerCustomElements();
-        $this->_registerTwigVariable();
         $this->_registerUrlChangeListeners();
 
         Event::on(Entry::class, Entry::EVENT_DEFINE_BEHAVIORS, function (DefineBehaviorsEvent $event) {
             $event->behaviors[$this->id] = EntrySeoBehavior::class;
         });
-
     }
 
     public function getCpNavItem(): ?array
@@ -341,29 +335,17 @@ class SeoFields extends Plugin
         );
 
         Event::on(
-<<<<<<< HEAD
             Entries::class,
             Entries::EVENT_AFTER_DELETE_SECTION,
-            function(SectionEvent $event) {
-=======
-            Sections::class,
-            Sections::EVENT_AFTER_DELETE_SECTION,
             function (SectionEvent $event) {
->>>>>>> develop
                 SeoFields::$plugin->sitemapSerivce->clearCaches();
             }
         );
 
         Event::on(
-<<<<<<< HEAD
             Entries::class,
             Entries::EVENT_AFTER_DELETE_ENTRY_TYPE,
-            function(EntryTypeEvent $event) {
-=======
-            Sections::class,
-            Sections::EVENT_AFTER_DELETE_ENTRY_TYPE,
             function (EntryTypeEvent $event) {
->>>>>>> develop
                 SeoFields::$plugin->sitemapSerivce->clearCaches();
             }
         );
@@ -410,22 +392,22 @@ class SeoFields extends Plugin
         if (self::getInstance()->getSettings()->createRedirectForUriChange) {
             $beforeEvents = [
                 Elements::EVENT_BEFORE_SAVE_ELEMENT,
-                Elements::EVENT_BEFORE_UPDATE_SLUG_AND_URI
+                Elements::EVENT_BEFORE_UPDATE_SLUG_AND_URI,
             ];
 
             $afterEvents = [
                 Elements::EVENT_AFTER_SAVE_ELEMENT,
-                Elements::EVENT_AFTER_UPDATE_SLUG_AND_URI
+                Elements::EVENT_AFTER_UPDATE_SLUG_AND_URI,
             ];
 
             foreach ($beforeEvents as $event) {
                 Event::on(Elements::class, $event, function (ElementEvent $event) {
                     $shouldCheckSlug = true;
-                    if(ElementHelper::isDraftOrRevision($event->element)) {
+                    if (ElementHelper::isDraftOrRevision($event->element)) {
                         $shouldCheckSlug = false;
                     }
 
-                    if ($shouldCheckSlug  && !$event->element->propagating) {
+                    if ($shouldCheckSlug && !$event->element->propagating) {
                         self::getInstance()->redirectService->trackElementUris($event->element);
                     }
                 });
@@ -434,11 +416,11 @@ class SeoFields extends Plugin
             foreach ($afterEvents as $event) {
                 Event::on(Elements::class, $event, function (ElementEvent $event) {
                     $shouldCheckSlug = true;
-                    if(ElementHelper::isDraftOrRevision($event->element)) {
+                    if (ElementHelper::isDraftOrRevision($event->element)) {
                         $shouldCheckSlug = false;
                     }
 
-                    if ($shouldCheckSlug  && !$event->element->propagating) {
+                    if ($shouldCheckSlug && !$event->element->propagating) {
                         self::getInstance()->redirectService->handleUriChange($event->element);
                     }
                 });
@@ -469,9 +451,11 @@ class SeoFields extends Plugin
     {
         $elements = [];
         if (Craft::$app->getPlugins()->isPluginEnabled('calendar')) {
+            /** @phpstan-ignore-next-line */
             $elements[] = \Solspace\Calendar\Elements\Event::class;
         }
         if (Craft::$app->getPlugins()->isPluginEnabled('commerce')) {
+            /** @phpstan-ignore-next-line */
             $elements[] = \craft\commerce\elements\Product::class;
         }
 
@@ -482,18 +466,5 @@ class SeoFields extends Plugin
                 }
             );
         }
-    }
-
-    private function _registerTwigVariable()
-    {
-        Event::on(
-            CraftVariable::class,
-            CraftVariable::EVENT_INIT,
-            function (Event $event) {
-                /** @var CraftVariable $variable */
-                $variable = $event->sender;
-                $variable->set('schema', SeoFieldsVariable::class);
-            }
-        );
     }
 }

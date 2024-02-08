@@ -2,9 +2,7 @@
 
 namespace studioespresso\seofields\extensions;
 
-use Spatie\SchemaOrg\Schema;
 use studioespresso\seofields\SeoFields;
-use studioespresso\seofields\variables\SeoFieldsVariable;
 use Twig\Extension\AbstractExtension;
 use Twig\Extension\GlobalsInterface;
 use Twig\TwigFunction;
@@ -24,14 +22,14 @@ class SeoFieldsExtension extends AbstractExtension implements GlobalsInterface
                 'getSeoFields',
                 [$this, 'getSeoFields'],
                 ['needs_context' => true]
-            )
+            ),
         ];
     }
 
     public function getGlobals(): array
     {
         return [
-            'seoFields' => SeoFields::getInstance()->schemaService
+            'seoFields' => SeoFields::getInstance()->schemaService,
         ];
     }
 

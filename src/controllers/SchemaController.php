@@ -3,14 +3,9 @@
 namespace studioespresso\seofields\controllers;
 
 use Craft;
-use craft\db\Query;
-use craft\helpers\Db;
-use craft\records\Section_SiteSettings;
 use craft\web\Controller;
-use Spatie\SchemaOrg\Schema;
 use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\SeoFields;
-use yii\web\NotFoundHttpException;
 
 class SchemaController extends Controller
 {
@@ -46,6 +41,4 @@ class SchemaController extends Controller
         SeoFields::$plugin->defaultsService->saveDefaults($model, $data['siteId']);
         SeoFields::$plugin->sitemapSerivce->clearCaches();
     }
-
-
 }

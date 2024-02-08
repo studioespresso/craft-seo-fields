@@ -30,6 +30,7 @@ class MigrateController extends Controller
             case 'fields':
                 return ['fieldHandle', 'metaTitle', 'metaDescription'];
         }
+        return parent::options($actionId);
     }
 
     public function actionEther()
