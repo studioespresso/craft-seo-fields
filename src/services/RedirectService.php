@@ -22,7 +22,6 @@ use yii\base\ExitException;
  */
 class RedirectService extends Component
 {
-
     public $oldUris = [];
 
 
@@ -42,7 +41,7 @@ class RedirectService extends Component
         foreach ($this->oldUris[$element->id] as $siteId => $oldUri) {
             $newUri = Craft::$app->getElements()->getElementUriForSite($element->id, $siteId);
             // Should be keep trailing slashes into account here (or when the old one have those as well)
-            if(Craft::$app->config->general->addTrailingSlashesToUrls) {
+            if (Craft::$app->config->general->addTrailingSlashesToUrls) {
                 $oldUri = rtrim($oldUri, '/') . '/';
                 $newUri = rtrim($newUri, '/') . '/';
             }
@@ -216,7 +215,6 @@ class RedirectService extends Component
     {
         $uris = [];
         if (!ElementHelper::isDraftOrRevision($element) && $element->id) {
-
             foreach (Craft::$app->getSites()->getAllSites(true) as $site) {
                 $uri = Craft::$app->getElements()->getElementUriForSite($element->id, $site->id);
                 if ($uri) {

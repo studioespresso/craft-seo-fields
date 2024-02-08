@@ -4,13 +4,8 @@ namespace studioespresso\seofields\services;
 
 use craft\base\Component;
 use craft\base\Element;
-use craft\commerce\elements\Product;
-use craft\commerce\Plugin as Commerce;
-use craft\commerce\services\ProductTypes;
 use craft\elements\Category;
 use craft\elements\Entry;
-use craft\helpers\Json;
-use craft\web\View;
 use Spatie\SchemaOrg\Schema;
 use studioespresso\seofields\SeoFields;
 
@@ -69,12 +64,9 @@ class SchemaService extends Component
                     break;
             }
             return $schema;
-
-
         } catch (\Exception $e) {
             \Craft::error($e, SeoFields::class);
             return null;
         }
     }
-
 }

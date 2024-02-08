@@ -8,7 +8,6 @@ use craft\base\Model;
 use craft\db\Query;
 use craft\elements\Asset;
 use craft\elements\Category;
-use craft\elements\db\AssetQuery;
 use craft\elements\Entry;
 use craft\helpers\Json;
 use craft\helpers\UrlHelper;
@@ -109,18 +108,14 @@ class SeoFieldModel extends Model
                 \Craft::$app->getView()->registerScript(
                     Json::encode($schema),
                     View::POS_END, [
-                        'type' => 'application/ld+json'
+                        'type' => 'application/ld+json',
                     ]
                 );
             }
-
-
         } catch (\Exception $e) {
             \Craft::error($e, SeoFields::class);
             return null;
         }
-
-
     }
 
     public function getSiteNameWithSeperator()
