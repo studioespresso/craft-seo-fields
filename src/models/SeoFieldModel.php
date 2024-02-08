@@ -88,7 +88,7 @@ class SeoFieldModel extends Model
 
                     /** @var $schema Schema */
                     $schema = \Craft::createObject($schemaClass);
-                    $schema->name($this->getMetaTitle($element, false) ?? "");
+                    $schema->name($this->getMetaTitle($element) ?? "");
                     $schema->description($this->getMetaDescription() ?? "");
                     $schema->url($element->getUrl() ?? "");
                     break;
@@ -99,7 +99,7 @@ class SeoFieldModel extends Model
 
                     /** @var $schema Schema */
                     $schema = Craft::createObject($schemaClass);
-                    $schema->name($this->getMetaTitle($element, false) ?? "");
+                    $schema->name($this->getMetaTitle($element) ?? "");
                     $schema->description($this->getMetaDescription() ?? "");
                     $schema->url($element->getUrl() ?? "");
                     break;

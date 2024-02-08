@@ -33,7 +33,6 @@ use craft\services\Sites;
 use craft\services\UserPermissions;
 use craft\utilities\ClearCaches;
 use craft\web\ErrorHandler;
-use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use studioespresso\seofields\behaviors\EntrySeoBehavior;
 use studioespresso\seofields\events\RegisterSeoElementEvent;
@@ -47,7 +46,6 @@ use studioespresso\seofields\services\RedirectService;
 use studioespresso\seofields\services\RenderService;
 use studioespresso\seofields\services\SchemaService;
 use studioespresso\seofields\services\SitemapService;
-use studioespresso\seofields\variables\SeoFieldsVariable;
 use yii\base\Event;
 use yii\base\Exception;
 use yii\console\Application as ConsoleApplication;
@@ -122,7 +120,6 @@ class SeoFields extends Plugin
         $this->_registerSiteListeners();
         $this->_registerCacheOptions();
         $this->_registerCustomElements();
-        $this->_registerTwigVariable();
         $this->_registerUrlChangeListeners();
 
         Event::on(Entry::class, Entry::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $event) {
@@ -454,9 +451,11 @@ class SeoFields extends Plugin
     {
         $elements = [];
         if (Craft::$app->getPlugins()->isPluginEnabled('calendar')) {
+            /** @phpstan-ignore-next-line */
             $elements[] = \Solspace\Calendar\Elements\Event::class;
         }
         if (Craft::$app->getPlugins()->isPluginEnabled('commerce')) {
+            /** @phpstan-ignore-next-line */
             $elements[] = \craft\commerce\elements\Product::class;
         }
 
@@ -467,18 +466,5 @@ class SeoFields extends Plugin
                 }
             );
         }
-    }
-
-    private function _registerTwigVariable()
-    {
-        Event::on(
-            CraftVariable::class,
-            CraftVariable::EVENT_INIT,
-            function(Event $event) {
-                /** @var CraftVariable $variable */
-                $variable = $event->sender;
-                $variable->set('schema', SeoFieldsVariable::class);
-            }
-        );
     }
 }
