@@ -24,7 +24,7 @@ class NotFoundController extends Controller
             'menu' => [
                 'label' => Craft::t('site', 'Select site'),
                 'items' => Cp::siteMenuItems($sites, $currentSite),
-            ]
+            ],
         ];
 
         return $this->asCpScreen()

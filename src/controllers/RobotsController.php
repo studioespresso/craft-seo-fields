@@ -5,7 +5,6 @@ namespace studioespresso\seofields\controllers;
 use Craft;
 use craft\helpers\Cp;
 use craft\helpers\Template;
-use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\SeoFields;
@@ -31,7 +30,7 @@ class RobotsController extends Controller
                 'menu' => [
                     'label' => Craft::t('site', 'Select site'),
                     'items' => Cp::siteMenuItems($sites, $currentSite),
-                ]
+                ],
             ];
         }
 
@@ -63,7 +62,7 @@ class RobotsController extends Controller
         SeoFields::$plugin->defaultsService->saveDefaults($model, Craft::$app->sites->currentSite->id);
     }
 
-    public function actionRender(): \yii\web\Response
+    public function actionRender(): \yii\web\Response|null
     {
         if (SeoFields::$plugin->getSettings()->robotsPerSite) {
             $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getCurrentSite());
@@ -77,6 +76,6 @@ class RobotsController extends Controller
             return $this->asRaw($string);
         } catch (\Exception $e) {
         }
-
+        return null;
     }
 }

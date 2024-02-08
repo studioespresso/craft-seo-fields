@@ -26,7 +26,6 @@ class DefaultsController extends Controller
             $this->redirect(UrlHelper::cpUrl("seo-fields/robots", $params));
         } elseif ($currentUser->can('seo-fields:sitemap')) {
             $this->redirect(UrlHelper::cpUrl("seo-fields/sitemap", $params));
-
         }
     }
 
@@ -47,15 +46,14 @@ class DefaultsController extends Controller
                     'menu' => [
                         'label' => Craft::t('site', 'Select site'),
                         'items' => Cp::siteMenuItems($sites, $currentSite),
-                    ]
-                ]
+                    ],
+                ],
             ])
             ->action('seo-fields/defaults/save')
             ->contentTemplate('seo-fields/_defaults/_content', [
                 'data' => SeoFields::$plugin->defaultsService->getDataBySite($currentSite),
                 'site' => $currentSite,
             ]);
-
     }
 
     public function actionSave()

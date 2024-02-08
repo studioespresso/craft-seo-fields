@@ -3,11 +3,8 @@
 namespace studioespresso\seofields\controllers;
 
 use Craft;
-use craft\enums\MenuItemType;
-use craft\fields\Url;
 use craft\helpers\App;
 use craft\helpers\Cp;
-use craft\helpers\Html;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use League\Csv\Reader;
@@ -32,7 +29,7 @@ class RedirectsController extends Controller
             'menu' => [
                 'label' => Craft::t('site', 'Select site'),
                 'items' => Cp::siteMenuItems($sites, $currentSite),
-            ]
+            ],
         ];
 
         return $this->asCpScreen()
