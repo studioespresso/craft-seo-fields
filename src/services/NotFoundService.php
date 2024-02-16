@@ -33,29 +33,6 @@ class NotFoundService extends Component
         $this->handleNotFound($request, $site);
     }
 
-    public function getAllNotFound($orderBy, $siteHandle = null, $handled)
-    {
-        $data = [];
-        $query = NotFoundRecord::find();
-        $query->orderBy("$orderBy DESC, dateLastHIT DESC");
-        $query->where(['in', 'siteId', Craft::$app->getSites()->getEditableSiteIds()]);
-        if ($siteHandle) {
-            $site = Craft::$app->getSites()->getSiteByHandle($siteHandle);
-            $query->andWhere(['siteId' => $site->id]);
-        }
-
-        if ($handled !== "all") {
-            $query->andWhere(Db::parseParam('handled', $handled));
-        }
-
-        foreach ($query->all() as $record) {
-            $model = new NotFoundModel();
-            $model->setAttributes($record->getAttributes());
-            $data[] = $model;
-        }
-        return $data;
-    }
-
     public function handleNotFound(Request $request, Site $site)
     {
         try {

@@ -2,12 +2,8 @@
 
 namespace studioespresso\seofields\behaviors;
 
-use Craft;
 use craft\elements\Asset;
-use craft\elements\db\ElementQuery;
 use craft\elements\db\EntryQuery;
-use craft\errors\InvalidFieldException;
-use craft\helpers\Db;
 use yii\base\Behavior;
 
 /**
@@ -126,5 +122,4 @@ class EntrySeoBehavior extends Behavior
     {
         return $this->twitterImage;
     }
-
 }

@@ -2,7 +2,7 @@
     "name": "studioespresso/craft-seo-fields",
     "description": "Fields for your SEO & OG meta data",
     "type": "craft-plugin",
-    "version": "4.0.4",
+    "version": "4.0.5",
     "keywords": [
         "craft",
         "cms",
@@ -31,10 +31,13 @@
         "spatie/schema-org": "^3.0.0"
     },
     "require-dev": {
-        "codeception/codeception": "^4.0.0",
-        "vlucas/phpdotenv": "^3.0",
-        "codeception/module-yii2": "^1.0.0",
-        "codeception/module-asserts": "^1.0.0"
+        "craftcms/ecs": "dev-main",
+        "craftcms/phpstan": "dev-main"
+    },
+    "scripts": {
+        "check-cs": "ecs check --ansi",
+        "fix-cs": "ecs check --ansi --fix",
+        "phpstan": "phpstan --memory-limit=1G"
     },
     "autoload": {
         "psr-4": {
@@ -47,5 +50,11 @@
         "hasCpSettings": true,
         "hasCpSection": true,
         "class": "studioespresso\\seofields\\SeoFields"
+    },
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true
+        }
     }
 }

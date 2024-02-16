@@ -83,6 +83,7 @@ class Ether extends Component
         }
     }
 
+    /** @phpstan-ignore-next-line */
     private function getTitle(SeoData $data)
     {
         if (count($data->titleRaw)) {

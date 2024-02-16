@@ -17,6 +17,7 @@
   "bugs": {
     "url": "https://github.com/janhenckens/craft3-seo-fields/issues"
   },
+
   "homepage": "https://github.com/janhenckens/craft3-seo-fields#readme",
   "devDependencies": {
     "codemirror": "^5.44.0",
