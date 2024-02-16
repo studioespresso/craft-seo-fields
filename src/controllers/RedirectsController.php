@@ -209,6 +209,7 @@ class RedirectsController extends Controller
     private function getRows(Reader $reader)
     {
         try {
+            /** @phpstan-ignore-next-line */
             return $reader->fetchAll();
         } catch (\Throwable $e) {
         }

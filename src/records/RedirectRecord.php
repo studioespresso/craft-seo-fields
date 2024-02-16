@@ -8,6 +8,9 @@ use craft\db\ActiveRecord;
  * @author    Studio Espresso
  * @package   SeoFields
  * @since     1.0.0
+ * @property $dateLastHit
+ * @property $pattern
+ * @property $redirect
  */
 class RedirectRecord extends ActiveRecord
 {

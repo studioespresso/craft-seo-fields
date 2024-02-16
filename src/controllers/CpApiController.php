@@ -16,10 +16,6 @@ class CpApiController extends Controller
     public const NOT_FOUND_BASE = "seo-fields/cp-api/not-found";
     public const REDIRECT_BASE = "seo-fields/cp-api/redirect";
 
-    /**
-     * @param null $siteHandle
-     * @return \yii\web\Response
-     */
     public function actionNotFound()
     {
         $sort = $this->request->getQueryParam('sort');
@@ -61,7 +57,7 @@ class CpApiController extends Controller
         $formatter = Craft::$app->getFormatter();
 
         foreach ($query->all() as $row) {
-            $lastHit = DateTimeHelper::toDateTime($row->dateLastHit);
+            $lastHit = DateTimeHelper::toDateTime($row->getAttribute('dateLastHit'));
 
             $row = [
                 'id' => $row->getAttribute('id'),
@@ -141,17 +137,17 @@ class CpApiController extends Controller
         ];
 
         foreach ($query->all() as $row) {
-            $lastHit = DateTimeHelper::toDateTime($row->dateLastHit);
+            $lastHit = DateTimeHelper::toDateTime($row->getAttribute('dateLastHit'));
             $row = [
-                'url' => UrlHelper::cpUrl("seo-fields/redirects/edit/{$row->id}"),
-                'id' => $row->id,
-                'title' => $row->pattern,
-                'redirect' => $row->redirect,
-                'counter' => $row->counter,
-                'site' => !$row->siteId ? "All" : Craft::$app->getSites()->getSiteById($row->siteId)->name,
+                'url' => UrlHelper::cpUrl("seo-fields/redirects/edit/{$row->getAttribute('id')}"),
+                'id' => $row->getAttribute('id'),
+                'title' => $row->getAttribute('pattern'),
+                'redirect' => $row->getAttribute('redirect'),
+                'counter' => $row->getAttribute('counter'),
+                'site' => !$row->getAttribute('siteId') ? "All" : Craft::$app->getSites()->getSiteById($row->getAttribute('siteId'))->name,
                 'lastHit' => $lastHit ? $formatter->asDatetime($lastHit, Locale::LENGTH_SHORT) : "",
-                'method' => $row->method,
-                'matchType' => $types[$row->matchType],
+                'method' => $row->getAttribute('method'),
+                'matchType' => $types[$row->getAttribute('matchType')],
             ];
 
             $rows[] = $row;

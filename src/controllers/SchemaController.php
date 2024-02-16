@@ -15,7 +15,7 @@ class SchemaController extends Controller
     {
         $primarySite = Craft::$app->getSites()->getPrimarySite();
         $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($primarySite->handle);
-        $sections = Craft::$app->getSections()->getAllSections();
+        $sections = Craft::$app->getEntries()->getAllSections();
 
         return $this->renderTemplate('seo-fields/_schema', [
             'data' => $data,

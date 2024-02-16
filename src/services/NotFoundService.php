@@ -10,7 +10,6 @@ use craft\helpers\StringHelper;
 use craft\models\Site;
 use craft\web\Request;
 use studioespresso\seofields\models\NotFoundModel;
-use studioespresso\seofields\models\RedirectModel;
 use studioespresso\seofields\records\NotFoundRecord;
 use studioespresso\seofields\records\RedirectRecord;
 use studioespresso\seofields\SeoFields;
@@ -61,9 +60,9 @@ class NotFoundService extends Component
             if ($redirect) {
                 if (is_array($redirect)) {
                     $record = $redirect['record'];
-                    $notFoundModel->redirect = $record->id;
+                    $notFoundModel->redirect = $record->getAttribute('id');
                 } else {
-                    $notFoundModel->redirect = $redirect->id;
+                    $notFoundModel->redirect = $redirect->getAttribute('id');
                 }
                 $notFoundModel->handled = true;
             }
@@ -93,10 +92,6 @@ class NotFoundService extends Component
         return;
     }
 
-    /**
-     * @param NotFoundModel $model
-     * @return RedirectModel|false
-     */
     private function getMatchingRedirect(NotFoundModel $model): RedirectRecord|array|bool
     {
         Craft::debug("Check if our 404 is matched to a redirect", SeoFields::class);
@@ -197,7 +192,7 @@ class NotFoundService extends Component
         $toDelete->limit($limit);
         $toDelete->orderBy("dateCreated ASC");
         foreach ($toDelete->all() as $record) {
-            $this->deletetById($record->id);
+            $this->deletetById($record->getAttribute('id'));
         }
     }
 

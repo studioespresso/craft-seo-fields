@@ -355,6 +355,7 @@ class SitemapService extends Component
                 /** @phpstan-ignore-next-line */
                 $productTypeService = new ProductTypes();
                 $site = Craft::$app->getSites()->getCurrentSite();
+                /** @phpstan-ignore-next-line */
                 foreach ($productTypeService->getProductTypeSites($productType) as $productTypeSite) {
                     if ($productTypeSite->siteId == $site->id && $productTypeSite->hasUrls) {
                         return true;

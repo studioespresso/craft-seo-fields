@@ -70,6 +70,7 @@ class SeoFieldModel extends Model
             return null;
         }
 
+        /** @phpstan-ignore-next-line */
         if (!$element->getShouldRenderSchema()) {
             return null;
         }
@@ -86,22 +87,22 @@ class SeoFieldModel extends Model
                     $sectionId = $element->section->id;
                     $schemaClass = $schemaSettings[$sectionId];
 
-                    /** @var $schema Schema */
+                    /** @var Schema $schema */
                     $schema = \Craft::createObject($schemaClass);
-                    $schema->name($this->getMetaTitle($element) ?? "");
-                    $schema->description($this->getMetaDescription() ?? "");
-                    $schema->url($element->getUrl() ?? "");
+                    $schema->name($this->getMetaTitle($element) ?? ""); // @phpstan-ignore-line
+                    $schema->description($this->getMetaDescription() ?? ""); // @phpstan-ignore-line
+                    $schema->url($element->getUrl() ?? ""); // @phpstan-ignore-line
                     break;
                 case Category::class:
                     $schemaSettings = $settings['groups'];
                     $groupId = $element->group->id;
                     $schemaClass = $schemaSettings[$groupId];
 
-                    /** @var $schema Schema */
+                    /** @var Schema $schema */
                     $schema = Craft::createObject($schemaClass);
-                    $schema->name($this->getMetaTitle($element) ?? "");
-                    $schema->description($this->getMetaDescription() ?? "");
-                    $schema->url($element->getUrl() ?? "");
+                    $schema->name($this->getMetaTitle($element) ?? ""); // @phpstan-ignore-line
+                    $schema->description($this->getMetaDescription() ?? ""); // @phpstan-ignore-line
+                    $schema->url($element->getUrl() ?? ""); // @phpstan-ignore-line
                     break;
             }
             if ($schema) {

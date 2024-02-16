@@ -6,15 +6,12 @@ use Craft;
 use craft\helpers\Cp;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
+use craft\web\Response;
 use studioespresso\seofields\SeoFields;
 
 class NotFoundController extends Controller
 {
-    /**
-     * @param null $siteHandle
-     * @return \yii\web\Response
-     */
-    public function actionIndex()
+    public function actionIndex(): Response
     {
         $siteHandle = $this->request->getRequiredQueryParam('site');
         $currentSite = Craft::$app->getSites()->getSiteByHandle($siteHandle);

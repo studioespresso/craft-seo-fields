@@ -6,6 +6,7 @@ use Craft;
 use craft\helpers\Cp;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
+use craft\web\Response;
 use studioespresso\seofields\SeoFields;
 
 class DefaultsController extends Controller
@@ -29,7 +30,7 @@ class DefaultsController extends Controller
         }
     }
 
-    public function actionSettings()
+    public function actionSettings(): Response
     {
         $site = $this->request->getRequiredQueryParam('site');
         $currentSite = Craft::$app->getSites()->getSiteByHandle($site);

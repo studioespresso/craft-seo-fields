@@ -11,6 +11,7 @@
 namespace studioespresso\seofields;
 
 use Craft;
+use craft\base\Model;
 use craft\base\Plugin;
 use craft\elements\Entry;
 use craft\events\DefineBehaviorsEvent;
@@ -82,7 +83,7 @@ class SeoFields extends Plugin
 
     // Public Properties
     // =========================================================================
-    public string $schemaVersion = "2.0.0";
+    public string $schemaVersion = "4.0.0";
 
 
     public const EVENT_SEOFIELDS_REGISTER_ELEMENT = "registerSeoElement";
@@ -178,9 +179,7 @@ class SeoFields extends Plugin
 
     // Protected Methods
     // =========================================================================
-    // Protected Methods
-    // =========================================================================
-    protected function createSettingsModel(): ?craft\base\Model
+    protected function createSettingsModel(): ?Model
     {
         return new Settings();
     }
