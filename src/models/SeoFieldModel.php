@@ -156,6 +156,7 @@ class SeoFieldModel extends Model
         return $request->hostInfo . '/' . $request->getPathInfo(true);
     }
 
+
     public function getMetaTitle($element)
     {
         $element = $element ?? $this->element;
@@ -169,7 +170,7 @@ class SeoFieldModel extends Model
         return $title;
     }
 
-    public function getOgTitle($element = null)
+    public function getSocialTitle($element)
     {
         $title = $this->getPageTitle($element, false);
 
@@ -181,18 +182,16 @@ class SeoFieldModel extends Model
 
         return $title . $this->getSiteNameWithSeperator();
     }
+    public function getOgTitle($element = null)
+    {
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'getOgTitle', "getOgTitle has been replaced by `getSocialTitle` and will be removed in a later update");
+        return $this->getSocialTitle($element);
+    }
 
     public function getTwitterTitle($element = null)
     {
-        $title = $this->getPageTitle($element, false);
-
-        if ($element->getTwitterTitle()) {
-            $title = $element->getTwitterTitle();
-        } elseif ($this->twitterTitle) {
-            $title = $this->twitterTitle;
-        }
-
-        return $title . $this->getSiteNameWithSeperator();
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'getTwitterTitle', "getTwitterTitle has been replaced by `getSocialTitle` and will be removed in a later update");
+        return $this->getSocialTitle($element);
     }
 
     public function getMetaDescription()
@@ -208,7 +207,7 @@ class SeoFieldModel extends Model
         return $this->siteDefault->defaultMetaDescription;
     }
 
-    public function getOgDescription()
+    public function getSocialDescription()
     {
         if ($this->element->getFacebookDescription()) {
             return $this->element->getFacebookDescription();
@@ -221,20 +220,20 @@ class SeoFieldModel extends Model
         return $this->siteDefault->defaultMetaDescription;
     }
 
-    public function getTwitterDescription()
+    public function getOgDescription()
     {
-        if ($this->element->getTwitterDescription()) {
-            return $this->element->getTwitterDescription();
-        }
-
-        if ($this->twitterDescription) {
-            return $this->twitterDescription;
-        }
-
-        return $this->siteDefault->defaultMetaDescription;
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'getOgDescription', "getOgDescription has been replaced by `getSocialDescription` and will be removed in a later update");
+        return $this->getSocialDescription();
     }
 
-    public function getOgImage(Asset $asset = null)
+    public function getTwitterDescription()
+    {
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'getTwitterDescription', "getTwitterDescription has been replaced by `getSocialDescription` and will be removed in a later update");
+        return $this->getSocialDescription();
+    }
+
+
+    public function getSocialImage(Asset $asset = null)
     {
         if ($asset) {
             $asset = $asset;
@@ -258,28 +257,16 @@ class SeoFieldModel extends Model
         ];
     }
 
-    public function getTwitterImage(Asset $value = null)
+    public function getOgImage(Asset $asset = null)
     {
-        if ($value) {
-            $asset = $value;
-        } elseif ($this->element->getTwitterImage()) {
-            $asset = $this->element->getTwitterImage();
-        } elseif ($this->twitterImage) {
-            $asset = Craft::$app->getAssets()->getAssetById($this->twitterImage[0]);
-        } elseif ($this->siteDefault->defaultImage) {
-            $asset = Craft::$app->getAssets()->getAssetById($this->siteDefault->defaultImage[0]);
-        }
-        if (!isset($asset)) {
-            return false;
-        }
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'getOgImage', "getOgImage has been replaced by `getSocialImage` and will be removed in a later update");
+        return $this->getSocialImage($asset);
+    }
 
-        $transform = $this->_getPreviewTransform($asset);
-        return [
-            'height' => $asset->getHeight($transform),
-            'width' => $asset->getWidth($transform),
-            'url' => $asset->getUrl($transform, true),
-            'alt' => $asset->title,
-        ];
+    public function getTwitterImage(Asset $asset = null)
+    {
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'getTwitterImage', "getTwitterImage has been replaced by `getSocialImage` and will be removed in a later update");
+        return $this->getSocialImage($asset);
     }
 
     public function getAlternate($element = null)

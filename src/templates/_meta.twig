@@ -11,25 +11,28 @@
     {# Facebook #}
     <meta property="og:url" content="{{ craft.app.request.absoluteUrl }}"/>
     <meta property="og:type" content="website"/>
-    <meta property="og:title" content="{{ meta.getOgTitle(element ?? '') }}"/>
-    {% set ogImage = meta.getOgImage() %}
+    <meta property="og:title" content="{{ meta.getSocialTitle(element ?? '') }}"/>
+    {% set ogImage = meta.getSocialImage() %}
     {% if ogImage %}
         <meta property="og:image" content="{{ ogImage.url }}"/>
         <meta property="og:image:width" content="{{ ogImage.width }}"/>
         <meta property="og:image:height" content="{{ ogImage.height }}"/>
         <meta property="og:image:alt" content="{{ ogImage.alt }}"/>
     {% endif %}
-    <meta property="og:description" content="{{ meta.getOgDescription() }}"/>
+    <meta property="og:description" content="{{ meta.getSocialDescription() }}"/>
     <meta property="og:site_name" content=""/>
     <meta property="og:locale" content="{{ currentSite.language }}"/>
     {# Twitter #}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="" />
-    <meta name="twitter:title" content="{{ meta.getTwitterTitle(element ?? '') }}" />
-    <meta name="twitter:description" content="{{ meta.getTwitterDescription() }}" />
+    <meta name="twitter:title" content="{{ meta.getSocialTitle(element ?? '') }}" />
+    <meta name="twitter:description" content="{{ meta.getSocialDescription() }}" />
     <meta name="twitter:url" content="{{ craft.app.request.absoluteUrl }}" />
     {% if ogImage %}
-        <meta name="twitter:image" content="{{ meta.getTwitterImage().url ?? ogImage.url }}" />
+        <meta property="twitter:image" content="{{ ogImage.url }}"/>
+        <meta property="twitter:image:width" content="{{ ogImage.width }}"/>
+        <meta property="twitter:image:height" content="{{ ogImage.height }}"/>
+        <meta property="twitter:image:alt" content="{{ ogImage.alt }}"/>
     {% endif %}
 
     {% if meta.allowIndexing == 'no' %}

@@ -94,9 +94,9 @@ class SeoFields extends Plugin
     public function init()
     {
         parent::init();
-        Sprig::bootstrap();
-
         self::$plugin = $this;
+
+        Sprig::bootstrap();
 
         $this->setComponents([
             "defaultsService" => DefaultsService::class,

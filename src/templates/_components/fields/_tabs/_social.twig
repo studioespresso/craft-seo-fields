@@ -5,9 +5,9 @@
 <div class="seofields-tab-content">
     <div class="fb-preview-container">
         <div class="fb-preview">
-            {% if value.getOgImage() %}
+            {% if value.getSocialImage() %}
             <div class="fb-image-wrap">
-                <img src="{{ value.getOgImage().url }}" width="500">
+                <img src="{{ value.getSocialImage().url }}" width="500">
             </div>
             {% endif %}
             <div class="fb-text-wrap">
@@ -15,10 +15,10 @@
                     {{ element.getUrl()|replace("https://", "") }}
                 </div>
                 <div class="fb-og-title">
-                    {{ value.getOgTitle(element) }}
+                    {{ value.getSocialTitle(element) }}
                 </div>
                 <div class="fb-og-description">
-                    {{ value.getOgDescription()|length > 70 ? value.getOgDescription()|slice(0, 70) ~ "..." : value.getOgDescription() }}
+                    {{ value.getSocialDescription()|length > 70 ? value.getSocialDescription()|slice(0, 70) ~ "..." : value.getSocialDescription() }}
                 </div>
             </div>
         </div>
