@@ -29,17 +29,10 @@
 }) }}
 
  {{ forms.lightswitchField({
-     label: "Show Facebook Tab"|t("seo-fields"),
+     label: "Show Social Media Tab"|t("seo-fields"),
      id: "showFacebookTab",
      name: "tabs[facebook]",
      on: field.tabs|length ? field.tabs.facebook : 1,
- }) }}
-
- {{ forms.lightswitchField({
-     label: "Show Twitter Tab"|t("seo-fields"),
-     id: "showTwitterTab",
-     name: "tabs[twitter]",
-     on: field.tabs|length ? field.tabs.twitter : 1,
  }) }}
 
  {{ forms.lightswitchField({

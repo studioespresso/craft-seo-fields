@@ -1,7 +1,7 @@
 {% import "_includes/forms" as forms %}
 
 <input type="radio" name="tabs" id="facebook-tab" class="seofields-tab" {% if tabSelected %}checked="checked"{% endif %}>
-<label for="facebook-tab" class="label">{{ "Facebook"|t("seo-fields") }}</label>
+<label for="facebook-tab" class="label">{{ "Social Media"|t("seo-fields") }}</label>
 <div class="seofields-tab-content">
     <div class="fb-preview-container">
         <div class="fb-preview">
@@ -25,7 +25,7 @@
     </div>
     <div class="seo-fields-facebook-text">
         {{ forms.textField({
-            label: "Facebook OG title"|t("seo-fields"),
+            label: "Social Media title"|t("seo-fields"),
             id: name ~ "-facebookTitle",
             name: name ~ "[facebookTitle]",
             value: value.facebookTitle,
@@ -34,7 +34,7 @@
         <div class="field" id="{{ name ~ "-facebookDescription" }}-field">
             <div class="heading">
                 <label id="{{ name ~ "[facebookDescription]" }}-label"
-                       for="{{ name ~ "-facebookDescription" }}">{{ "Facebook OG description"|t("seo-fields") }}</label>
+                       for="{{ name ~ "-facebookDescription" }}">{{ "Social Media description"|t("seo-fields") }}</label>
             </div>
             <div class="input ltr">
                 {{ forms.textArea({
@@ -53,7 +53,7 @@
 
     {% if craft.app.volumes.getAllVolumes()|length %}
         {{ forms.elementSelectField({
-            label: "Facebook OG image"|t('seo-fields'),
+            label: "Social Media image"|t('seo-fields'),
             id: name ~ "-facebookImage",
             name: name ~ "[facebookImage]",
             elements: value.facebookImage|length ? craft.assets.id(value.facebookImage|first).all() : null,

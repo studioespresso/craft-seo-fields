@@ -22,12 +22,9 @@
     {% endif %}
     {% if field.tabs.facebook %}
         {% set tabSelected = false %}
-        {% include 'seo-fields/_components/fields/_tabs/_facebook.twig' with { tabSelected : tabSelected}  %}
+        {% include 'seo-fields/_components/fields/_tabs/_social.twig' with { tabSelected : tabSelected}  %}
     {% endif %}
-    {% if field.tabs.twitter %}
-        {% set tabSelected = false %}
-        {% include 'seo-fields/_components/fields/_tabs/_twitter.twig' with { tabSelected : tabSelected}  %}
-    {% endif %}
+
     {% if (field.tabs.advanced is defined and field.tabs.advanced) %}
         {% set tabSelected = false %}
         {% include 'seo-fields/_components/fields/_tabs/_advanced.twig' with { tabSelected : tabSelected}  %}
