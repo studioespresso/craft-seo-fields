@@ -77,21 +77,21 @@ class SitemapController extends Controller
         $data['siteId'] = Craft::$app->getRequest()->getBodyParam('siteId', Craft::$app->getSites()->getPrimarySite()->id);
         $model->setAttributes($data);
         SeoFields::$plugin->defaultsService->saveDefaults($model, $data['siteId']);
-        SeoFields::$plugin->sitemapSerivce->clearCaches();
+        SeoFields::$plugin->sitemapService->clearCaches();
     }
 
     public function actionRender()
     {
         if (SeoFields::$plugin->getSettings()->sitemapPerSite) {
-            $data = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());
+            $data = SeoFields::getInstance()->sitemapService->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());
         } else {
-            $data = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getPrimarySite());
+            $data = SeoFields::getInstance()->sitemapService->shouldRenderBySiteId(Craft::$app->getSites()->getPrimarySite());
         }
         if (!$data) {
             throw new NotFoundHttpException(Craft::t('app', 'Page not found'), 404);
         }
 
-        $xml = SeoFields::$plugin->sitemapSerivce->getSitemapIndex(array_filter($data));
+        $xml = SeoFields::$plugin->sitemapService->getSitemapIndex(array_filter($data));
 
         $headers = Craft::$app->response->headers;
         $headers->add('Content-Type', 'text/xml; charset=utf-8');
@@ -100,7 +100,7 @@ class SitemapController extends Controller
 
     public function actionDetail($siteId, $type, $sectionId, $handle)
     {
-        $xml = SeoFields::$plugin->sitemapSerivce->getSitemapData($siteId, $type, $sectionId);
+        $xml = SeoFields::$plugin->sitemapService->getSitemapData($siteId, $type, $sectionId);
         $headers = Craft::$app->response->headers;
         $headers->add('Content-Type', 'text/xml; charset=utf-8');
         $this->asRaw($xml);

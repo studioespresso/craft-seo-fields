@@ -61,7 +61,7 @@ use yii\web\HttpException;
  * @since     1.0.0
  *
  *
- * @property  SitemapService $sitemapSerivce
+ * @property  SitemapService $sitemapService
  * @property  DefaultsService $defaultsService
  * @property RenderService $renderService
  * @property RedirectService $redirectService
@@ -100,7 +100,7 @@ class SeoFields extends Plugin
 
         $this->setComponents([
             "defaultsService" => DefaultsService::class,
-            "sitemapSerivce" => SitemapService::class,
+            "sitemapService" => SitemapService::class,
             "renderService" => RenderService::class,
             "redirectService" => RedirectService::class,
             "notFoundService" => NotFoundService::class,
@@ -273,9 +273,9 @@ class SeoFields extends Plugin
                     ]);
                 }
                 if (SeoFields::$plugin->getSettings()->sitemapPerSite) {
-                    $shouldRender = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());
+                    $shouldRender = SeoFields::getInstance()->sitemapService->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());
                 } else {
-                    $shouldRender = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getPrimarySite());
+                    $shouldRender = SeoFields::getInstance()->sitemapService->shouldRenderBySiteId(Craft::$app->getSites()->getPrimarySite());
                 }
                 if ($shouldRender) {
                     $event->rules = array_merge($event->rules, [
@@ -324,7 +324,7 @@ class SeoFields extends Plugin
             Elements::class,
             Elements::EVENT_AFTER_SAVE_ELEMENT,
             function(ElementEvent $event) {
-                SeoFields::$plugin->sitemapSerivce->clearCacheForElement($event->element);
+                SeoFields::$plugin->sitemapService->clearCacheForElement($event->element);
             }
         );
 
@@ -332,7 +332,7 @@ class SeoFields extends Plugin
             Elements::class,
             Elements::EVENT_AFTER_DELETE_ELEMENT,
             function(ElementEvent $event) {
-                SeoFields::$plugin->sitemapSerivce->clearCacheForElement($event->element);
+                SeoFields::$plugin->sitemapService->clearCacheForElement($event->element);
             }
         );
 
@@ -340,7 +340,7 @@ class SeoFields extends Plugin
             Entries::class,
             Entries::EVENT_AFTER_DELETE_SECTION,
             function(SectionEvent $event) {
-                SeoFields::$plugin->sitemapSerivce->clearCaches();
+                SeoFields::$plugin->sitemapService->clearCaches();
             }
         );
 
@@ -348,7 +348,7 @@ class SeoFields extends Plugin
             Entries::class,
             Entries::EVENT_AFTER_DELETE_ENTRY_TYPE,
             function(EntryTypeEvent $event) {
-                SeoFields::$plugin->sitemapSerivce->clearCaches();
+                SeoFields::$plugin->sitemapService->clearCaches();
             }
         );
 
@@ -442,7 +442,7 @@ class SeoFields extends Plugin
                     [
                         "key" => 'seofields_sitemaps',
                         "label" => "Sitemap caches (SEO Fields)",
-                        "action" => [SeoFields::$plugin->sitemapSerivce, 'clearCaches'],
+                        "action" => [SeoFields::$plugin->sitemapService, 'clearCaches'],
                     ],
                 ]);
             }
