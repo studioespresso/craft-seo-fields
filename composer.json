@@ -24,6 +24,7 @@
   ],
   "require": {
     "craftcms/cms": "^5.0.0-alpha",
+    "putyourlightson/craft-sprig-core": "3.0.0-beta.1",
     "spatie/schema-org": "^3.0.0",
     "league/csv": "^9.0"
   },
