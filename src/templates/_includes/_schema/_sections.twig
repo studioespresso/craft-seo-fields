@@ -1,6 +1,6 @@
 {% import "_includes/forms" as forms %}
 
-{% set allSections = craft.app.sections.getAllSections() %}
+{% set allSections = craft.app.entries.getAllSections() %}
 {% if allSections|length %}
     <table class="data fullwidth collapsible">
         <thead>
