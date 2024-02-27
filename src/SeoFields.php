@@ -38,7 +38,6 @@ use craft\web\ErrorHandler;
 use craft\web\UrlManager;
 use putyourlightson\sprig\Sprig;
 use studioespresso\seofields\behaviors\ElementSeoBehavior;
-use studioespresso\seofields\behaviors\EntrySeoBehavior;
 use studioespresso\seofields\events\RegisterSeoElementEvent;
 use studioespresso\seofields\extensions\SeoFieldsExtension;
 use studioespresso\seofields\fields\SeoField;
