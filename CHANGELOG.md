@@ -9,6 +9,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 - Initial Craft 5 support 🚀
 
+
+## 4.0.6 - 2024-02-27
+### Fixed
+- Fixed support for Commerce Products ([#92](https://github.com/studioespresso/craft-seo-fields/issues/92))
+
+
+## 4.0.5 - 2024-02-16
+### Fixed
+- Change schema version to fix an issue with migrations from 4.0.0 not being applied correctly.
+
 ## 4.0.4 - 2024-02-05
 ### Fixed
 - Fixed an issue where the "Allow sitename to be hidden" option would not work ([#90](https://github.com/studioespresso/craft-seo-fields/issues/90))

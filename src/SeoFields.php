@@ -13,6 +13,7 @@ namespace studioespresso\seofields;
 use Craft;
 use craft\base\Model;
 use craft\base\Plugin;
+use craft\commerce\elements\Product;
 use craft\elements\Entry;
 use craft\events\DefineBehaviorsEvent;
 use craft\events\ElementEvent;
@@ -36,6 +37,7 @@ use craft\utilities\ClearCaches;
 use craft\web\ErrorHandler;
 use craft\web\UrlManager;
 use putyourlightson\sprig\Sprig;
+use studioespresso\seofields\behaviors\ElementSeoBehavior;
 use studioespresso\seofields\behaviors\EntrySeoBehavior;
 use studioespresso\seofields\events\RegisterSeoElementEvent;
 use studioespresso\seofields\extensions\SeoFieldsExtension;
@@ -126,10 +128,7 @@ class SeoFields extends Plugin
         $this->_registerCacheOptions();
         $this->_registerCustomElements();
         $this->_registerUrlChangeListeners();
-
-        Event::on(Entry::class, Entry::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $event) {
-            $event->behaviors[$this->id] = EntrySeoBehavior::class;
-        });
+        $this->_registerElementBehaviors();
     }
 
     public function getCpNavItem(): ?array
@@ -468,6 +467,20 @@ class SeoFields extends Plugin
                     $event->elements = array_merge($event->elements, $elements);
                 }
             );
+        }
+    }
+
+    private function _registerElementBehaviors(): void
+    {
+        Event::on(Entry::class, Entry::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $event) {
+            $event->behaviors[$this->id] = ElementSeoBehavior::class;
+        });
+
+        if (Craft::$app->getPlugins()->isPluginEnabled('commerce')) {
+            /** @phpstan-ignore-next-line */
+            Event::on(Product::class, Product::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $event) {
+                $event->behaviors[$this->id] = ElementSeoBehavior::class;
+            });
         }
     }
 }
