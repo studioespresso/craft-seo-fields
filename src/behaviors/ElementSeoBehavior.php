@@ -11,7 +11,7 @@ use yii\base\Behavior;
  *
  * @property EntryQuery $owner
  */
-class EntrySeoBehavior extends Behavior
+class ElementSeoBehavior extends Behavior
 {
     public bool $shouldRenderSchema = true;
 

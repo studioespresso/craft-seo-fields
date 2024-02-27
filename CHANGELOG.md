@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.0.6 - 2024-02-27
+### Fixed
+- Fixed support for Commerce Products ([#92](https://github.com/studioespresso/craft-seo-fields/issues/92))
+
+
 ## 4.0.5 - 2024-02-16
 ### Fixed
 - Change schema version to fix an issue with migrations from 4.0.0 not being applied correctly.
