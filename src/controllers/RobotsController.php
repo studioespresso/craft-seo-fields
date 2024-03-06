@@ -35,7 +35,7 @@ class RobotsController extends Controller
         $sites = Craft::$app->getSites()->getEditableSites();
 
         $crumbs = ['label' => $this->site->name, ];
-        if (Craft::$app->getIsMultiSite()) {
+        if (Craft::$app->getIsMultiSite() && $settings->robotsPerSite) {
             $crumbs['menu'] = [
                 'label' => Craft::t('site', 'Select site'),
                 'items' => Cp::siteMenuItems($sites, $this->site),
