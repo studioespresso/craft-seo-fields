@@ -97,7 +97,6 @@ class SeoFields extends Plugin
         parent::init();
         self::$plugin = $this;
 
-        /** @phpstan-ignore-next-line */
         Sprig::bootstrap();
 
         $this->setComponents([
