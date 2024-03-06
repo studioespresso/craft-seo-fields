@@ -3,6 +3,7 @@
 namespace studioespresso\seofields\controllers;
 
 use Craft;
+use craft\models\Site;
 use craft\web\Controller;
 use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\SeoFields;
@@ -10,6 +11,18 @@ use studioespresso\seofields\SeoFields;
 class SchemaController extends Controller
 {
     protected array|bool|int $allowAnonymous = false;
+
+    public Site|null $site = null;
+
+    public function init(): void
+    {
+        if (Craft::$app->getRequest()->getQueryParam('site')) {
+            $this->site = Craft::$app->getSites()->getSiteByHandle(Craft::$app->getRequest()->getQueryParam('site'));
+        } else {
+            $this->site = Craft::$app->getSites()->getPrimarySite();
+        }
+        parent::init();
+    }
 
     public function actionIndex()
     {

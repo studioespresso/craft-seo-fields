@@ -5,30 +5,42 @@ namespace studioespresso\seofields\controllers;
 use Craft;
 use craft\helpers\Cp;
 use craft\helpers\UrlHelper;
+use craft\models\Site;
 use craft\web\Controller;
 use craft\web\Response;
 use studioespresso\seofields\SeoFields;
 
 class NotFoundController extends Controller
 {
+    public Site|null $site = null;
+
+    public function init(): void
+    {
+        if (Craft::$app->getRequest()->getQueryParam('site')) {
+            $this->site = Craft::$app->getSites()->getSiteByHandle(Craft::$app->getRequest()->getQueryParam('site'));
+        } else {
+            $this->site = Craft::$app->getSites()->getPrimarySite();
+        }
+        parent::init();
+    }
+
     public function actionIndex(): Response
     {
-        $siteHandle = $this->request->getRequiredQueryParam('site');
-        $currentSite = Craft::$app->getSites()->getSiteByHandle($siteHandle);
         $sites = Craft::$app->getSites()->getEditableSites();
-        $crumbs[] = [
-            'label' => $currentSite->name,
-            'menu' => [
+
+        $crumbs = ['label' => $this->site->name, ];
+        if (Craft::$app->getIsMultiSite()) {
+            $crumbs['menu'] = [
                 'label' => Craft::t('site', 'Select site'),
-                'items' => Cp::siteMenuItems($sites, $currentSite),
-            ],
-        ];
+                'items' => Cp::siteMenuItems($sites, $this->site),
+            ];
+        }
 
         return $this->asCpScreen()
             ->title(Craft::t('seo-fields', '404 Overview'))
             ->selectedSubnavItem('notfound')
             ->additionalButtonsTemplate('seo-fields/_notfound/_buttons')
-            ->crumbs($crumbs)
+            ->crumbs([$crumbs])
             ->contentTemplate('seo-fields/_notfound/_content');
     }
 

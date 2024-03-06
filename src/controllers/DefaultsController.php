@@ -5,12 +5,26 @@ namespace studioespresso\seofields\controllers;
 use Craft;
 use craft\helpers\Cp;
 use craft\helpers\UrlHelper;
+use craft\models\Site;
 use craft\web\Controller;
 use craft\web\Response;
 use studioespresso\seofields\SeoFields;
 
 class DefaultsController extends Controller
 {
+    public Site|null $site = null;
+
+    public function init(): void
+    {
+        if (Craft::$app->getRequest()->getQueryParam('site')) {
+            $this->site = Craft::$app->getSites()->getSiteByHandle(Craft::$app->getRequest()->getQueryParam('site'));
+        } else {
+            $this->site = Craft::$app->getSites()->getPrimarySite();
+        }
+        parent::init();
+    }
+
+
     public function actionIndex()
     {
         $params = Craft::$app->getRequest()->getQueryParams();
@@ -32,28 +46,25 @@ class DefaultsController extends Controller
 
     public function actionSettings(): Response
     {
-        $site = $this->request->getRequiredQueryParam('site');
-        $currentSite = Craft::$app->getSites()->getSiteByHandle($site);
-
         $sites = Craft::$app->getSites()->getEditableSites();
-        Craft::$app->sites->setCurrentSite($site);
+
+        $crumbs = ['label' => $this->site->name];
+
+        if (Craft::$app->getIsMultiSite()) {
+            $crumbs['menu'] = [
+                'label' => Craft::t('site', 'Select site'),
+                'items' => Cp::siteMenuItems($sites, $this->site),
+            ];
+        }
 
         return $this->asCpScreen()
             ->title(Craft::t('seo-fields', 'SEO Fields'))
             ->selectedSubnavItem('defaults')
-            ->crumbs([
-                [
-                    'label' => $currentSite->name,
-                    'menu' => [
-                        'label' => Craft::t('site', 'Select site'),
-                        'items' => Cp::siteMenuItems($sites, $currentSite),
-                    ],
-                ],
-            ])
+            ->crumbs([$crumbs])
             ->action('seo-fields/defaults/save')
             ->contentTemplate('seo-fields/_defaults/_content', [
-                'data' => SeoFields::$plugin->defaultsService->getDataBySite($currentSite),
-                'site' => $currentSite,
+                'data' => SeoFields::$plugin->defaultsService->getDataBySite($this->site),
+                'site' => $this->site,
             ]);
     }
 

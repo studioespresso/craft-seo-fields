@@ -6,6 +6,7 @@ use Craft;
 use craft\db\Query;
 use craft\helpers\Cp;
 use craft\helpers\Db;
+use craft\models\Site;
 use craft\web\Controller;
 use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\SeoFields;
@@ -15,19 +16,29 @@ class SitemapController extends Controller
 {
     protected array|bool|int $allowAnonymous = ['render', 'detail'];
 
+    public Site|null $site = null;
+
+    public function init(): void
+    {
+        if (Craft::$app->getRequest()->getQueryParam('site')) {
+            $this->site = Craft::$app->getSites()->getSiteByHandle(Craft::$app->getRequest()->getQueryParam('site'));
+        } else {
+            $this->site = Craft::$app->getSites()->getPrimarySite();
+        }
+        parent::init();
+    }
+
     public function actionIndex()
     {
-        $siteHandle = $this->request->getRequiredQueryParam('site');
-        $currentSite = Craft::$app->getSites()->getSiteByHandle($siteHandle);
         $sites = Craft::$app->getSites()->getEditableSites();
-        $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($siteHandle);
+        $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($this->site->handle);
         $settings = SeoFields::$plugin->getSettings();
 
         $query = new Query();
         $query->select('sectionId as id')
             ->from('{{%sections_sites}}')
             ->leftJoin('{{%sections}}', 'sections.id = sections_sites.sectionId')
-            ->where(Db::parseParam('siteId', $currentSite->id))
+            ->where(Db::parseParam('siteId', $this->site->id))
             ->andWhere(['sections.dateDeleted' => null]);
 
         $sections = [];
@@ -36,22 +47,19 @@ class SitemapController extends Controller
         }
 
 
-        $crumbs = [];
-
-        if ($settings->sitemapPerSite) {
-            $crumbs[] = [
-                'label' => $currentSite->name,
-                'menu' => [
-                    'label' => Craft::t('site', 'Select site'),
-                    'items' => Cp::siteMenuItems($sites, $currentSite),
-                ],
+        $crumbs = ['label' => $this->site->name, ];
+        if (Craft::$app->getIsMultiSite()) {
+            $crumbs['menu'] = [
+                'label' => Craft::t('site', 'Select site'),
+                'items' => Cp::siteMenuItems($sites, $this->site),
             ];
         }
+
 
         return $this->asCpScreen()
             ->title(Craft::t('seo-fields', 'Sitemap.xml'))
             ->selectedSubnavItem('sitemap')
-            ->crumbs($crumbs)
+            ->crumbs([$crumbs])
             ->action('seo-fields/sitemap/save')
             ->additionalButtonsTemplate('seo-fields/_sitemap/_buttons')
 
@@ -59,7 +67,7 @@ class SitemapController extends Controller
                 'data' => $data,
                 'sitemapPerSite' => $settings->sitemapPerSite,
                 'sections' => $sections,
-                'site' => $currentSite,
+                'site' => $this->site,
             ]);
     }
 

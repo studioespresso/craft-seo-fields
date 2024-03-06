@@ -6,6 +6,7 @@ use Craft;
 use craft\helpers\App;
 use craft\helpers\Cp;
 use craft\helpers\UrlHelper;
+use craft\models\Site;
 use craft\web\Controller;
 use League\Csv\Reader;
 use studioespresso\seofields\models\RedirectModel;
@@ -16,27 +17,38 @@ class RedirectsController extends Controller
 {
     public const IMPORT_FILE = 'seofields_redirects_import.csv';
 
+    public Site|null $site = null;
+
+    public function init(): void
+    {
+        if (Craft::$app->getRequest()->getQueryParam('site')) {
+            $this->site = Craft::$app->getSites()->getSiteByHandle(Craft::$app->getRequest()->getQueryParam('site'));
+        } else {
+            $this->site = Craft::$app->getSites()->getPrimarySite();
+        }
+        parent::init();
+    }
+
     public function actionIndex()
     {
         $searchParam = Craft::$app->getRequest()->getParam('search');
         $redirects = SeoFields::getInstance()->redirectService->getAllRedirects($searchParam);
 
-        $siteHandle = $this->request->getRequiredQueryParam('site');
-        $currentSite = Craft::$app->getSites()->getSiteByHandle($siteHandle);
         $sites = Craft::$app->getSites()->getEditableSites();
-        $crumbs[] = [
-            'label' => $currentSite->name,
-            'menu' => [
+
+        $crumbs = ['label' => $this->site->name, ];
+        if (Craft::$app->getIsMultiSite()) {
+            $crumbs['menu'] = [
                 'label' => Craft::t('site', 'Select site'),
-                'items' => Cp::siteMenuItems($sites, $currentSite),
-            ],
-        ];
+                'items' => Cp::siteMenuItems($sites, $this->site),
+            ];
+        }
 
         return $this->asCpScreen()
             ->selectedSubnavItem('redirects')
             ->additionalButtonsTemplate('seo-fields/_redirect/_buttons')
             ->title(Craft::t('seo-fields', 'Redirects'))
-            ->crumbs($crumbs)
+            ->crumbs([$crumbs])
             ->contentTemplate('seo-fields/_redirect/_content');
     }
 

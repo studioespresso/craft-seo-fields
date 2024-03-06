@@ -5,6 +5,7 @@ namespace studioespresso\seofields\controllers;
 use Craft;
 use craft\helpers\Cp;
 use craft\helpers\Template;
+use craft\models\Site;
 use craft\web\Controller;
 use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\SeoFields;
@@ -13,24 +14,31 @@ class RobotsController extends Controller
 {
     protected array|bool|int $allowAnonymous = ['render'];
 
+    public Site|null $site = null;
+
+    public function init(): void
+    {
+        if (Craft::$app->getRequest()->getQueryParam('site')) {
+            $this->site = Craft::$app->getSites()->getSiteByHandle(Craft::$app->getRequest()->getQueryParam('site'));
+        } else {
+            $this->site = Craft::$app->getSites()->getPrimarySite();
+        }
+        parent::init();
+    }
+
     public function actionIndex()
     {
-        $siteHandle = $this->request->getRequiredQueryParam('site');
-        $currentSite = Craft::$app->getSites()->getSiteByHandle($siteHandle);
         $sites = Craft::$app->getSites()->getEditableSites();
-        $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($siteHandle);
-
+        $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($this->site->handle);
         $settings = SeoFields::$plugin->getSettings();
 
-        $crumbs = [];
+        $sites = Craft::$app->getSites()->getEditableSites();
 
-        if ($settings->robotsPerSite) {
-            $crumbs[] = [
-                'label' => $currentSite->name,
-                'menu' => [
-                    'label' => Craft::t('site', 'Select site'),
-                    'items' => Cp::siteMenuItems($sites, $currentSite),
-                ],
+        $crumbs = ['label' => $this->site->name, ];
+        if (Craft::$app->getIsMultiSite()) {
+            $crumbs['menu'] = [
+                'label' => Craft::t('site', 'Select site'),
+                'items' => Cp::siteMenuItems($sites, $this->site),
             ];
         }
 
@@ -38,11 +46,11 @@ class RobotsController extends Controller
             ->selectedSubnavItem('robots')
 
             ->title(Craft::t('seo-fields', 'Robots.txt'))
-            ->crumbs($crumbs)
+            ->crumbs([$crumbs])
             ->action('seo-fields/robots/save')
             ->contentTemplate('seo-fields/_robots/_content', [
                 'data' => $data,
-                'site' => $currentSite,
+                'site' => $this->site,
                 'robotsPerSite' => $settings->robotsPerSite,
             ]);
     }
