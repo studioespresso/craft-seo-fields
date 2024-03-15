@@ -212,12 +212,12 @@ class SitemapService extends Component
                 (new Query())->select(['elements_sites.siteId', 'uri', 'language'])
                     ->from('{{%elements_sites}} as elements_sites')
                     ->leftJoin('{{%sites}} as sites', 'sites.id = elements_sites.siteId')
-                    ->leftJoin('{{%content}}', 'elements_sites.elementId = content.elementId')
+                    ->leftJoin('{{%content}} as c', 'elements_sites.elementId = c.elementId')
                     ->where('[[elements_sites.elementId]] = ' . $entry->id)
                     ->andWhere([
                         'or',
-                        Db::parseParam("JSON_EXTRACT(content.$field, '$.allowIndexing')", "yes"),
-                        Db::parseParam("JSON_EXTRACT(content.$field, '$.allowIndexing')", ":empty:"),
+                        Db::parseParam("JSON_EXTRACT(c.$field, '$.allowIndexing')", "yes"),
+                        Db::parseParam("JSON_EXTRACT(c.$field, '$.allowIndexing')", ":empty:"),
                     ])
                     ->andWhere('sites.enabled = true')->all();
             if (!$siteEntries) {

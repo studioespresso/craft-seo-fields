@@ -25,11 +25,11 @@ class SitemapController extends Controller
         $site = Craft::$app->getSites()->getSiteByHandle($siteHandle);
         Craft::$app->getSites()->getSiteByHandle($site);
         $query = new Query();
-        $query->select('sectionId as id')
-            ->from('{{%sections_sites}}')
-            ->leftJoin('{{%sections}}', 'sections.id = sections_sites.sectionId')
+        $query->select('ss.sectionId as id')
+            ->from('{{%sections_sites}} as ss')
+            ->leftJoin('{{%sections}} as s', 's.id = ss.sectionId')
             ->where(Db::parseParam('siteId', $site->id))
-            ->andWhere(['sections.dateDeleted' => null]);
+            ->andWhere(['s.dateDeleted' => null]);
         $sections = [];
         foreach ($query->all() as $s) {
             $sections[] = Craft::$app->getSections()->getSectionById($s['id']);
