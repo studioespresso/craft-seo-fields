@@ -19,7 +19,6 @@
     {
       "name": "Studio Espresso",
       "homepage": "https://www.studioespresso.co"
-
     }
   ],
   "require": {
@@ -28,14 +27,14 @@
     "spatie/schema-org": "^3.0.0",
     "league/csv": "^9.0"
   },
+  "require-dev": {
+    "craftcms/ecs": "dev-main",
+    "craftcms/phpstan": "dev-main"
+  },
   "scripts": {
     "check-cs": "ecs check --ansi",
     "fix-cs": "ecs check --ansi --fix",
     "phpstan": "phpstan --memory-limit=1G"
-  },
-  "require-dev": {
-    "craftcms/ecs": "dev-main",
-    "craftcms/phpstan": "dev-main"
   },
   "autoload": {
     "psr-4": {

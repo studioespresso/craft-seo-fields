@@ -35,17 +35,17 @@ class SitemapController extends Controller
         $settings = SeoFields::$plugin->getSettings();
 
         $query = new Query();
+
         $query->select('sectionId as id')
-            ->from('{{%sections_sites}}')
-            ->leftJoin('{{%sections}}', 'sections.id = sections_sites.sectionId')
+            ->from('{{%sections_sites}} as ss')
+            ->leftJoin('{{%sections}} as s', 's.id = ss.sectionId')
             ->where(Db::parseParam('siteId', $this->site->id))
-            ->andWhere(['sections.dateDeleted' => null]);
+            ->andWhere(['s.dateDeleted' => null]);
 
         $sections = [];
         foreach ($query->all() as $s) {
             $sections[] = Craft::$app->getEntries()->getSectionById($s['id']);
         }
-
 
         $crumbs = ['label' => $this->site->name, ];
         if (Craft::$app->getIsMultiSite() && $settings->sitemapPerSite) {
@@ -54,7 +54,6 @@ class SitemapController extends Controller
                 'items' => Cp::siteMenuItems($sites, $this->site),
             ];
         }
-
 
         return $this->asCpScreen()
             ->title(Craft::t('seo-fields', 'Sitemap.xml'))
