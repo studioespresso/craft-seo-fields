@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.0.0 - 2024-05-22
+### Fixed
+- Fixed an error with fields that don't use "seo" as a handle ([#94](https://github.com/studioespresso/craft-seo-fields/issues/94))
+- Fixed an error where meta description would never be rendered
 
 ## 5.0.0-beta.1 - 2024-03-23
 ### Added
