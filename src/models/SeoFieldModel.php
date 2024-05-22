@@ -201,7 +201,7 @@ class SeoFieldModel extends Model
         }
 
         if ($this->metaDescription) {
-            return $this->element->getMetaDescription();
+            return $this->metaDescription;
         }
 
         return $this->siteDefault->defaultMetaDescription;
