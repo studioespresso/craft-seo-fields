@@ -210,9 +210,10 @@ class SitemapService extends Component
         $data[] = '<?xml version="1.0" encoding="UTF-8"?>';
         $data[] = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xhtml="http://www.w3.org/1999/xhtml" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9">';
         $currentSite = Craft::$app->getSites()->getCurrentSite();
+        $fieldHandle = SeoFields::$plugin->getSettings()->fieldHandle;
 
         foreach ($entries as $entry) {
-            if ($entry->seo->allowIndexing === 'no') {
+            if ($entry->$fieldHandle->allowIndexing === 'no') {
                 continue;
             }
 
