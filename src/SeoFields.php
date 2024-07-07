@@ -13,6 +13,7 @@ namespace studioespresso\seofields;
 use Craft;
 use craft\base\Plugin;
 use craft\commerce\elements\Product;
+use craft\elements\Category;
 use craft\elements\Entry;
 use craft\events\DefineBehaviorsEvent;
 use craft\events\ElementEvent;
@@ -469,6 +470,10 @@ class SeoFields extends Plugin
     private function _registerElementBehaviors(): void
     {
         Event::on(Entry::class, Entry::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $event) {
+            $event->behaviors[$this->id] = ElementSeoBehavior::class;
+        });
+
+        Event::on(Category::class, Entry::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $event) {
             $event->behaviors[$this->id] = ElementSeoBehavior::class;
         });
 
