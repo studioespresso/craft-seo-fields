@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.0.11 - 2024-07-07
+### Fixed
+- Fixed missing behaviour for categories ([#95](https://github.com/studioespresso/craft-seo-fields/issues/95))
+
 ## 4.0.10 - 2024-07-07
 ### Fixed
-- Fixed misssing behaviour for categories ([#95](https://github.com/studioespresso/craft-seo-fields/issues/95))
+- Fixed missing behaviour for categories ([#95](https://github.com/studioespresso/craft-seo-fields/issues/95))
 
 ## 4.0.9 - 2024-04-11
 ### Fixed
