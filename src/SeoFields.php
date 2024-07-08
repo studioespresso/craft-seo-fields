@@ -475,7 +475,7 @@ class SeoFields extends Plugin
             $event->behaviors[$this->id] = ElementSeoBehavior::class;
         });
 
-        Event::on(Category::class, Entry::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $event) {
+        Event::on(Category::class, Category::EVENT_DEFINE_BEHAVIORS, function(DefineBehaviorsEvent $event) {
             $event->behaviors[$this->id] = ElementSeoBehavior::class;
         });
 
