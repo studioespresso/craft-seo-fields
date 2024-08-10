@@ -29,7 +29,7 @@ class m191114_182559_addNotFoundTable extends Migration
                     'urlPath' => $this->text(),
                     'urlParams' => $this->text(),
                     'referrer' => $this->text(),
-                    'handled' => $this->boolean()->defaultValue(0),
+                    'handled' => $this->boolean()->defaultValue(false),
                     'counter' => $this->bigInteger(),
                     'redirect' => $this->integer(11),
                     'dateLastHit' => $this->dateTime()->notNull(),
