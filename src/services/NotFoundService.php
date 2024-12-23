@@ -122,15 +122,19 @@ class NotFoundService extends Component
         $regexRedirects = $this->getAllRegexRedirects($model);
         foreach ($regexRedirects as $regexRedirect) {
             $pattern = '`' . $regexRedirect->pattern . '`i';
-            if (preg_match(
-                    $pattern,
-                    $model->urlPath
-                ) === 1) {
-                $parsedUrl = preg_replace($pattern, $regexRedirect->redirect, $model->fullUrl);
-                return ["record" => $regexRedirect, "url" => $parsedUrl];
+            
+            if (str_contains($regexRedirect->redirect, 'http')) {
+                $url = $model->urlPath;
+            } else {
+                $url = $model->fullUrl;
+            }
+
+            if (preg_match($pattern, $model->urlPath, $matches)) {
+                // Replace placeholders ($1, $2, etc.) with actual captured groups
+                $finalRedirectUrl = preg_replace($pattern, $regexRedirect->redirect, $url);
+                return ["record" => $regexRedirect, "url" => $finalRedirectUrl];
             }
         }
-
         return false;
     }
 
