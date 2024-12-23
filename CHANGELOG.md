@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.0.3 - 2024-12-23
+### Fixed
+- Fixed regex redirection to full external urls ([#101](https://github.com/studioespresso/craft-seo-fields/issues/101))
+- Fixed install error when using Postgres ([#97](https://github.com/studioespresso/craft-seo-fields/pull/97))
+
+
 ## 5.0.2 - 2024-07-08
 ### Fixed
 - Fixed missing behaviour for categories ([#95](https://github.com/studioespresso/craft-seo-fields/issues/95))
