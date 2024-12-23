@@ -123,7 +123,7 @@ class NotFoundService extends Component
         foreach ($regexRedirects as $regexRedirect) {
             $pattern = '`' . $regexRedirect->pattern . '`i';
             
-            if(str_contains($regexRedirect->redirect, 'http')) {
+            if (str_contains($regexRedirect->redirect, 'http')) {
                 $url = $model->urlPath;
             } else {
                 $url = $model->fullUrl;
@@ -134,7 +134,6 @@ class NotFoundService extends Component
                 $finalRedirectUrl = preg_replace($pattern, $regexRedirect->redirect, $url);
                 return ["record" => $regexRedirect, "url" => $finalRedirectUrl];
             }
-
         }
         return false;
     }
