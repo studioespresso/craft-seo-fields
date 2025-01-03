@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.0.4 - 2025-01-03
+### Removed
+- Removed Sprig dependency
+
 ## 5.0.3 - 2024-12-23
 ### Fixed
 - Fixed regex redirection to full external urls ([#101](https://github.com/studioespresso/craft-seo-fields/issues/101))

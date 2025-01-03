@@ -37,7 +37,6 @@ use craft\services\UserPermissions;
 use craft\utilities\ClearCaches;
 use craft\web\ErrorHandler;
 use craft\web\UrlManager;
-use putyourlightson\sprig\Sprig;
 use studioespresso\seofields\behaviors\ElementSeoBehavior;
 use studioespresso\seofields\events\RegisterSeoElementEvent;
 use studioespresso\seofields\extensions\SeoFieldsExtension;
@@ -97,8 +96,6 @@ class SeoFields extends Plugin
     {
         parent::init();
         self::$plugin = $this;
-
-        Sprig::bootstrap();
 
         $this->setComponents([
             "defaultsService" => DefaultsService::class,
