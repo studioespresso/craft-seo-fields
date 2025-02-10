@@ -48,10 +48,11 @@ class RedirectService extends Component
 
             if ($newUri !== $oldUri) {
                 // Let's add a redirect
-                $oldUrl = UrlHelper::siteUrl($oldUri, null, null, $siteId);
+                $oldUrl = parse_url(UrlHelper::siteUrl($oldUri, null, null, $siteId));
+
                 $newUrl = UrlHelper::siteUrl($newUri, null, null, $siteId);
                 $redirect = new RedirectModel();
-                $redirect->pattern = $oldUri;
+                $redirect->pattern = $oldUrl['path'];
                 $redirect->sourceMatch = 'path';
                 $redirect->redirect = $newUrl;
                 $redirect->matchType = 'exact';

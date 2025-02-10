@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.0.12 - 2025-02-10
+### Fixed
+- Automatically created redirects now take the full path into account, not just the slug ([#105](https://github.com/studioespresso/craft-seo-fields/issues/105))
+
 ## 4.0.11 - 2024-07-07
 ### Fixed
 - Fixed missing behaviour for categories ([#95](https://github.com/studioespresso/craft-seo-fields/issues/95))
