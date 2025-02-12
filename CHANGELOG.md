@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## 5.0.5 - unreleased
 ### Added
 - Redirect can now be sorted by match type
+- ### Fixed
+- Fixed an error when sorting 4O4's
 
 ## 5.0.4 - 2025-01-03
 ### Removed
