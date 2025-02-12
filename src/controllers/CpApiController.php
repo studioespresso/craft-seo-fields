@@ -25,11 +25,16 @@ class CpApiController extends Controller
         $sort = $this->request->getQueryParam('sort');
         $search = $this->request->getQueryParam('search');
         if (!$sort) {
-            $sort = "counter|desc";
+            $sort = [
+                [
+                    'field' => 'hits',
+                    'sortField' => 'counter',
+                    'direction' => 'desc',
+                ]
+            ];
         };
 
         $page = $this->request->getQueryParam('page', 1);
-        list($key, $direction) = explode("|", $sort);
 
         $limit = 20;
         $offset = ($page - 1) * $limit;
@@ -52,8 +57,7 @@ class CpApiController extends Controller
             ]);
         }
 
-        $query->orderBy($key . " " . $direction);
-
+        $query->orderBy($sort[0]['sortField'] . " " . $sort[0]['direction']);
         $total = clone  $query;
         $total = $total->count();
 
