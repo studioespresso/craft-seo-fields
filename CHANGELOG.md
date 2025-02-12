@@ -5,8 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 4.0.13 - unreleased
+### Added
+- Redirects can now be sorted by match type
+
 ### Fixed
-- Fixed silent error when no schema was selected for a section ([STU-185](https://linear.app/studio-espresso/issue/STU-185/error-when-no-schema-is-selected-for-a-section))
+- Fixed silent error when no schema was selected for a section ([STU-185](https://linear.app/studio-espresso/issue/STU-185/error-when-no-schema-is-selected-for-a-section)))
+- Fixed an error when sorting 404's
 
 ## 4.0.12 - 2025-02-10
 ### Fixed
