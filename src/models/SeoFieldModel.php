@@ -14,6 +14,7 @@ use craft\helpers\UrlHelper;
 use craft\models\ImageTransform;
 use craft\web\View;
 use Spatie\SchemaOrg\Schema;
+use Spatie\SchemaOrg\WebPage;
 use studioespresso\seofields\SeoFields;
 
 class SeoFieldModel extends Model
@@ -85,7 +86,7 @@ class SeoFieldModel extends Model
                 case Entry::class:
                     $schemaSettings = $settings['sections'];
                     $sectionId = $element->section->id;
-                    $schemaClass = $schemaSettings[$sectionId];
+                    $schemaClass = $schemaSettings[$sectionId] ?? WebPage::class;
 
                     /** @var Schema $schema */
                     $schema = \Craft::createObject($schemaClass);
@@ -96,7 +97,7 @@ class SeoFieldModel extends Model
                 case Category::class:
                     $schemaSettings = $settings['groups'];
                     $groupId = $element->group->id;
-                    $schemaClass = $schemaSettings[$groupId];
+                    $schemaClass = $schemaSettings[$groupId] ?? WebPage::class;
 
                     /** @var Schema $schema */
                     $schema = Craft::createObject($schemaClass);
