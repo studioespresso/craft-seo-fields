@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.0.13 - unreleased
+### Fixed
+- Fixed silent error when no schema was selected for a section ([STU-185](https://linear.app/studio-espresso/issue/STU-185/error-when-no-schema-is-selected-for-a-section))
+
 ## 4.0.12 - 2025-02-10
 ### Fixed
 - Automatically created redirects now take the full path into account, not just the slug ([#105](https://github.com/studioespresso/craft-seo-fields/issues/105))
