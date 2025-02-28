@@ -1,16 +1,13 @@
 # SEO Fields for Craft CMS
 
-
-
 Fields for your meta & OG data, sitemaps & robots.txt. Fast to set up, easy to customize. <br>
 Also includes: redirects, 404 tracking, JSON-LD Schema.org data
 
-
-![Screenshot](https://www.studioespresso.co/assets/SEO-Fields-GitHub-banner.png)
+![Screenshot](docs/images/banner.png)
 
 ## Requirements
 
-This plugin requires Craft CMS 3 or 4.
+This plugin requires Craft CMS 3 or later.
 
 ## Installation
 
