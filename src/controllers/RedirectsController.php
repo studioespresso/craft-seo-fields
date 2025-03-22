@@ -181,6 +181,12 @@ class RedirectsController extends Controller
         }
     }
 
+    public function actionClearAll()
+    {
+        SeoFields::getInstance()->redirectService->deleteAll();
+        return $this->redirect(UrlHelper::cpUrl('seo-fields/redirects'));
+    }
+
     private function getSitesMenu()
     {
         $sites = [

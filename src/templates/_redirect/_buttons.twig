@@ -5,6 +5,17 @@
            style="display: none;">
     <label class="btn" for="file">{{ "Import CSV File"|t('seo-fields') }}</label>
 </form>
+
+{% if currentUser.admin %}
+    {% tag 'a' with {
+        href: actionUrl('seo-fields/redirects/clear-all'),
+        class: 'btn',
+        onclick: 'return confirm("Are you sure you want to remove all redirects for this site?")',
+    } %}
+        {{ 'Clear all'|t('seo-fields') }}
+    {% endtag %}
+{% endif %}
+
 {% tag 'a' with {
     href: cpUrl('seo-fields/redirects/add'),
     class: 'btn submit add icon',
