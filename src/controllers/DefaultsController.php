@@ -80,5 +80,8 @@ class DefaultsController extends Controller
         $defaultsModel = SeoFields::$plugin->defaultsService->getDataBySiteId($data['siteId']);
         $defaultsModel->setAttributes($data);
         SeoFields::$plugin->defaultsService->saveDefaults($defaultsModel, $data['siteId']);
+
+        Craft::$app->getSession()->setNotice(Craft::t('seo-fields', 'Defaults saved.'));
+        return $this->redirectToPostedUrl();
     }
 }
