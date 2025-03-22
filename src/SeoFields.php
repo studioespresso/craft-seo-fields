@@ -405,6 +405,10 @@ class SeoFields extends Plugin
                         $shouldCheckSlug = false;
                     }
 
+                    if (ElementHelper::isTempSlug($event->element)) {
+                        $shouldCheckSlug = false;
+                    }
+
                     if ($shouldCheckSlug && !$event->element->propagating) {
                         self::getInstance()->redirectService->trackElementUris($event->element);
                     }
@@ -415,6 +419,10 @@ class SeoFields extends Plugin
                 Event::on(Elements::class, $event, function(ElementEvent $event) {
                     $shouldCheckSlug = true;
                     if (ElementHelper::isDraftOrRevision($event->element)) {
+                        $shouldCheckSlug = false;
+                    }
+                    
+                    if (ElementHelper::isTempSlug($event->element)) {
                         $shouldCheckSlug = false;
                     }
 

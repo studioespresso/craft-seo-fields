@@ -10,7 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - ### Fixed
 - Fixed an error when sorting 4O4's
 - Automatically created redirects now take the full path into account, not just the slug ([#105](https://github.com/studioespresso/craft-seo-fields/issues/105))
-- Pages withouth a Schema type now default to WebPage
+- Pages without a Schema type now default to WebPage
+- Automatic redirects are no longer being created for temporary slugs ([#106](https://github.com/studioespresso/craft-seo-fields/issues/106)
 
 ## 5.0.4 - 2025-01-03
 ### Removed
