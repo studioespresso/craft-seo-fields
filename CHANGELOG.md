@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.0.6 - 2025-04-16
+### Fixed
+- Urls in sitemaps are now encoding to ensure correct parsing of special characters
+
 ## 5.0.5 - 2025-03-23
 ### Added
 - Redirect can now be sorted by match type
