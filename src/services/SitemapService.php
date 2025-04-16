@@ -12,6 +12,7 @@ use craft\db\Query;
 use craft\elements\Category;
 use craft\elements\Entry;
 use craft\helpers\ElementHelper;
+use craft\helpers\Html;
 use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use craft\models\Site;
@@ -235,8 +236,9 @@ class SitemapService extends Component
             });
 
             if ($entry->getUrl()) {
+                $url =  Html::encode(UrlHelper::encodeUrl($entry->getUrl()));
                 $data[] = "<url>";
-                $data[] = "<loc>" . $entry->getUrl() . "</loc>";
+                $data[] = "<loc>" . $url . "</loc>";
                 $data[] = "<lastmod>" . $entry->dateUpdated->format("Y-m-d") . "</lastmod>";
                 $data[] = "<changefreq>" . $settings['changefreq'] . "</changefreq>";
                 $data[] = "<priority>" . $settings['priority'] . "</priority>";
