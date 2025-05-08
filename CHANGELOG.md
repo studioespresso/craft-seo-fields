@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.0.7 - 2025-05-08
+### Fixed 
+- Fixed an issue with overwriting SEO fields in templates ([#110](https://github.com/studioespresso/craft-seo-fields/issues/110))
+
 ## 5.0.6 - 2025-04-16
 ### Fixed
 - Urls in sitemaps are now encoding to ensure correct parsing of special characters
