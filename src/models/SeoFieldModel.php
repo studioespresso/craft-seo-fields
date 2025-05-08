@@ -144,7 +144,9 @@ class SeoFieldModel extends Model
         if ($element) {
             $this->element = $element;
         }
-
+        if($element && $element->getSocialTitle()) {
+            return $element->getSocialTitle() . ($includeSiteName ? $this->getSiteNameWithSeperator() : '');
+        }
         if ($element && !$this->metaTitle) {
             return $element->title . ($includeSiteName ? $this->getSiteNameWithSeperator() : '');
         }
@@ -197,6 +199,10 @@ class SeoFieldModel extends Model
 
     public function getMetaDescription()
     {
+        if($this->element && $this->element->getSocialDescription()) {
+            return $this->element->getSocialDescription();
+        }
+
         if ($this->element->getMetaDescription()) {
             return $this->element->getMetaDescription();
         }
@@ -210,6 +216,9 @@ class SeoFieldModel extends Model
 
     public function getSocialDescription()
     {
+        if($this->element && $this->element->getSocialDescription()) {
+            return $this->element->getSocialDescription();
+        }
         if ($this->element->getFacebookDescription()) {
             return $this->element->getFacebookDescription();
         }

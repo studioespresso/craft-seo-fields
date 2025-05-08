@@ -30,16 +30,13 @@ Next to the site defaults and the field, you might also want to use text and ima
 To do this, use the following twig functions:
 
 ````twig
-{% do entry.setMetaTitle('New title') %}
-{% do entry.setMetaDescription('custom meta description') %}
-{% do entry.setFacebookTitle('Facebook title') %}
-{% do entry.setFacebookDescription('custom description') %}
-{% do entry.setTwitterTitle('Twitter title') %}
-{% do entry.setTwitterDescription('Just for twitter') %}
 
-// Overwriting the image fields can be done by passing an Asset elemnt
-{% do entry.setFacebookImage(entry.assetField.one()) %}
-{% do entry.setTwitterImage(entry.assetField.one()) %}
+{% do entry.setSocialTitle('Facebook title') %}
+{% do entry.setSocialDescription('custom description') %}
+
+
+// Overwriting the image fields can be done by passing an Asset element
+{% do entry.setSocialImage(entry.assetField.one()) %}
 ````
 
 This is a normal Twig template so the usual conditionals and operators work here. You can use these for the fields that need a text value. For the OG and Twitter images, you can pass an ``Asset`` to ``meta.getOgImage()``, eg: ```{% set ogImage = meta.getOgImage(entry.overviewImage.one()) %}```.
