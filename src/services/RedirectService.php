@@ -11,7 +11,6 @@ use craft\helpers\ElementHelper;
 use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use studioespresso\seofields\models\RedirectModel;
-use studioespresso\seofields\records\NotFoundRecord;
 use studioespresso\seofields\records\RedirectRecord;
 use studioespresso\seofields\SeoFields;
 use yii\base\ExitException;

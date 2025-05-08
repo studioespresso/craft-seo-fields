@@ -236,7 +236,7 @@ class SitemapService extends Component
             });
 
             if ($entry->getUrl()) {
-                $url =  Html::encode(UrlHelper::encodeUrl($entry->getUrl()));
+                $url = Html::encode(UrlHelper::encodeUrl($entry->getUrl()));
                 $data[] = "<url>";
                 $data[] = "<loc>" . $url . "</loc>";
                 $data[] = "<lastmod>" . $entry->dateUpdated->format("Y-m-d") . "</lastmod>";
