@@ -11,3 +11,4 @@ parameters:
         - lib/craft/bootstrap.php
     excludePaths:
         - src/services/migrate/Ether.php
+        - src/feedme/fields/SeoFieldType.php
