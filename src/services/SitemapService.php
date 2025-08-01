@@ -32,6 +32,12 @@ class SitemapService extends Component
     {
         $data = SeoFields::$plugin->defaultsService->getRecordForSiteId($site->id);
         $sitemapSettings = Json::decode($data->sitemap);
+
+        if (!$sitemapSettings) {
+            $data = SeoFields::$plugin->defaultsService->getDataBySiteId(Craft::$app->getSites()->getPrimarySite()->id);
+            $sitemapSettings = Json::decode($data->sitemap);
+        }
+
         if (!$sitemapSettings) {
             return false;
         }

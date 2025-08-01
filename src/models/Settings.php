@@ -11,6 +11,7 @@
 namespace studioespresso\seofields\models;
 
 use craft\base\Model;
+use Craft;
 
 /**
  * @author    Studio Espresso
@@ -27,6 +28,10 @@ class Settings extends Model
 
     public $robotsPerSite = false;
 
+    /**
+     * @var bool
+     * @deprecated Since x.x this was turned on my default and the setting will be remove on the next major release.
+     */
     public $sitemapPerSite = false;
 
     public $fieldHandle = 'seo';
@@ -56,5 +61,17 @@ class Settings extends Model
         return [
             ['titleSeperator', 'string'],
         ];
+    }
+
+    public function getSitemapPerSite()
+    {
+
+        if ($this->sitemapPerSite) {
+            Craft::$app->getDeprecator()->log(
+                'studioespresso\seofields\models\Settings::getSitemapPerSite',
+                'The settings getSitemapPerSite is deprecated and now defaults to true. It will be removed in the next major release.'
+            );
+        }
+        return true;
     }
 }
