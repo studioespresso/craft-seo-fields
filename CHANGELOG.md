@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.1.0 - unreleased
+### Added
+- ``sitemapPerSite`` is now enabled by default, falling back to the primary site's data if no configuration exists for the current site ([#113](https://github.com/studioespresso/craft-seo-fields/issues/113))
+
 ## 5.0.7 - 2025-05-08
 ### Fixed 
 - Fixed an issue with overwriting SEO fields in templates ([#110](https://github.com/studioespresso/craft-seo-fields/issues/110))

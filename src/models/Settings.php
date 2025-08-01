@@ -10,8 +10,8 @@
 
 namespace studioespresso\seofields\models;
 
-use craft\base\Model;
 use Craft;
+use craft\base\Model;
 
 /**
  * @author    Studio Espresso
@@ -65,7 +65,6 @@ class Settings extends Model
 
     public function getSitemapPerSite()
     {
-
         if ($this->sitemapPerSite) {
             Craft::$app->getDeprecator()->log(
                 'studioespresso\seofields\models\Settings::getSitemapPerSite',

@@ -94,7 +94,7 @@ class SitemapController extends Controller
         if (SeoFields::$plugin->getSettings()->getSitemapPerSite()) {
             $data = SeoFields::getInstance()->sitemapService->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());
         }
-        
+
         if (!$data) {
             throw new NotFoundHttpException(Craft::t('app', 'Page not found'), 404);
         }
