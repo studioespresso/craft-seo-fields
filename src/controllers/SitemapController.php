@@ -47,7 +47,7 @@ class SitemapController extends Controller
             $sections[] = Craft::$app->getEntries()->getSectionById($s['id']);
         }
 
-        $crumbs = ['label' => $this->site->name, ];
+        $crumbs = ['label' => $this->site->name,];
         if (Craft::$app->getIsMultiSite() && $settings->sitemapPerSite) {
             $crumbs['menu'] = [
                 'label' => Craft::t('site', 'Select site'),
@@ -63,7 +63,6 @@ class SitemapController extends Controller
             ->additionalButtonsTemplate('seo-fields/_sitemap/_buttons', [
                 'site' => $this->site,
             ])
-
             ->contentTemplate('seo-fields/_sitemap/_content', [
                 'data' => $data,
                 'sitemapPerSite' => $settings->sitemapPerSite,
@@ -91,10 +90,10 @@ class SitemapController extends Controller
 
     public function actionRender()
     {
-        if (SeoFields::$plugin->getSettings()->getSitemapPerSite()) {
-            $data = SeoFields::getInstance()->sitemapService->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());
-        }
-
+        $data = SeoFields::getInstance()->sitemapService->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());
+        // keeping this here to trigger the decrepation error is the user has that set
+        SeoFields::$plugin->getSettings()->getSitemapPerSite() ;
+        
         if (!$data) {
             throw new NotFoundHttpException(Craft::t('app', 'Page not found'), 404);
         }
