@@ -99,7 +99,7 @@ class SeoFieldModel extends Model
                     $schema->url($element->getUrl() ?? ""); // @phpstan-ignore-line
                     break;
                 case Category::class:
-                    if(isset($settings['categories'])) {
+                    if (isset($settings['categories'])) {
                         $schemaSettings = $settings['categories'];
                         $groupId = $element->group->id;
                         $schemaClass = $schemaSettings[$groupId] ?? WebPage::class;
