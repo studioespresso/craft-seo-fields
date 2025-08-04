@@ -70,25 +70,25 @@ class ElementSeoBehavior extends Behavior
 
     public function setFacebookTitle(string $value): void
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookTitle', "setFacebookTitle has been replaced by `setSocialTitle` and will be removed in a later update", __FILE__, __LINE__-2);
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookTitle', "setFacebookTitle has been replaced by `setSocialTitle` and will be removed in a later update", __FILE__, __LINE__ - 2);
         $this->socialTitle = $value;
     }
 
     public function getFacebookTitle(): string|null
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'getFacebookTitle', "getFacebookTitle has been replaced by `getSocialTitle` and will be removed in a later update", __FILE__, __LINE__-2);
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'getFacebookTitle', "getFacebookTitle has been replaced by `getSocialTitle` and will be removed in a later update", __FILE__, __LINE__ - 2);
         return $this->socialTitle;
     }
 
     public function setTwitterTitle(string $value): void
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterTitle', "setTwitterTitle has been replaced by `setSocialTitle` and will be removed in a later update", __FILE__, __LINE__-2);
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterTitle', "setTwitterTitle has been replaced by `setSocialTitle` and will be removed in a later update", __FILE__, __LINE__ - 2);
         $this->socialTitle = $value;
     }
 
     public function getTwitterTitle(): string|null
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'getTwitterTitle', "getTwitterTitle has been replaced by `getSocialTitle` and will be removed in a later update", __FILE__, __LINE__-2);
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'getTwitterTitle', "getTwitterTitle has been replaced by `getSocialTitle` and will be removed in a later update", __FILE__, __LINE__ - 2);
         return $this->socialTitle;
     }
 
@@ -115,25 +115,25 @@ class ElementSeoBehavior extends Behavior
 
     public function setFacebookDescription(string $value): void
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookDescription', "setFacebookDescription has been replaced by `setSocialDescription` and will be removed in a later update", __FILE__, __LINE__-2);
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookDescription', "setFacebookDescription has been replaced by `setSocialDescription` and will be removed in a later update", __FILE__, __LINE__ - 2);
         $this->facebookDescription = $value;
     }
 
     public function getFacebookDescription(): string|null
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'getFacebookDescription', "getFacebookDescription has been replaced by `getSocialDescription` and will be removed in a later update", __FILE__, __LINE__-2);
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'getFacebookDescription', "getFacebookDescription has been replaced by `getSocialDescription` and will be removed in a later update", __FILE__, __LINE__ - 2);
         return $this->facebookDescription;
     }
 
     public function setTwitterDescription(string $value): void
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterDescription', "setTwitterDescription has been replaced by `setSocialDescription` and will be removed in a later update", __FILE__, __LINE__-2);
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterDescription', "setTwitterDescription has been replaced by `setSocialDescription` and will be removed in a later update", __FILE__, __LINE__ - 2);
         $this->twitterDescription = $value;
     }
 
     public function getTwitterDescription(): string|null
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'getTwitterDescription', "getTwitterDescription has been replaced by `getSocialDescription` and will be removed in a later update", __FILE__, __LINE__-2);
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'getTwitterDescription', "getTwitterDescription has been replaced by `getSocialDescription` and will be removed in a later update", __FILE__, __LINE__ - 2);
         return $this->twitterDescription;
     }
 
@@ -149,26 +149,26 @@ class ElementSeoBehavior extends Behavior
 
     public function setFacebookImage(Asset $value): void
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookImage', "setFacebookImage has been replaced by `setSocialImage` and will be removed in a later update", __FILE__, __LINE__-2);
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookImage', "setFacebookImage has been replaced by `setSocialImage` and will be removed in a later update", __FILE__, __LINE__ - 2);
         $this->facebookImage = $value;
     }
 
     public function getFacebookImage(): Asset|null
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'getFacebookImage', "getFacebookImage has been replaced by `getSocialImage` and will be removed in a later update", __FILE__, __LINE__-2);
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'getFacebookImage', "getFacebookImage has been replaced by `getSocialImage` and will be removed in a later update", __FILE__, __LINE__ - 2);
         return $this->facebookImage;
     }
 
 
     public function setTwitterImage(Asset $value): void
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterImage', "setTwitterImage has been replaced by `setSocialImage` and will be removed in a later update", __FILE__, __LINE__-2);
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterImage', "setTwitterImage has been replaced by `setSocialImage` and will be removed in a later update", __FILE__, __LINE__ - 2);
         $this->twitterImage = $value;
     }
 
     public function getTwitterImage(): Asset|null
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'getTwitterImage', "getTwitterImage has been replaced by `getSocialImage` and will be removed in a later update", __FILE__, __LINE__-2);
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'getTwitterImage', "getTwitterImage has been replaced by `getSocialImage` and will be removed in a later update", __FILE__, __LINE__ - 2);
         return $this->twitterImage;
     }
 }
