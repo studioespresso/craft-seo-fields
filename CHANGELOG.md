@@ -4,9 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 5.1.0 - unreleased
+## 5.1.0 - 2025-08-04
 ### Added
 - ``sitemapPerSite`` is now enabled by default, falling back to the primary site's data if no configuration exists for the current site ([#113](https://github.com/studioespresso/craft-seo-fields/issues/113))
+- Added support for importing data into an SEOField field with FeedMe ([#109](https://github.com/studioespresso/craft-seo-fields/pull/109) - PR by [@Numkil](https://github.com/Numkil))
+### Fixed
+- Fixed an issue with deprecation notices in ElementSeoBehaviour ([#114](https://github.com/studioespresso/craft-seo-fields/issues/114))
 
 ## 5.0.7 - 2025-05-08
 ### Fixed 
