@@ -84,9 +84,13 @@ class SeoFieldModel extends Model
 
             switch (get_class($element)) {
                 case Entry::class:
-                    $schemaSettings = $settings['sections'];
-                    $sectionId = $element->section->id;
-                    $schemaClass = $schemaSettings[$sectionId] ?? WebPage::class;
+                    if (isset($settings['sections'])) {
+                        $schemaSettings = $settings['sections'];
+                        $sectionId = $element->section->id;
+                        $schemaClass = $schemaSettings[$sectionId] ?? WebPage::class;
+                    } else {
+                        $schemaClass = WebPage::class;
+                    }
 
                     /** @var Schema $schema */
                     $schema = \Craft::createObject($schemaClass);
@@ -95,6 +99,13 @@ class SeoFieldModel extends Model
                     $schema->url($element->getUrl() ?? ""); // @phpstan-ignore-line
                     break;
                 case Category::class:
+                    if(isset($settings['categories'])) {
+                        $schemaSettings = $settings['categories'];
+                        $groupId = $element->group->id;
+                        $schemaClass = $schemaSettings[$groupId] ?? WebPage::class;
+                    } else {
+                        $schemaClass = WebPage::class;
+                    }
                     $schemaSettings = $settings['groups'];
                     $groupId = $element->group->id;
                     $schemaClass = $schemaSettings[$groupId] ?? WebPage::class;
@@ -185,6 +196,7 @@ class SeoFieldModel extends Model
 
         return $title . $this->getSiteNameWithSeperator();
     }
+
     public function getOgTitle($element = null)
     {
         Craft::$app->getDeprecator()->log(__CLASS__ . 'getOgTitle', "getOgTitle has been replaced by `getSocialTitle` and will be removed in a later update");

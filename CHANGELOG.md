@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Added support for importing data into an SEOField field with FeedMe ([#109](https://github.com/studioespresso/craft-seo-fields/pull/109) - PR by [@Numkil](https://github.com/Numkil))
 ### Fixed
 - Fixed an issue with deprecation notices in ElementSeoBehaviour ([#114](https://github.com/studioespresso/craft-seo-fields/issues/114))
+- Fixed a warning when no schema settings where defined
 
 ## 5.0.7 - 2025-05-08
 ### Fixed 
