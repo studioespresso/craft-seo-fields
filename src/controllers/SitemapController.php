@@ -38,7 +38,6 @@ class SitemapController extends Controller
         $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($siteHandle);
         return $this->renderTemplate('seo-fields/_sitemap', [
             'data' => $data,
-            'sitemapPerSite' => SeoFields::$plugin->getSettings()->sitemapPerSite,
             'sections' => $sections,
             'selectedSite' => $site,
         ]);
@@ -62,11 +61,9 @@ class SitemapController extends Controller
 
     public function actionRender()
     {
-        if (SeoFields::$plugin->getSettings()->sitemapPerSite) {
-            $data = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());
-        } else {
-            $data = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getPrimarySite());
-        }
+        $data = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());        // keeping this here to trigger the decrepation error is the user has that set
+        SeoFields::$plugin->getSettings()->getSitemapPerSite();
+
         if (!$data) {
             throw new NotFoundHttpException(Craft::t('app', 'Page not found'), 404);
         }

@@ -269,11 +269,8 @@ class SeoFields extends Plugin
                         'robots.txt' => 'seo-fields/robots/render',
                     ]);
                 }
-                if (SeoFields::$plugin->getSettings()->sitemapPerSite) {
-                    $shouldRender = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());
-                } else {
-                    $shouldRender = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getPrimarySite());
-                }
+
+                $shouldRender = SeoFields::getInstance()->sitemapSerivce->shouldRenderBySiteId(Craft::$app->getSites()->getPrimarySite());
                 if ($shouldRender) {
                     $event->rules = array_merge($event->rules, [
                         'sitemap.xml' => 'seo-fields/sitemap/render',
