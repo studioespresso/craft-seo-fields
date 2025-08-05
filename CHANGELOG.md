@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.1.0 - 2025-08-05
+### Added
+- Sitemaps are new enabled by default across multsite setups ([#113](https://github.com/studioespresso/craft-seo-fields/issues/113))
+
 ## 4.0.14 - 2025-04-16
 ### Fixed
 - Urls in sitemaps are now encoding to ensure correct parsing of special characters

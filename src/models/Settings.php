@@ -65,7 +65,6 @@ class Settings extends Model
 
     public function getSitemapPerSite()
     {
-
         if ($this->sitemapPerSite) {
             Craft::$app->getDeprecator()->log(
                 'studioespresso\seofields\models\Settings::getSitemapPerSite',
