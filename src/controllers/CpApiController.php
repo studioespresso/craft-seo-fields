@@ -30,7 +30,7 @@ class CpApiController extends Controller
                     'field' => 'hits',
                     'sortField' => 'counter',
                     'direction' => 'desc',
-                ]
+                ],
             ];
         }
 
@@ -108,7 +108,7 @@ class CpApiController extends Controller
                     'field' => 'hits',
                     'sortField' => 'counter',
                     'direction' => 'desc',
-                ]
+                ],
             ];
         }
 

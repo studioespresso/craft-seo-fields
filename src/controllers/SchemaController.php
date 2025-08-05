@@ -19,7 +19,6 @@ class SchemaController extends Controller
 
         return $this->renderTemplate('seo-fields/_schema', [
             'data' => $data,
-            'sitemapPerSite' => SeoFields::$plugin->getSettings()->sitemapPerSite,
             'sections' => $sections,
             'options' => SeoFields::getInstance()->schemaService->getDefaultOptions(),
             'selectedSite' => $primarySite,

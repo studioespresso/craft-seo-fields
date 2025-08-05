@@ -14,7 +14,6 @@ return [
     "pluginLabel" => "SEO",
     "titleSeperator" => "-",
     "robotsPerSite" => false,
-    "sitemapPerSite" => false,
     "fieldHandle" => "seo",
     "notFoundLimit" => 10000,
     "createRedirectForUriChange" => true,
