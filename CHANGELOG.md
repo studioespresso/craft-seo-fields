@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.1.1 - 2025-08-06
+### Fixed
+- Show the site switcher on /seo-fields/sitemap ([#113](https://github.com/studioespresso/craft-seo-fields/issues/113))
+
 ## 5.1.0 - 2025-08-04
 ### Added
 - ``sitemapPerSite`` is now enabled by default, falling back to the primary site's data if no configuration exists for the current site ([#113](https://github.com/studioespresso/craft-seo-fields/issues/113))

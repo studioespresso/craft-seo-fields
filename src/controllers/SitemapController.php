@@ -48,7 +48,7 @@ class SitemapController extends Controller
         }
 
         $crumbs = ['label' => $this->site->name, ];
-        if (Craft::$app->getIsMultiSite() && $settings->sitemapPerSite) {
+        if (Craft::$app->getIsMultiSite()) {
             $crumbs['menu'] = [
                 'label' => Craft::t('site', 'Select site'),
                 'items' => Cp::siteMenuItems($sites, $this->site),
