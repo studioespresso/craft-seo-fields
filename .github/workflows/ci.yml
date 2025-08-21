@@ -17,6 +17,6 @@ jobs:
     uses: studioespresso/.github/.github/workflows/ci.yml@main
     with:
       craft_version: '5'
-      jobs: '["ecs", "phpstan"]'
+      jobs: '["ecs", "phpstan", "changelog"]'
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
