@@ -40,6 +40,11 @@ class RedirectService extends Component
 
         foreach ($this->oldUris[$element->id] as $siteId => $oldUri) {
             $newUri = Craft::$app->getElements()->getElementUriForSite($element->id, $siteId);
+            // It's possible that the element has no URI in this site, so we skip it (https://github.com/studioespresso/craft-seo-fields/issues/116)
+            if (!$newUri) {
+                continue;
+            }
+
             // Should be keep trailing slashes into account here (or when the old one have those as well)
             if (Craft::$app->config->general->addTrailingSlashesToUrls) {
                 $oldUri = rtrim($oldUri, '/') . '/';
