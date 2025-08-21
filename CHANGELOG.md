@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.1.2 - 2025-08-21
+### Fixed
+- Fixed an error that would happen when clearing the set url for a section ([#116](https://github.com/studioespresso/craft-seo-fields/issues/116))
+
 ## 5.1.1 - 2025-08-06
 ### Fixed
 - Show the site switcher on /seo-fields/sitemap ([#113](https://github.com/studioespresso/craft-seo-fields/issues/113))
