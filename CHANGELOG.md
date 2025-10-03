@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.1.1 - 2025-10-03
+### Fixed
+- Fixed an issue where redirects set to `pathWithoutParams` would not show correctly
+- Automatically created redirects now discard query parameters ([#119](https://github.com/studioespresso/craft-seo-fields/issues/119))
+
 ## 4.1.0 - 2025-08-05
 ### Added
 - Sitemaps are new enabled by default across multsite setups ([#113](https://github.com/studioespresso/craft-seo-fields/issues/113))

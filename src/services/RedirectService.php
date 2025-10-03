@@ -53,7 +53,7 @@ class RedirectService extends Component
                 $newUrl = UrlHelper::siteUrl($newUri, null, null, $siteId);
                 $redirect = new RedirectModel();
                 $redirect->pattern = $oldUrl['path'];
-                $redirect->sourceMatch = 'path';
+                $redirect->sourceMatch = 'pathWithoutParams';
                 $redirect->redirect = $newUrl;
                 $redirect->matchType = 'exact';
                 $redirect->siteId = $siteId;
