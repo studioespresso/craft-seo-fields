@@ -6,7 +6,7 @@
 {#       onclick='return confirm("{{ confirmation }}")'>{{ "Clear all"|t('seo-fields') }}</a>#}
 {#{% endblock %}#}
 
-    {% import "_includes/forms" as forms %}
+{% import "_includes/forms" as forms %}
 <div id="seofields-notfound"></div>
 
 
@@ -53,15 +53,15 @@
         {% set site = craft.app.request.getQueryParam('site', '') %}
     {% endif %}
 
+    {# Readme in craftcms/cms/src/web/assets/admintable/README.md #}
     new Craft.VueAdminTable({
-    container: '#seofields-notfound',
-    columns: columns,
-    tableDataEndpoint: "{{ cpUrl('seo-fields/cp-api/not-found', {site: site}) }}" ,
-    deleteAction: 'seo-fields/not-found/delete',
-    checkboxes:  0,
-    search: true,
-    allowMultipleSelections: false,
-    perPage: 10,
+        container: '#seofields-notfound',
+        columns: columns,
+        tableDataEndpoint: "{{ cpUrl('seo-fields/cp-api/not-found') }}" ,
+        deleteAction: 'seo-fields/not-found/delete',
+        checkboxes:  0,
+        search: true,
+        allowMultipleSelections: false,
+        perPage: 10,
     });
-
 {% endjs %}

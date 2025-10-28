@@ -36,10 +36,16 @@ class NotFoundController extends Controller
             ];
         }
 
+        $viewOptions = [
+            ['value' => 'all', 'label' => Craft::t('seo-fields', 'Show all 404\'s')],
+            ['value' => 'unhandled', 'label' => Craft::t('seo-fields', 'Items without a redirect')],
+            ['value' => 'handled', 'label' => Craft::t('seo-fields', 'Items with a redirect')],
+        ];
+
         return $this->asCpScreen()
             ->title(Craft::t('seo-fields', '404 Overview'))
             ->selectedSubnavItem('notfound')
-            ->additionalButtonsTemplate('seo-fields/_notfound/_buttons')
+            ->additionalButtonsTemplate('seo-fields/_notfound/_buttons', ['viewOptions' => $viewOptions])
             ->crumbs([$crumbs])
             ->contentTemplate('seo-fields/_notfound/_content');
     }

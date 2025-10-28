@@ -1,3 +1,17 @@
+{% import "_includes/forms" as forms %}
+
+
+
+
+{{ forms.selectField({
+    id: 'display',
+    name: 'display',
+    options: viewOptions,
+    includeEnvVars: false,
+    allowedEnvValues: false,
+    value: craft.app.request.getParam('display', 'all'),
+}) }}
+
 {% tag 'a' with {
     href: actionUrl('seo-fields/not-found/clear-all'),
     class: 'btn',
@@ -5,3 +19,10 @@
 } %}
     {{ 'Clear all'|t('seo-fields') }}
 {% endtag %}
+<script>
+    document.getElementById('display').addEventListener('change', function() {
+        const url = new URL(window.location);
+        url.searchParams.set('display', this.value);
+        window.location.href = url.toString();
+    });
+</script>
