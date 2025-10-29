@@ -44,9 +44,25 @@
 
 
 {% block actionButton %}
+    {{ forms.selectField({
+        id: 'display',
+        name: 'display',
+        class: '',
+        options: viewOptions,
+        value: craft.app.request.getParam('display', 'all'),
+    }) }}
+
     {% set confirmation = "Are you sure you want to remove all tracked 404's?"|t('seo-fields') %}
     <a href="{{ actionUrl('seo-fields/not-found/clear-all') }}" class="btn"
        onclick='return confirm("{{ confirmation }}")'>{{ "Clear all"|t('seo-fields') }}</a>
+
+    <script>
+        document.getElementById('display').addEventListener('change', function() {
+            const url = new URL(window.location);
+            url.searchParams.set('display', this.value);
+            window.location.href = url.toString();
+        });
+    </script>
 {% endblock %}
 
 {% block content %}
