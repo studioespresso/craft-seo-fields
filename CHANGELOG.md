@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
+5.2.0 - 2025-10-28
+### Added
+- 404's can now be filtered filtered by wether they have been handled or not in the CP overview.
 
 ## 5.1.2 - 2025-08-21
 ### Fixed

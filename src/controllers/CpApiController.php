@@ -18,6 +18,13 @@ class CpApiController extends Controller
 
     public function actionNotFound()
     {
+        $ref = parse_url(Craft::$app->getRequest()->getReferrer());
+        $refParams = [];
+        if (isset($ref['query'])) {
+            parse_str($ref['query'], $refParams);
+        }
+
+        $view = $refParams['display'] ?? 'all';
         $sort = $this->request->getQueryParam('sort');
         $search = $this->request->getQueryParam('search');
         if (!$sort) {
@@ -53,8 +60,16 @@ class CpApiController extends Controller
             ]);
         }
 
+        if ($view && $view != 'all') {
+            if ($view === 'handled') {
+                $query->andWhere(Db::parseParam('handled', 1));
+            } elseif ($view === 'unhandled') {
+                $query->andWhere(Db::parseParam('handled', 0));
+            }
+        }
+
         $query->orderBy($sort[0]['sortField'] . " " . $sort[0]['direction']);
-        $total = clone  $query;
+        $total = clone $query;
         $total = $total->count();
 
         $rows = [];
@@ -78,7 +93,7 @@ class CpApiController extends Controller
         }
 
         $from = ($page - 1) * $limit + 1;
-        $lastPage = (int) ceil($total / $limit);
+        $lastPage = (int)ceil($total / $limit);
         $to = intval($page) === intval($lastPage) ? $total : ($page * $limit);
 
         return $this->asJson([
@@ -134,7 +149,7 @@ class CpApiController extends Controller
         }
 
         $query->orderBy($sort[0]['sortField'] . " " . $sort[0]['direction']);
-        $total = clone  $query;
+        $total = clone $query;
         $total = $total->count();
 
         $rows = [];
@@ -163,7 +178,7 @@ class CpApiController extends Controller
         }
 
         $from = ($page - 1) * $limit + 1;
-        $lastPage = (int) ceil($total / $limit);
+        $lastPage = (int)ceil($total / $limit);
         $to = (int)$page === $lastPage ? $total : ($page * $limit);
 
         return $this->asJson([
