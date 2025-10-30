@@ -22,6 +22,14 @@ class CpApiController extends Controller
      */
     public function actionNotFound()
     {
+        $ref = parse_url(Craft::$app->getRequest()->getReferrer());
+        $refParams = [];
+        if (isset($ref['query'])) {
+            parse_str($ref['query'], $refParams);
+        }
+
+        $view = $refParams['display'] ?? 'all';
+
         $sort = $this->request->getQueryParam('sort');
         $search = $this->request->getQueryParam('search');
         if (!$sort) {
@@ -47,6 +55,14 @@ class CpApiController extends Controller
         if ($site) {
             $site = Craft::$app->getSites()->getSiteByHandle($site);
             $query->orWhere(Db::parseParam('siteId', $site->id));
+        }
+
+        if ($view && $view != 'all') {
+            if ($view === 'handled') {
+                $query->andWhere(Db::parseParam('handled', 1));
+            } elseif ($view === 'unhandled') {
+                $query->andWhere(Db::parseParam('handled', 0));
+            }
         }
 
         if ($search) {

@@ -19,15 +19,13 @@ class NotFoundController extends Controller
             $site = Craft::$app->getSites()->getSiteByHandle($siteHandle);
             Craft::$app->getSites()->setCurrentSite($site);
         }
-        $handled = "all";
-        if (Craft::$app->getRequest()->getParam('redirect')) {
-            if (Craft::$app->getRequest()->getParam('redirect') === "handled") {
-                $handled = 1;
-            } elseif (Craft::$app->getRequest()->getParam('redirect') === "not-handled") {
-                $handled = 0;
-            }
-        }
-        return $this->renderTemplate('seo-fields/_notfound/_index');
+        $viewOptions = [
+            ['value' => 'all', 'label' => Craft::t('seo-fields', 'Show all 404\'s')],
+            ['value' => 'unhandled', 'label' => Craft::t('seo-fields', 'Items without a redirect')],
+            ['value' => 'handled', 'label' => Craft::t('seo-fields', 'Items with a redirect')],
+        ];
+
+        return $this->renderTemplate('seo-fields/_notfound/_index', ['viewOptions' => $viewOptions]);
     }
 
     /**

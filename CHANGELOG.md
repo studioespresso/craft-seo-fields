@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.1.2 - 2025-10-29
+### Added
+- 404's can now be filtered filtered by wether they have been handled or not in the CP overview.
+
 ## 4.1.1 - 2025-10-03
 ### Fixed
 - Fixed an issue where redirects set to `pathWithoutParams` would not show correctly
