@@ -24,8 +24,9 @@ Defaults to ``-``
 ## robotsPerSite
 Whether robots.txt should be set per site, defautls to ``false``
 
-## sitemapPerSite
-Whether sitemap settings should be set per site, defautls to ``false``
+## sitemapPerSite <Badge type="danger" text="Deprecated" />
+Since 4.1.0, this setting is deprecated. Sitemaps are now always generated per site.
+
 
 ## fieldHandle
 This is the handle your SEO Fields - field has, defaults to ``seo`` but make sure to change this setting should your field be named differently.
@@ -46,5 +47,10 @@ For example:
         get_class(\Spatie\SchemaOrg\Schema::recipe()) => 'Recipe'
     ],
 ````
+
+## logicallySeperatedSiteGroups <Badge type="tip" text="^4.1.3" />
+Depending on your Craft CMS setup, you may have multiple site groups that are logically separated from each other. For example, you may have a site group for your main website and another site group for a secondary brand.
+
+If this is the case, you can enable the `logicallySeperatedSiteGroups` setting. This will ensure that alternate links will only be generated for sites within the same site group.
 
 

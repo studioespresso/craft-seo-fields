@@ -287,6 +287,7 @@ class SeoFieldModel extends Model
         if (!$element) {
             return false;
         }
+
         $siteEntries =
             (new Query())->select(['siteId', 'uri', 'language', 'sites.primary as primary'])
                 ->from('{{%elements_sites}} as  elements')
@@ -297,11 +298,23 @@ class SeoFieldModel extends Model
                 ->andWhere('elements.enabled = true')
                 ->distinct(true)
                 ->all();
-        $currentSite = Craft::$app->getSites()->getCurrentSite()->id;
+
+        $currentSite = Craft::$app->getSites()->getCurrentSite();
+        $seperatedSiteGroups = SeoFields::getInstance()->getSettings()->logicallySeperatedSiteGroups;
+
         $sites = $siteEntries;
         if (empty($sites)) {
             return false;
         }
+
+        if ($seperatedSiteGroups) {
+            $currentSiteGroupId = $currentSite->groupId;
+            $sites = array_filter($sites, function($siteEntry) use ($currentSiteGroupId) {
+                $site = Craft::$app->getSites()->getSiteById($siteEntry['siteId']);
+                return $site->groupId === $currentSiteGroupId;
+            });
+        }
+
 
         $data = [];
         foreach ($sites as $site) {
