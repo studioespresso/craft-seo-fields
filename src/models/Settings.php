@@ -42,7 +42,7 @@ class Settings extends Model
 
     public $notFoundLimit = 10000;
 
-    public $logicallySeperatedSiteGroups = true;
+    public $logicallySeperatedSiteGroups = false;
 
 
     // Public Methods
