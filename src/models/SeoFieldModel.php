@@ -306,10 +306,20 @@ class SeoFieldModel extends Model
                 ->andWhere('elements.enabled = true')
                 ->distinct(true)
                 ->all();
-        $currentSite = Craft::$app->getSites()->getCurrentSite()->id;
+        $seperatedSiteGroups = SeoFields::getInstance()->getSettings()->logicallySeperatedSiteGroups;
+        $currentSite = Craft::$app->getSites()->getCurrentSite();
+
         $sites = $siteEntries;
         if (empty($sites)) {
             return false;
+        }
+
+        if ($seperatedSiteGroups) {
+            $currentSiteGroupId = $currentSite->groupId;
+            $sites = array_filter($sites, function($siteEntry) use ($currentSiteGroupId) {
+                $site = Craft::$app->getSites()->getSiteById($siteEntry['siteId']);
+                return $site->groupId === $currentSiteGroupId;
+            });
         }
 
         $data = [];
