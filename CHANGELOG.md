@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.1.4 - 2025-11-03
+### Fixed
+- Fixed an error that would happen when viewing robots settings with ``robotsPerSite`` enabled. ([#127](https://github.com/studioespresso/craft-seo-fields/issues/127))
+
 ## 4.1.3 - 2025-11-02
 ### Added
 - Added the ``$logicallySeperatedSiteGroups`` setting, which allows for separating site groups in alternate links.
