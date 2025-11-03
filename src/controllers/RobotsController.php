@@ -21,9 +21,12 @@ class RobotsController extends Controller
     public function actionSettings($siteHandle = null)
     {
         $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($siteHandle);
+        $primarySite = Craft::$app->sites->getPrimarySite();
+
         return $this->renderTemplate('seo-fields/_robots', [
             'data' => $data,
             'robotsPerSite' => SeoFields::$plugin->getSettings()->robotsPerSite,
+            'selectedSite' => $siteHandle ? Craft::$app->sites->getSiteByHandle($siteHandle) : $primarySite,
         ]);
     }
 
