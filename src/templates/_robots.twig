@@ -24,10 +24,12 @@
 
 {% block content %}
     {% if robotsPerSite %}
-        <input type="hidden" name="siteId" value="{{ currentSite.id }}">
+        <input type="hidden" name="siteId" value="{{ selectedSite.id }}">
+{#        {{ hiddenInput('siteId', currentsite.id) }}#}
     {% endif %}
 
     {{ actionInput('seo-fields/robots/save') }}
+
     {% if data.id is defined %}
         {{ forms.hidden({
             name: 'id',

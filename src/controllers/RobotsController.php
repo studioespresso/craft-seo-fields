@@ -38,11 +38,12 @@ class RobotsController extends Controller
         } else {
             $model = new SeoDefaultsModel();
         }
+        $siteId = Craft::$app->getRequest()->getBodyParam('siteId', Craft::$app->getSites()->getPrimarySite()->id);
         $data['enableRobots'] = Craft::$app->getRequest()->getBodyParam('enableRobots');
         $data['robots'] = Craft::$app->getRequest()->getBodyParam('robots');
-        $data['siteId'] = Craft::$app->getRequest()->getBodyParam('siteId', Craft::$app->getSites()->getPrimarySite()->id);
+        $data['siteId'] = $siteId;
         $model->setAttributes($data);
-        SeoFields::$plugin->defaultsService->saveDefaults($model, Craft::$app->sites->currentSite->id);
+        SeoFields::$plugin->defaultsService->saveDefaults($model, $siteId);
     }
 
     public function actionRender()
