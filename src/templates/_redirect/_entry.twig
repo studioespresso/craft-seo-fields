@@ -44,7 +44,7 @@
 
     {{ forms.textField({
         label: 'Old pattern or URL to redirect'|t('seo-fields'),
-        instructions: 'Enter a URL or pattern that should be matched. Depening on the options set below, this will match the path (`/news`) or the full URL (`http://www.example.com/news`).'|t('seo-fields'),
+        instructions: 'Enter a URL or pattern that should be matched. Do not enter the full domain, only the slug. If you need to match for mulitiple domains in 1 site, please use the "Enable for site" option at the top of this form. <br><br> Depening on the options set below, this will match the path (`/news`) or the full URL (`http://www.example.com/news`).'|t('seo-fields'),
         id: 'pattern',
         required: true,
         name: 'fields[pattern]',
