@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.2.2 - 2025-12-30
+### Fixed
+- Fixed validation for creating redirects with full urls as source urls. ([#130](https://github.com/studioespresso/craft-seo-fields/issues/130))
+
 ## 5.2.1 - 2025-11-02
 ### Added
 - Added the ``$logicallySeperatedSiteGroups`` setting, which allows for separating site groups in alternate links.
