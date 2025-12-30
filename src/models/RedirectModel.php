@@ -65,6 +65,19 @@ class RedirectModel extends Model
             [
                 ['id', 'pattern', 'sourceMatch', 'redirect', 'matchType', 'method', 'siteId', 'counter', 'dateLastHit', 'dateLastHit', 'dateCreated', 'dateUpdated'], 'safe',
             ],
+            ['pattern', 'validatePattern'],
         ];
+    }
+
+    public function validatePattern($attribute, $params)
+    {
+        if ($this->sourceMatch != 'url') {
+            $value = trim((string)$this->$attribute);
+
+            // Reject patterns that include a scheme/host (e.g. "http://example.com/path" or "//example.com/path")
+            if (preg_match('/^(https?:\/\/|\/\/)/i', $value)) {
+                $this->addError($attribute, 'Remove "http(s)://" and the domain, the old pattern should only contain the slug');
+            }
+        }
     }
 }
