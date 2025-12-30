@@ -122,20 +122,24 @@ class RedirectService extends Component
         } else {
             $record = new RedirectRecord();
         }
-
         $record->setAttribute('siteId', $model->siteId === "0" ? null : $model->siteId);
-        if (substr($model->pattern, 0, 1) == '/') {
-            $record->setAttribute('pattern', $model->pattern);
+
+        if ($model->sourceMatch !== 'url') {
+            if (substr($model->pattern, 0, 1) == '/') {
+                $record->setAttribute('pattern', $model->pattern);
+            } else {
+                $record->setAttribute('pattern', "/" . $model->pattern);
+            }
         } else {
-            $record->setAttribute('pattern', "/$model->pattern");
+            $record->setAttribute('pattern', $model->pattern);
         }
+//        dd($record->getAttributes());
         $record->setAttribute('sourceMatch', $model->sourceMatch);
         $record->setAttribute('redirect', $model->redirect);
         $record->setAttribute('matchType', $model->matchType);
         $record->setAttribute('counter', $model->counter);
         $record->setAttribute('dateLastHit', $model->dateLastHit);
         $record->setAttribute('method', $model->method);
-
         if ($record->save()) {
             return true;
         }

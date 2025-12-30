@@ -57,6 +57,7 @@ class NotFoundService extends Component
             }
 
             $redirect = $this->getMatchingRedirect($notFoundModel);
+
             if ($redirect) {
                 if (is_array($redirect)) {
                     $record = $redirect['record'];
@@ -112,6 +113,15 @@ class NotFoundService extends Component
         $redirect->where(['and',
             Db::parseParam('pattern', $parsedUrl['path'], '='),
             Db::parseParam('sourceMatch', 'pathWithoutParams', '='),
+        ]);
+
+        if ($redirect->one()) {
+            return $redirect->one();
+        }
+
+        $redirect->where(['and',
+            Db::parseParam('pattern', $model->fullUrl, '='),
+            Db::parseParam('sourceMatch', 'url', '='),
         ]);
 
         if ($redirect->one()) {
