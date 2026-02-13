@@ -1,0 +1,35 @@
+{% import "_includes/forms" as forms %}
+
+    {% if data.id is defined %}
+        {{ forms.hidden({
+            name: 'id',
+            value: data.id
+        }) }}
+    {% endif %}
+
+<div class="field">
+    <div class="heading">
+        <h2>{{ "Why LLM.txt?"|t('seo-fields') }}</h2>
+        <div class="instructions">
+            {{ "TODO"|t('seo-fields') }}
+        </div>
+    </div>
+</div>
+
+
+{{ forms.lightswitchField({
+    label: 'Enable llm.txt'|t('seo-fields'),
+    instructions: 'Let the plugin handle your LLM.txt'|t('seo-fields'),
+    id: 'enableLlm',
+    name: 'enableLlm',
+    value: 1,
+    on: data.enableLlm is not null ? data.enableLlm,
+}) }}
+
+    {{ forms.textareaField({
+        label: 'Robots.txt content'|t('seo-fields'),
+        id: 'robots',
+        name: 'robots',
+        value: data.robots,
+        rows: 25,
+    }) }}

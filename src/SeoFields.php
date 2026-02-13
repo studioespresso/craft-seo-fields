@@ -89,7 +89,7 @@ class SeoFields extends Plugin
 
     // Public Properties
     // =========================================================================
-    public string $schemaVersion = "4.0.0";
+    public string $schemaVersion = "5.0.0";
 
 
     public const EVENT_SEOFIELDS_REGISTER_ELEMENT = "registerSeoElement";
@@ -168,6 +168,12 @@ class SeoFields extends Plugin
                 'url' => 'seo-fields/robots',
             ];
         }
+        if ($currentUser->can('seo-fields:llm')) {
+            $subNavs['llm'] = [
+                'label' => 'LLM.txt',
+                'url' => 'seo-fields/llm',
+            ];
+        }
         if ($currentUser->can('seo-fields:sitemap')) {
             $subNavs['sitemap'] = [
                 'label' => 'Sitemap.xml',
@@ -242,6 +248,9 @@ class SeoFields extends Plugin
                         'seo-fields:robots' => [
                             'label' => Craft::t('seo-fields', 'Robots'),
                         ],
+                        'seo-fields:llm' => [
+                            'label' => Craft::t('seo-fields', 'LLM.txt'),
+                        ],
                         'seo-fields:sitemap' => [
                             'label' => Craft::t('seo-fields', 'Sitemap'),
                         ],
@@ -298,11 +307,11 @@ class SeoFields extends Plugin
                     'seo-fields' => 'seo-fields/defaults/index',
                     'seo-fields/cp-api/<action>' => 'seo-fields/cp-api/<action>',
                     'seo-fields/<controller:(not-found)>/<siteHandle:{handle}>' => 'seo-fields/<controller>/index',
-                    'seo-fields/<controller:(defaults|robots|sitemap|not-found|redirects|schema)>' => 'seo-fields/<controller>/index',
+                    'seo-fields/<controller>' => 'seo-fields/<controller>/index',
                     'seo-fields/<controller:(redirects)>/<id:\d+>' => 'seo-fields/<controller>/<action>',
                     'seo-fields/<controller:(redirects|not-found)>/<action>' => 'seo-fields/<controller>/<action>',
                     'seo-fields/<controller:(redirects|not-found)>/<action>/<id:\d+>' => 'seo-fields/<controller>/<action>',
-                    'seo-fields/<controller:(defaults|robots|sitemap|schema)>/<siteHandle:{handle}>' => 'seo-fields/<controller>/settings',
+                    'seo-fields/<controller:(defaults|robots|sitemap|schema|llm)>/<siteHandle:{handle}>' => 'seo-fields/<controller>/settings',
                 ]);
             }
         );
