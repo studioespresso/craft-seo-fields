@@ -52,6 +52,7 @@ use studioespresso\seofields\services\NotFoundService;
 use studioespresso\seofields\services\RedirectService;
 use studioespresso\seofields\services\RenderService;
 use studioespresso\seofields\services\SchemaService;
+use studioespresso\seofields\services\LlmService;
 use studioespresso\seofields\services\SitemapService;
 use yii\base\Event;
 use yii\base\Exception;
@@ -72,6 +73,7 @@ use yii\web\HttpException;
  * @property RedirectService $redirectService
  * @property NotFoundService $notFoundService
  * @property SchemaService $schemaService
+ * @property LlmService $llmService
  * @method    Settings getSettings()
  */
 class SeoFields extends Plugin
@@ -108,6 +110,7 @@ class SeoFields extends Plugin
             "redirectService" => RedirectService::class,
             "notFoundService" => NotFoundService::class,
             "schemaService" => SchemaService::class,
+            "llmService" => LlmService::class,
         ]);
 
         if (Craft::$app instanceof ConsoleApplication) {
@@ -281,6 +284,9 @@ class SeoFields extends Plugin
                         'robots.txt' => 'seo-fields/robots/render',
                     ]);
                 }
+                $event->rules = array_merge($event->rules, [
+                    'llms.txt' => 'seo-fields/llm/render',
+                ]);
                 if (SeoFields::$plugin->getSettings()->sitemapPerSite) {
                     $shouldRender = SeoFields::getInstance()->sitemapService->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());
                 } else {
@@ -334,6 +340,7 @@ class SeoFields extends Plugin
             Elements::EVENT_AFTER_SAVE_ELEMENT,
             function(ElementEvent $event) {
                 SeoFields::$plugin->sitemapService->clearCacheForElement($event->element);
+                SeoFields::$plugin->llmService->clearCaches();
             }
         );
 
@@ -342,6 +349,15 @@ class SeoFields extends Plugin
             Elements::EVENT_AFTER_DELETE_ELEMENT,
             function(ElementEvent $event) {
                 SeoFields::$plugin->sitemapService->clearCacheForElement($event->element);
+                SeoFields::$plugin->llmService->clearCaches();
+            }
+        );
+
+        Event::on(
+            Entries::class,
+            Entries::EVENT_AFTER_SAVE_SECTION,
+            function(SectionEvent $event) {
+                SeoFields::$plugin->llmService->clearCaches();
             }
         );
 
@@ -350,6 +366,7 @@ class SeoFields extends Plugin
             Entries::EVENT_AFTER_DELETE_SECTION,
             function(SectionEvent $event) {
                 SeoFields::$plugin->sitemapService->clearCaches();
+                SeoFields::$plugin->llmService->clearCaches();
             }
         );
 
@@ -358,6 +375,7 @@ class SeoFields extends Plugin
             Entries::EVENT_AFTER_DELETE_ENTRY_TYPE,
             function(EntryTypeEvent $event) {
                 SeoFields::$plugin->sitemapService->clearCaches();
+                SeoFields::$plugin->llmService->clearCaches();
             }
         );
 
@@ -469,6 +487,11 @@ class SeoFields extends Plugin
                             "key" => 'seofields_sitemaps',
                             "label" => "Sitemap caches (SEO Fields)",
                             "action" => [SeoFields::$plugin->sitemapService, 'clearCaches'],
+                        ],
+                        [
+                            "key" => 'seofields_llm',
+                            "label" => "LLM.txt caches (SEO Fields)",
+                            "action" => [SeoFields::$plugin->llmService, 'clearCaches'],
                         ],
                     ]
                 );
