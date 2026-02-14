@@ -23,6 +23,10 @@ class SeoDefaultsModel extends Model
 
     public $robots;
 
+    public $enableLlm;
+
+    public $llm;
+
     public $schema;
 
     public $sitemap;
@@ -42,6 +46,8 @@ class SeoDefaultsModel extends Model
                     'siteId',
                     'enableRobots',
                     'robots',
+                    'enableLlm',
+                    'llm',
                     'schema',
                     'sitemap',
                     'id',
