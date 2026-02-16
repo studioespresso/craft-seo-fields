@@ -29,7 +29,7 @@ class LlmService extends Component
 
         return Craft::$app->getCache()->getOrSet(
             $cacheKey,
-            function () use ($site, $llmData) {
+            function() use ($site, $llmData) {
                 return $this->_buildMarkdown($site, $llmData);
             },
             $duration,

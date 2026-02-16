@@ -2,7 +2,6 @@
 
 namespace studioespresso\seofields\migrations;
 
-use Craft;
 use craft\db\Migration;
 use studioespresso\seofields\records\DefaultsRecord;
 
