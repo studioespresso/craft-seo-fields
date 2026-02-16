@@ -32,6 +32,7 @@ module.exports = {
                 items:
                     [
                         {text: 'Robots.txt', link: '/robots'},
+                        {text: 'LLMS.txt', link: '/llms'},
                         {text: 'Sitemap.xml', link: '/sitemap'},
                         {text: 'Redirects', link: '/redirects'},
                         {text: '404 tracking', link: '/notfound'},

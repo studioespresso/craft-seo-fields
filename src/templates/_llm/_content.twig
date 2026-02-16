@@ -1,0 +1,94 @@
+{% import "_includes/forms" as forms %}
+
+<input type="hidden" name="siteId" value="{{ site.id }}">
+
+{% if data.id is defined %}
+    {{ forms.hidden({
+        name: 'id',
+        value: data.id
+    }) }}
+{% endif %}
+
+<div class="field">
+    <div class="heading">
+        <h2>{{ "What is llms.txt?"|t('seo-fields') }}</h2>
+        <div class="instructions">
+            {{ "An llms.txt file helps LLMs (Large Language Models) understand your website. It provides a structured markdown summary of your site's content, purpose, and key resources. <a href='https://llmstxt.org' target='_blank'>Learn more about the llms.txt specification</a>."|t('seo-fields')|raw }}
+        </div>
+    </div>
+</div>
+
+{{ forms.lightswitchField({
+    label: 'Enable llms.txt'|t('seo-fields'),
+    instructions: 'Let the plugin handle your llms.txt'|t('seo-fields'),
+    id: 'enableLlm',
+    name: 'enableLlm',
+    value: 1,
+    on: data.enableLlm is not null ? data.enableLlm,
+}) }}
+
+{{ forms.textField({
+    label: 'Title'|t('seo-fields'),
+    instructions: 'The main heading for your llms.txt file. Defaults to the site name if left empty.'|t('seo-fields'),
+    id: 'llmTitle',
+    name: 'llmTitle',
+    value: llmData.title ?? '',
+    placeholder: site.name,
+}) }}
+
+{{ forms.textareaField({
+    label: 'Summary'|t('seo-fields'),
+    instructions: 'A brief description of what this website is about. This will be rendered as a blockquote.'|t('seo-fields'),
+    id: 'llmSummary',
+    name: 'llmSummary',
+    value: llmData.summary ?? '',
+    rows: 3,
+}) }}
+
+{% if sectionsData|length %}
+<div class="field">
+    <div class="heading">
+        <h2>{{ "Description fallback field"|t('seo-fields') }}</h2>
+        <div class="instructions">
+            {{ "When an entry has no SEO meta description, the selected field will be used as the description in llms.txt."|t('seo-fields') }}
+        </div>
+    </div>
+</div>
+
+<table class="data fullwidth collapsible">
+    <thead>
+    <tr>
+        <th>{{ 'Section'|t('seo-fields') }}</th>
+        <th>{{ 'Entry Type'|t('seo-fields') }}</th>
+        <th>{{ 'Fallback field'|t('seo-fields') }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for section in sectionsData %}
+        {% for entryType in section.entryTypes %}
+            {% set currentValue = llmData.descriptionFields[entryType.id ~ ''] ?? '' %}
+            <tr>
+                <th>{% if loop.first %}{{ section.name }}{% endif %}</th>
+                <td>{{ entryType.name }}</td>
+                <td>
+                    <div class="field">
+                        <div class="input ltr">
+                            <div class="select">
+                                <select name="descriptionFields[{{ entryType.id }}]">
+                                    <option value="">{{ '—'|t('seo-fields') }}</option>
+                                    {% for field in entryType.fields %}
+                                        <option value="{{ field.handle }}" {% if currentValue == field.handle %}selected{% endif %}>
+                                            {{ field.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
