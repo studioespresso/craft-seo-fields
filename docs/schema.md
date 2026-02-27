@@ -29,7 +29,7 @@ This can be done with the following snippet:
 ````twig
 {# make sure you add this line above any layout you're extending #}
 {% do entry.setShouldRenderSchema(false) %}
-{% extend 'layout.twig' %}
+{% extends 'layout.twig' %}
 ````
 
 ### 2) Add you own schema tag
@@ -44,7 +44,7 @@ Doing that will make it easier to add a script like the example below:
 
 ````twig
 {# @var schema \Spatie\SchemaOrg\Schema #}
-{% set schema = craft.schema %}
+{% set schema = seoFields.schema %}
 {{ schema.organization
     .name("Studio Espresso")
     .email("info@studioespresso.co")
