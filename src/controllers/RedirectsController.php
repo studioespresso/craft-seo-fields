@@ -14,6 +14,7 @@ use League\Csv\Reader;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Writer\XLSX\Writer;
 use studioespresso\seofields\models\RedirectModel;
+use studioespresso\seofields\records\RedirectRecord;
 use studioespresso\seofields\SeoFields;
 use yii\web\UploadedFile;
 
@@ -132,6 +133,7 @@ class RedirectsController extends Controller
 
     public function actionExport()
     {
+        $site = $this->request->getQueryParam('site', null);
         /** @var Path $pathService */
         $pathService = Craft::$app->getPath();
         $now = DateTimeHelper::now();
@@ -143,7 +145,12 @@ class RedirectsController extends Controller
         $headerRow = Row::fromValues(["Old url", "Redirected to", "Type", "Site Name", "Last hit on", "Total hits"]);
 
         $writer->addRow($headerRow);
-        $redirects = SeoFields::getInstance()->redirectService->getAllRedirects();
+        if($site) {
+            $site = Craft::$app->getSites()->getSiteByHandle($site);
+            $redirects = RedirectRecord::findAll(['siteId' => $site->id]);
+        } else {
+            $redirects = RedirectRecord::find()->all();
+        }
         foreach ($redirects as $redirect) {
             $row = Row::fromValues([
                 $redirect->pattern,
