@@ -24,7 +24,7 @@
   "require": {
     "craftcms/cms": "^5.0.0",
     "spatie/schema-org": "^3.0.0",
-    "league/csv": "^9.0"
+    "openspout/openspout": "^v4.0.0"
   },
   "require-dev": {
     "craftcms/ecs": "dev-main",
