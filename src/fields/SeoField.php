@@ -112,7 +112,7 @@ class SeoField extends Field
      *
      * @return mixed The prepared field value
      */
-    public function normalizeValue($value, ElementInterface $element = null): mixed
+    public function normalizeValue($value, ?ElementInterface $element = null): mixed
     {
         $model = new SeoFieldModel();
         if (is_array($value)) {
@@ -132,7 +132,7 @@ class SeoField extends Field
      *
      * @return null|false `false` in the event that the method is sure that no elements are going to be found.
      */
-    public function serializeValue($value, ElementInterface $element = null): mixed
+    public function serializeValue($value, ?ElementInterface $element = null): mixed
     {
         return parent::serializeValue($value, $element);
     }
@@ -161,7 +161,7 @@ class SeoField extends Field
      *
      * @return string The input HTML.
      */
-    public function getInputHtml($value, ElementInterface $element = null): string
+    public function getInputHtml($value, ?ElementInterface $element = null): string
     {
         $value->siteId = $element->siteId;
 

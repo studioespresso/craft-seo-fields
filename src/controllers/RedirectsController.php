@@ -140,6 +140,7 @@ class RedirectsController extends Controller
         } else {
             $redirects = RedirectRecord::find()->all();
         }
+        /** @var RedirectRecord[] $redirects */
         foreach ($redirects as $redirect) {
             $row = Row::fromValues([
                 $redirect->pattern,
