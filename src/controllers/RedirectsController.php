@@ -4,10 +4,15 @@ namespace studioespresso\seofields\controllers;
 
 use Craft;
 use craft\helpers\App;
+use craft\helpers\DateTimeHelper;
 use craft\helpers\UrlHelper;
+use craft\services\Path;
 use craft\web\Controller;
-use League\Csv\Reader;
+use OpenSpout\Common\Entity\Row;
+use OpenSpout\Reader\CSV\Reader as CsvReader;
+use OpenSpout\Writer\XLSX\Writer;
 use studioespresso\seofields\models\RedirectModel;
+use studioespresso\seofields\records\RedirectRecord;
 use studioespresso\seofields\SeoFields;
 use yii\web\UploadedFile;
 
@@ -70,15 +75,46 @@ class RedirectsController extends Controller
         ]);
     }
 
+    public function actionExport()
+    {
+        $site = $this->request->getQueryParam('site', null);
+        /** @var Path $pathService */
+        $pathService = Craft::$app->getPath();
+        $now = DateTimeHelper::now();
+        $path = $pathService->getTempPath() . "/redirect-{$now->format('Y-m-d h:i:s')}.xlsx";
+
+        $writer = new Writer();
+        $writer->openToFile($path);
+
+        $headerRow = Row::fromValues(["Old url", "Redirected to", "Type", "Site Name", "Last hit on", "Total hits"]);
+
+        $writer->addRow($headerRow);
+        if ($site) {
+            $site = Craft::$app->getSites()->getSiteByHandle($site);
+            $redirects = RedirectRecord::findAll(['siteId' => [$site->id, null]]);
+        } else {
+            $redirects = RedirectRecord::find()->all();
+        }
+
+        /** @var RedirectRecord[] $redirects */
+        foreach ($redirects as $redirect) {
+            $row = Row::fromValues([
+                $redirect->pattern,
+                $redirect->redirect,
+                $redirect->method,
+                $redirect->siteId ? Craft::$app->getSites()->getSiteById($redirect->siteId)->name : 'All Sites',
+                $redirect->dateLastHit ? DateTimeHelper::toDateTime($redirect->lastHit)->format('Y-m-d h:i:s') : '',
+                $redirect->counter,
+            ]);
+            $writer->addRow($row);
+        }
+        $writer->close();
+        return Craft::$app->getResponse()->sendFile($path);
+    }
+
     public function actionUpload()
     {
         $this->requirePostRequest();
-
-        // If your CSV document was created or is read on a Macintosh computer,
-        // add the following lines before using the library to help PHP detect line ending in Mac OS X
-        if (!ini_get('auto_detect_line_endings')) {
-            ini_set('auto_detect_line_endings', '1');
-        }
 
         $file = UploadedFile::getInstanceByName('file');
 
@@ -86,11 +122,6 @@ class RedirectsController extends Controller
             $filename = self::IMPORT_FILE;
             $filePath = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . $filename;
             $file->saveAs($filePath, false);
-            $csv = Reader::createFromPath($file->tempName);
-            $headers = $csv->fetchOne(0);
-            Craft::info(print_r($headers, true), __METHOD__);
-            $variables['headers'] = $headers;
-            $variables['filename'] = $filePath;
         }
 
         $this->redirect(UrlHelper::cpUrl('seo-fields/redirects/import'));
@@ -103,8 +134,7 @@ class RedirectsController extends Controller
         if (!file_exists($filePath)) {
             return $this->redirect(UrlHelper::cpUrl('seo-fields/redirects'));
         }
-        $csv = Reader::createFromPath($filePath);
-        $headers = $csv->fetchOne(0);
+        $headers = $this->getHeaders($filePath);
         $variables['headers'] = $headers;
         $variables['filename'] = $filePath;
         $variables['sites'] = $this->getSitesMenu();
@@ -129,14 +159,9 @@ class RedirectsController extends Controller
 
         $filename = self::IMPORT_FILE;
         $filePath = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . $filename;
-        $reader = Reader::createFromPath($filePath);
-        //$headers = $reader->fetchOne(0);
-        $reader->setHeaderOffset(1);
 
-        $headers = $this->getHeaders($reader);
-        $rows = $this->getRows($reader);
-        $variables['headers'] = $headers;
-        $variables['filename'] = $filePath;
+        $rows = $this->getRows($filePath);
+        $headers = $this->getHeaders($filePath);
 
         $results = SeoFields::getInstance()->redirectService->import($rows, $settings);
         return $this->renderTemplate('seo-fields/_redirect/_import_results', $results);
@@ -173,30 +198,40 @@ class RedirectsController extends Controller
         return $sites;
     }
 
-    private function getHeaders($reader)
+    private function getHeaders(string $filePath): array
     {
-        // Support for league/csv v8 with a header
-        try {
-            return $reader->fetchOne(0);
-        } catch (\Throwable $e) {
+        $reader = new CsvReader();
+        $reader->open($filePath);
+
+        foreach ($reader->getSheetIterator() as $sheet) {
+            foreach ($sheet->getRowIterator() as $row) {
+                $reader->close();
+                return $row->toArray();
+            }
         }
 
-        try {
-            $reader->setHeaderOffset(0);
-            return $reader->getHeader();
-        } catch (\Throwable $e) {
-        }
+        $reader->close();
+        return [];
     }
-    private function getRows(Reader $reader)
+
+    private function getRows(string $filePath): array
     {
-        try {
-            return $reader->fetchAll();
-        } catch (\Throwable $e) {
+        $reader = new CsvReader();
+        $reader->open($filePath);
+
+        $rows = [];
+        $isFirstRow = true;
+        foreach ($reader->getSheetIterator() as $sheet) {
+            foreach ($sheet->getRowIterator() as $row) {
+                if ($isFirstRow) {
+                    $isFirstRow = false;
+                    continue;
+                }
+                $rows[] = $row->toArray();
+            }
         }
 
-        try {
-            return $reader->getIterator();
-        } catch (\Throwable $e) {
-        }
+        $reader->close();
+        return $rows;
     }
 }
