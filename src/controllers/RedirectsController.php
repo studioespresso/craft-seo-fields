@@ -5,10 +5,14 @@ namespace studioespresso\seofields\controllers;
 use Craft;
 use craft\helpers\App;
 use craft\helpers\Cp;
+use craft\helpers\DateTimeHelper;
 use craft\helpers\UrlHelper;
 use craft\models\Site;
+use craft\services\Path;
 use craft\web\Controller;
 use League\Csv\Reader;
+use OpenSpout\Common\Entity\Row;
+use OpenSpout\Writer\XLSX\Writer;
 use studioespresso\seofields\models\RedirectModel;
 use studioespresso\seofields\SeoFields;
 use yii\web\UploadedFile;
@@ -36,7 +40,7 @@ class RedirectsController extends Controller
 
         $sites = Craft::$app->getSites()->getEditableSites();
 
-        $crumbs = ['label' => $this->site->name, ];
+        $crumbs = ['label' => $this->site->name,];
         if (Craft::$app->getIsMultiSite()) {
             $crumbs['menu'] = [
                 'label' => Craft::t('site', 'Select site'),
@@ -124,6 +128,36 @@ class RedirectsController extends Controller
         }
 
         $this->redirect(UrlHelper::cpUrl('seo-fields/redirects/import'));
+    }
+
+    public function actionExport()
+    {
+        /** @var Path $pathService */
+        $pathService = Craft::$app->getPath();
+        $now = DateTimeHelper::now();
+        $path = $pathService->getTempPath() . "/redirect-{$now->format('Y-m-d h:i:s')}.xlsx";
+
+        $writer = new Writer();
+        $writer->openToFile($path);
+
+        $headerRow = Row::fromValues(["Old url", "Redirected to", "Type", "Site Name", "Last hit on", "Total hits"]);
+
+        $writer->addRow($headerRow);
+        $redirects = SeoFields::getInstance()->redirectService->getAllRedirects();
+        foreach ($redirects as $redirect) {
+            $row = Row::fromValues([
+                $redirect->pattern,
+                $redirect->redirect,
+                $redirect->method,
+                $redirect->siteId ? Craft::$app->getSites()->getSiteById($redirect->siteId)->name : 'All Sites',
+                $redirect->dateLastHit ? DateTimeHelper::toDateTime($redirect->lastHit)->format('Y-m-d h:i:s') : '',
+                $redirect->counter,
+            ]);
+            $writer->addRow($row);
+        }
+        $writer->close();
+        return Craft::$app->getResponse()->sendFile($path);
+
     }
 
     public function actionImport()
