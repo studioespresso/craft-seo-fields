@@ -51,6 +51,8 @@
                style="display: none;">
         <label class="btn" for="file">{{ "Import CSV File"|t('seo-fields') }}</label>
     </form>
+    <a href="{{ cpUrl('seo-fields/redirects/export') }}"
+       class="btn">{{ 'Export'|t('seo-fields') }}</a>
     <a href="{{ cpUrl('seo-fields/redirects/add') }}"
        class="btn submit add icon">{{ 'New redirect'|t('seo-fields') }}</a>
 {% endblock %}
