@@ -2,7 +2,7 @@
   "name": "studioespresso/craft-seo-fields",
   "description": "Fields for your SEO & OG meta data",
   "type": "craft-plugin",
-  "version": "5.3.0",
+  "version": "5.3.1",
   "keywords": [
     "craft",
     "cms",
@@ -35,7 +35,6 @@
     "fix-cs": "ecs check --ansi --fix",
     "phpstan": "phpstan --memory-limit=1G",
     "ci": "ecs check --ansi --fix && phpstan --memory-limit=1G"
-
   },
   "autoload": {
     "psr-4": {
