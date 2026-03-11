@@ -2,7 +2,10 @@
 
 namespace studioespresso\seofields\services;
 
+use Craft;
 use craft\base\Component;
+use craft\web\View;
+use Spatie\SchemaOrg\Graph;
 use Spatie\SchemaOrg\Schema;
 use studioespresso\seofields\SeoFields;
 
@@ -13,6 +16,35 @@ use studioespresso\seofields\SeoFields;
  */
 class SchemaService extends Component
 {
+    private ?Graph $graph = null;
+    private bool $renderRegistered = false;
+
+    public function getGraph(): Graph
+    {
+        if ($this->graph === null) {
+            $this->graph = new Graph();
+            $this->registerDeferredRender();
+        }
+        return $this->graph;
+    }
+
+    private function registerDeferredRender(): void
+    {
+        if ($this->renderRegistered) {
+            return;
+        }
+        $this->renderRegistered = true;
+
+        Craft::$app->getView()->on(View::EVENT_END_PAGE, function () {
+            if ($this->graph !== null) {
+                Craft::$app->getView()->registerHtml(
+                    $this->graph->toScript(),
+                    View::POS_END
+                );
+            }
+        });
+    }
+
     public function getDefaultOptions()
     {
         $options = SeoFields::getInstance()->getSettings()->schemaOptions;

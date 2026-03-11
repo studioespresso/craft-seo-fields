@@ -12,7 +12,6 @@ use craft\elements\Entry;
 use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use craft\models\ImageTransform;
-use craft\web\View;
 use Spatie\SchemaOrg\Schema;
 use Spatie\SchemaOrg\WebPage;
 use studioespresso\seofields\SeoFields;
@@ -77,10 +76,16 @@ class SeoFieldModel extends Model
         }
 
         try {
-            $schema = null;
             $primarySite = Craft::$app->getSites()->getPrimarySite();
             $defaults = SeoFields::getInstance()->defaultsService->getDataBySite($primarySite);
             $settings = $defaults->getSchema();
+
+            $graph = SeoFields::getInstance()->schemaService->getGraph();
+
+            $graph->organization()
+                ->setProperty('@id', '#organization')
+                ->name($this->siteDefault->defaultSiteTitle ?? Craft::$app->getSystemName())
+                ->url(UrlHelper::siteUrl());
 
             switch (get_class($element)) {
                 case Entry::class:
@@ -93,10 +98,13 @@ class SeoFieldModel extends Model
                     }
 
                     /** @var Schema $schema */
-                    $schema = \Craft::createObject($schemaClass);
-                    $schema->name($this->getMetaTitle($element) ?? ""); // @phpstan-ignore-line
-                    $schema->description($this->getMetaDescription() ?? ""); // @phpstan-ignore-line
-                    $schema->url($element->getUrl() ?? ""); // @phpstan-ignore-line
+                    $method = lcfirst((new \ReflectionClass($schemaClass))->getShortName());
+                    $graph->{$method}()
+                        ->setProperty('@id', '#page')
+                        ->name($this->getMetaTitle($element) ?? "") // @phpstan-ignore-line
+                        ->author($graph->organization())
+                        ->description($this->getMetaDescription() ?? "") // @phpstan-ignore-line
+                        ->url($element->getUrl() ?? ""); // @phpstan-ignore-line
                     break;
                 case Category::class:
                     if (isset($settings['categories'])) {
@@ -106,25 +114,16 @@ class SeoFieldModel extends Model
                     } else {
                         $schemaClass = WebPage::class;
                     }
-                    $schemaSettings = $settings['groups'];
-                    $groupId = $element->group->id;
-                    $schemaClass = $schemaSettings[$groupId] ?? WebPage::class;
 
-                    /** @var Schema $schema */
-                    $schema = Craft::createObject($schemaClass);
-                    $schema->name($this->getMetaTitle($element) ?? ""); // @phpstan-ignore-line
-                    $schema->description($this->getMetaDescription() ?? ""); // @phpstan-ignore-line
-                    $schema->url($element->getUrl() ?? ""); // @phpstan-ignore-line
+                    $method = lcfirst((new \ReflectionClass($schemaClass))->getShortName());
+                    $graph->{$method}()
+                        ->setProperty('@id', '#page')
+                        ->name($this->getMetaTitle($element) ?? "") // @phpstan-ignore-line
+                        ->description($this->getMetaDescription() ?? "") // @phpstan-ignore-line
+                        ->url($element->getUrl() ?? ""); // @phpstan-ignore-line
                     break;
             }
-            if ($schema) {
-                \Craft::$app->getView()->registerScript(
-                    Json::encode($schema),
-                    View::POS_END, [
-                        'type' => 'application/ld+json',
-                    ]
-                );
-            }
+
         } catch (\Exception $e) {
             \Craft::error($e, SeoFields::class);
             return null;
@@ -316,7 +315,7 @@ class SeoFieldModel extends Model
 
         if ($seperatedSiteGroups) {
             $currentSiteGroupId = $currentSite->groupId;
-            $sites = array_filter($sites, function($siteEntry) use ($currentSiteGroupId) {
+            $sites = array_filter($sites, function ($siteEntry) use ($currentSiteGroupId) {
                 $site = Craft::$app->getSites()->getSiteById($siteEntry['siteId']);
                 return $site->groupId === $currentSiteGroupId;
             });
