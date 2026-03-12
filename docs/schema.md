@@ -21,35 +21,79 @@ The fields from the SEO field (meta title, meta description, facebook image) wil
 
 <img src="/img/schema_org.png" alt="">
 
-## Custom markup & template overrides
-In case you want to specify the schema type yourself, overwrite the values or set additional properties, you can do so by following these steps.
-### 1) Disable to plugin from rendering the schema data.
-This can be done with the following snippet:
+## Schema Builder API
+
+The plugin exposes a shared schema graph that you can add to from any template or include. All types are merged into a single `<script type="application/ld+json">` tag automatically — no manual output needed.
+
+### Adding schema types
+
+Use `seoFields.graph` to add top-level schema types to the page:
 
 ````twig
-{# make sure you add this line above any layout you're extending #}
+{% do seoFields.graph.event()
+    .name(entry.title)
+    .description(entry.intro|striptags)
+    .url(entry.url)
+%}
+````
+
+The default schema (organization + section-level type) is still added automatically. Anything you add from your templates merges into the same graph.
+
+### Building across includes
+
+Your entry template and its includes all contribute to the same graph:
+
+````twig
+{# _events/_entry.twig #}
+{% do seoFields.graph.event()
+    .name(entry.title)
+    .description(entry.intro|striptags)
+    .url(entry.url)
+%}
+
+{% include '_snippets/_faq' with { faqs: entry.faqBlocks } %}
+````
+
+````twig
+{# _snippets/_faq.twig #}
+{% if faqs|length %}
+    {% set questions = [] %}
+    {% for faq in faqs.all() %}
+        {% set questions = questions|merge([
+            seoFields.schema.question()
+                .name(faq.title)
+                .acceptedAnswer(
+                    seoFields.schema.answer().text(faq.answer|striptags)
+                )
+        ]) %}
+    {% endfor %}
+    {% do seoFields.graph.fAQPage().mainEntity(questions) %}
+{% endif %}
+````
+
+### `seoFields.graph` vs `seoFields.schema`
+
+- **`seoFields.graph`** — the shared Graph instance for the current request. Use this for top-level schema types (Event, FAQPage, Article, etc.) that end up in the `@graph` array.
+- **`seoFields.schema`** — a factory for creating standalone types. Use this for nested objects like `Question` and `Answer` that get passed as properties to graph nodes.
+
+### Setting custom properties
+
+Every schema type supports the fluent API from [spatie/schema-org](https://github.com/spatie/schema-org). For properties without a named method, use `setProperty`:
+
+````twig
+{% do seoFields.graph.event()
+    .setProperty('@id', '#my-event')
+    .setProperty('eventAttendanceMode', 'https://schema.org/OfflineEventAttendanceMode')
+%}
+````
+
+## Disabling schema output
+
+If you want to fully disable schema output for a specific entry, you can still do so:
+
+````twig
 {% do entry.setShouldRenderSchema(false) %}
 {% extends 'layout.twig' %}
-````
-
-### 2) Add you own schema tag
-
-You can create a new Schema object through the ``seoFields`` variable in your template.
-````twig
-{# @var schema \Spatie\SchemaOrg\Schema #}
-{% set schema = seoFields.schema %}
-````
-When using PHPStorm, it's recommended that you use the [Symfony Plugin](https://plugins.jetbrains.com/plugin/7219-symfony-plugin), to get proper autocompletion on the created object
-Doing that will make it easier to add a script like the example below:
-
-````twig
-{# @var schema \Spatie\SchemaOrg\Schema #}
-{% set schema = seoFields.schema %}
-{{ schema.organization
-    .name("Studio Espresso")
-    .email("info@studioespresso.co")
-|raw }}
-
 ````
 
 
