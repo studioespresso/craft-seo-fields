@@ -48,6 +48,7 @@ use studioespresso\seofields\fields\SeoField;
 use studioespresso\seofields\models\Settings;
 use studioespresso\seofields\records\NotFoundRecord;
 use studioespresso\seofields\services\DefaultsService;
+use studioespresso\seofields\services\LlmService;
 use studioespresso\seofields\services\NotFoundService;
 use studioespresso\seofields\services\RedirectService;
 use studioespresso\seofields\services\RenderService;
@@ -72,6 +73,7 @@ use yii\web\HttpException;
  * @property RedirectService $redirectService
  * @property NotFoundService $notFoundService
  * @property SchemaService $schemaService
+ * @property LlmService $llmService
  * @method    Settings getSettings()
  */
 class SeoFields extends Plugin
@@ -89,7 +91,7 @@ class SeoFields extends Plugin
 
     // Public Properties
     // =========================================================================
-    public string $schemaVersion = "4.0.0";
+    public string $schemaVersion = "5.0.0";
 
 
     public const EVENT_SEOFIELDS_REGISTER_ELEMENT = "registerSeoElement";
@@ -108,6 +110,7 @@ class SeoFields extends Plugin
             "redirectService" => RedirectService::class,
             "notFoundService" => NotFoundService::class,
             "schemaService" => SchemaService::class,
+            "llmService" => LlmService::class,
         ]);
 
         if (Craft::$app instanceof ConsoleApplication) {
@@ -166,6 +169,12 @@ class SeoFields extends Plugin
             $subNavs['robots'] = [
                 'label' => 'Robots.txt',
                 'url' => 'seo-fields/robots',
+            ];
+        }
+        if ($currentUser->can('seo-fields:llm')) {
+            $subNavs['llm'] = [
+                'label' => 'LLM.txt',
+                'url' => 'seo-fields/llm',
             ];
         }
         if ($currentUser->can('seo-fields:sitemap')) {
@@ -242,6 +251,9 @@ class SeoFields extends Plugin
                         'seo-fields:robots' => [
                             'label' => Craft::t('seo-fields', 'Robots'),
                         ],
+                        'seo-fields:llm' => [
+                            'label' => Craft::t('seo-fields', 'LLM.txt'),
+                        ],
                         'seo-fields:sitemap' => [
                             'label' => Craft::t('seo-fields', 'Sitemap'),
                         ],
@@ -272,6 +284,9 @@ class SeoFields extends Plugin
                         'robots.txt' => 'seo-fields/robots/render',
                     ]);
                 }
+                $event->rules = array_merge($event->rules, [
+                    'llms.txt' => 'seo-fields/llm/render',
+                ]);
                 if (SeoFields::$plugin->getSettings()->sitemapPerSite) {
                     $shouldRender = SeoFields::getInstance()->sitemapService->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());
                 } else {
@@ -298,11 +313,11 @@ class SeoFields extends Plugin
                     'seo-fields' => 'seo-fields/defaults/index',
                     'seo-fields/cp-api/<action>' => 'seo-fields/cp-api/<action>',
                     'seo-fields/<controller:(not-found)>/<siteHandle:{handle}>' => 'seo-fields/<controller>/index',
-                    'seo-fields/<controller:(defaults|robots|sitemap|not-found|redirects|schema)>' => 'seo-fields/<controller>/index',
+                    'seo-fields/<controller>' => 'seo-fields/<controller>/index',
                     'seo-fields/<controller:(redirects)>/<id:\d+>' => 'seo-fields/<controller>/<action>',
                     'seo-fields/<controller:(redirects|not-found)>/<action>' => 'seo-fields/<controller>/<action>',
                     'seo-fields/<controller:(redirects|not-found)>/<action>/<id:\d+>' => 'seo-fields/<controller>/<action>',
-                    'seo-fields/<controller:(defaults|robots|sitemap|schema)>/<siteHandle:{handle}>' => 'seo-fields/<controller>/settings',
+                    'seo-fields/<controller:(defaults|robots|sitemap|schema|llm)>/<siteHandle:{handle}>' => 'seo-fields/<controller>/settings',
                 ]);
             }
         );
@@ -325,6 +340,7 @@ class SeoFields extends Plugin
             Elements::EVENT_AFTER_SAVE_ELEMENT,
             function(ElementEvent $event) {
                 SeoFields::$plugin->sitemapService->clearCacheForElement($event->element);
+                SeoFields::$plugin->llmService->clearCaches();
             }
         );
 
@@ -333,6 +349,15 @@ class SeoFields extends Plugin
             Elements::EVENT_AFTER_DELETE_ELEMENT,
             function(ElementEvent $event) {
                 SeoFields::$plugin->sitemapService->clearCacheForElement($event->element);
+                SeoFields::$plugin->llmService->clearCaches();
+            }
+        );
+
+        Event::on(
+            Entries::class,
+            Entries::EVENT_AFTER_SAVE_SECTION,
+            function(SectionEvent $event) {
+                SeoFields::$plugin->llmService->clearCaches();
             }
         );
 
@@ -341,6 +366,7 @@ class SeoFields extends Plugin
             Entries::EVENT_AFTER_DELETE_SECTION,
             function(SectionEvent $event) {
                 SeoFields::$plugin->sitemapService->clearCaches();
+                SeoFields::$plugin->llmService->clearCaches();
             }
         );
 
@@ -349,6 +375,7 @@ class SeoFields extends Plugin
             Entries::EVENT_AFTER_DELETE_ENTRY_TYPE,
             function(EntryTypeEvent $event) {
                 SeoFields::$plugin->sitemapService->clearCaches();
+                SeoFields::$plugin->llmService->clearCaches();
             }
         );
 
@@ -460,6 +487,11 @@ class SeoFields extends Plugin
                             "key" => 'seofields_sitemaps',
                             "label" => "Sitemap caches (SEO Fields)",
                             "action" => [SeoFields::$plugin->sitemapService, 'clearCaches'],
+                        ],
+                        [
+                            "key" => 'seofields_llm',
+                            "label" => "LLM.txt caches (SEO Fields)",
+                            "action" => [SeoFields::$plugin->llmService, 'clearCaches'],
                         ],
                     ]
                 );

@@ -33,6 +33,8 @@ class DefaultsService extends Component
         $record->setAttribute('siteId', $model->siteId ?? $siteId);
         $record->setAttribute('enableRobots', $model->enableRobots);
         $record->setAttribute('robots', $model->robots);
+        $record->setAttribute('enableLlm', $model->enableLlm);
+        $record->setAttribute('llm', $model->llm);
         $record->setAttribute('schema', $model->schema);
         $record->setAttribute('sitemap', $model->sitemap);
 
@@ -69,6 +71,8 @@ class DefaultsService extends Component
                     'id' => $record->id,
                     'enableRobots' => $record->enableRobots,
                     'robots' => $record->robots,
+                    'enableLlm' => $record->enableLlm,
+                    'llm' => $record->llm,
                     'schema' => $record->schema,
                     'sitemap' => $record->sitemap,
                 ]);
@@ -108,6 +112,22 @@ class DefaultsService extends Component
             $model->setAttributes($fields);
             return $model;
         }
+    }
+
+    public function getLlmForSite(Site $site)
+    {
+        $record = $this->getRecordForSiteId($site->id);
+        if (!$record || !$record->enableLlm) {
+            return false;
+        }
+
+        $model = new SeoDefaultsModel();
+        $fields = [
+            'enableLlm' => $record->enableLlm,
+            'llm' => $record->llm,
+        ];
+        $model->setAttributes($fields);
+        return $model;
     }
 
     public function getRecordForSiteId($siteId)
