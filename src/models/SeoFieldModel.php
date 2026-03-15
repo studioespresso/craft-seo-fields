@@ -82,9 +82,31 @@ class SeoFieldModel extends Model
 
             $graph = SeoFields::getInstance()->schemaService->getGraph();
 
-            $graph->organization()
+            $entityName = $defaults->organizationName ?: ($defaults->defaultSiteTitle ?: Craft::$app->getSystemName());
+
+            $entityClass = $defaults->siteEntity ?: get_class(Schema::organization());
+            $entityMethod = lcfirst((new \ReflectionClass($entityClass))->getShortName());
+
+            $entity = $graph->{$entityMethod}()
                 ->setProperty('@id', '#organization')
-                ->name($this->siteDefault->defaultSiteTitle ?? Craft::$app->getSystemName())
+                ->name($entityName)
+                ->url(UrlHelper::siteUrl());
+
+            if (!empty($defaults->organizationLogo)) {
+                $logoAsset = Craft::$app->getAssets()->getAssetById(is_array($defaults->organizationLogo) ? $defaults->organizationLogo[0] : $defaults->organizationLogo);
+                if ($logoAsset) {
+                    $entity->logo($logoAsset->getUrl());
+                }
+            }
+
+            if (!empty($defaults->sameAs) && is_array($defaults->sameAs)) {
+                $entity->sameAs($defaults->sameAs);
+            }
+
+            $graph->webSite()
+                ->setProperty('@id', '#website')
+                ->name($entityName)
+                ->publisher(['@id' => '#organization'])
                 ->url(UrlHelper::siteUrl());
 
             switch (get_class($element)) {
@@ -99,12 +121,14 @@ class SeoFieldModel extends Model
 
                     /** @var Schema $schema */
                     $method = lcfirst((new \ReflectionClass($schemaClass))->getShortName());
-                    $graph->{$method}()
+                    $pageNode = $graph->{$method}()
                         ->setProperty('@id', '#page')
                         ->name($this->getMetaTitle($element) ?? "") // @phpstan-ignore-line
-                        ->author($graph->organization())
+                        ->author(['@id' => '#organization'])
+                        ->isPartOf(['@id' => '#website'])
                         ->description($this->getMetaDescription() ?? "") // @phpstan-ignore-line
                         ->url($element->getUrl() ?? ""); // @phpstan-ignore-line
+                    SeoFields::getInstance()->schemaService->setPageNode($pageNode);
                     break;
                 case Category::class:
                     if (isset($settings['categories'])) {
@@ -116,11 +140,14 @@ class SeoFieldModel extends Model
                     }
 
                     $method = lcfirst((new \ReflectionClass($schemaClass))->getShortName());
-                    $graph->{$method}()
+                    $pageNode = $graph->{$method}()
                         ->setProperty('@id', '#page')
                         ->name($this->getMetaTitle($element) ?? "") // @phpstan-ignore-line
+                        ->author(['@id' => '#organization'])
+                        ->isPartOf(['@id' => '#website'])
                         ->description($this->getMetaDescription() ?? "") // @phpstan-ignore-line
                         ->url($element->getUrl() ?? ""); // @phpstan-ignore-line
+                    SeoFields::getInstance()->schemaService->setPageNode($pageNode);
                     break;
             }
 

@@ -31,6 +31,67 @@
         }) }}
     {% endif %}
 
+    <h2>{{ "Organization & Website"|t('seo-fields') }}</h2>
+
+    {{ forms.selectField({
+        label: 'Site entity type'|t('seo-fields'),
+        instructions: 'The Schema.org type that represents your site\'s owner or subject'|t('seo-fields'),
+        id: 'siteEntity',
+        name: 'siteEntity',
+        options: siteEntityOptions,
+        value: data['siteEntity'],
+    }) }}
+
+    {{ forms.textField({
+        label: 'Organization name'|t('seo-fields'),
+        instructions: 'Leave blank to use the default site title'|t('seo-fields'),
+        id: 'organizationName',
+        name: 'organizationName',
+        size: 80,
+        value: data['organizationName']}) }}
+
+    {% if craft.app.volumes.getAllVolumes()|length %}
+        {{ forms.elementSelectField({
+            label: "Organization logo"|t('seo-fields'),
+            id: "organizationLogo",
+            name: "organizationLogo",
+            elements: data.organizationLogo|length ? craft.assets.id(data.organizationLogo|first).all() : null,
+            elementType: "craft\\elements\\Asset",
+            criteria: {
+                kind: ["image"],
+            },
+            viewMode: "cards",
+            limit: 1,
+            selectionLabel: "Select a logo"|t('seo-fields'),
+        }) }}
+    {% endif %}
+
+    {% set sameAsRows = {} %}
+    {% if data.sameAs is iterable %}
+        {% for url in data.sameAs %}
+            {% set sameAsRows = sameAsRows|merge({('row' ~ loop.index): {url: url}}) %}
+        {% endfor %}
+    {% endif %}
+
+    {{ forms.editableTableField({
+        label: 'Social profiles'|t('seo-fields'),
+        instructions: 'Add your organization\'s social profile URLs (Facebook, X, LinkedIn, Instagram, YouTube, etc.)'|t('seo-fields'),
+        id: 'sameAs',
+        name: 'sameAs',
+        cols: {
+            url: {
+                heading: 'URL'|t('seo-fields'),
+                type: 'url',
+            },
+        },
+        rows: sameAsRows,
+        allowAdd: true,
+        allowDelete: true,
+        allowReorder: true,
+    }) }}
+
+    <hr>
+
     <div class="field">
         <div class="heading">
             <h2>{{ 'What is Schema Markup?'|t('seo-fields') }}</h2>

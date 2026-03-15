@@ -40,6 +40,8 @@ class Settings extends Model
 
     public $schemaOptions = [];
 
+    public $siteEntityOptions = [];
+
     public $notFoundLimit = 10000;
 
     public bool $logicallySeperatedSiteGroups = false;

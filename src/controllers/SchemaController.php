@@ -35,6 +35,7 @@ class SchemaController extends Controller
             'sitemapPerSite' => SeoFields::$plugin->getSettings()->sitemapPerSite,
             'sections' => $sections,
             'options' => SeoFields::getInstance()->schemaService->getDefaultOptions(),
+            'siteEntityOptions' => SeoFields::getInstance()->schemaService->getSiteEntityOptions(),
             'selectedSite' => $primarySite,
         ]);
     }
@@ -50,6 +51,17 @@ class SchemaController extends Controller
 
         $data['schema'] = Craft::$app->getRequest()->getBodyParam('data');
         $data['siteId'] = Craft::$app->getRequest()->getBodyParam('siteId', Craft::$app->getSites()->getPrimarySite()->id);
+        $data['siteEntity'] = Craft::$app->getRequest()->getBodyParam('siteEntity');
+        $data['organizationName'] = Craft::$app->getRequest()->getBodyParam('organizationName');
+        $data['organizationLogo'] = Craft::$app->getRequest()->getBodyParam('organizationLogo');
+
+        $sameAsRows = Craft::$app->getRequest()->getBodyParam('sameAs');
+        if (is_array($sameAsRows)) {
+            $data['sameAs'] = array_values(array_filter(array_map(fn($row) => $row['url'] ?? null, $sameAsRows)));
+        } else {
+            $data['sameAs'] = [];
+        }
+
         $model->setAttributes($data);
         SeoFields::$plugin->defaultsService->saveDefaults($model, $data['siteId']);
         SeoFields::$plugin->sitemapService->clearCaches();
