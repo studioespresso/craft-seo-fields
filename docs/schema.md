@@ -67,13 +67,50 @@ Your entry template and its includes all contribute to the same graph:
                 )
         ]) %}
     {% endfor %}
-    {% do seoFields.graph.fAQPage().mainEntity(questions) %}
+    {% do seoFields.pageNode.mainEntity(questions) %}
+    {% do seoFields.addPageType('FAQPage') %}
 {% endif %}
+````
+
+This uses `seoFields.pageNode` to add the `mainEntity` directly to the existing page node, and `seoFields.addPageType('FAQPage')` to merge `FAQPage` into the page's `@type`. The result is a single node with `"@type": ["WebPage", "FAQPage"]` instead of two separate nodes.
+
+### Multi-type page nodes
+
+Sometimes a page should be described by multiple Schema.org types at once (e.g. a WebPage that is also a FAQPage). Instead of creating a separate node, you can merge additional types into the existing page node:
+
+- **`seoFields.pageNode`** — returns the page node (WebPage, Article, etc.) that was automatically created for the current entry or category. Use this to add properties like `mainEntity` directly to it.
+- **`seoFields.addPageType(type)`** — registers an additional `@type` to merge into the page node. During rendering, the page node's `@type` becomes an array (e.g. `["WebPage", "FAQPage"]`).
+
+````twig
+{# Add FAQ data to the existing page node #}
+{% set questions = [] %}
+{% for block in entry.faqBlocks.all() %}
+    {% set questions = questions|merge([
+        seoFields.schema.question()
+            .name(block.title)
+            .acceptedAnswer(seoFields.schema.answer().text(block.answer|striptags))
+    ]) %}
+{% endfor %}
+{% do seoFields.pageNode.mainEntity(questions) %}
+{% do seoFields.addPageType('FAQPage') %}
+````
+
+This outputs:
+````json
+{
+  "@type": ["WebPage", "FAQPage"],
+  "@id": "#page",
+  "name": "...",
+  "mainEntity": [
+    { "@type": "Question", "name": "...", "acceptedAnswer": { "@type": "Answer", "text": "..." } }
+  ]
+}
 ````
 
 ### `seoFields.graph` vs `seoFields.schema`
 
-- **`seoFields.graph`** — the shared Graph instance for the current request. Use this for top-level schema types (Event, FAQPage, Article, etc.) that end up in the `@graph` array.
+- **`seoFields.graph`** — the shared Graph instance for the current request. Use this for top-level schema types (Event, Article, etc.) that end up in the `@graph` array.
+- **`seoFields.pageNode`** — the page node (WebPage, Article, etc.) created for the current entry/category. Use this to add properties to the page node directly.
 - **`seoFields.schema`** — a factory for creating standalone types. Use this for nested objects like `Question` and `Answer` that get passed as properties to graph nodes.
 
 ### Setting custom properties
@@ -108,5 +145,7 @@ Out of the box, you can set a section to one of the following types:
 - <a href="https://schema.org/Recipe" target="_blank">Recipe</a>
 - <a href="https://schema.org/Person" target="_blank">Person</a>
 
-You can extend this list by setting the ``schemaOptions`` attribute in the ``seo-fields.php`` settings file. You can find the syntax [here]() 
+You can extend this list by setting the ``schemaOptions`` attribute in the ``seo-fields.php`` settings file. You can find the syntax [here](/settings.html#schemaoptions).
+
+Similarly, you can add custom options to the **site entity type** dropdown using the ``siteEntityOptions`` setting. This works the same way as ``schemaOptions``. You can find the syntax [here](/settings.html#siteentityoptions).
 

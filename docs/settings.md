@@ -47,6 +47,20 @@ For example:
     ],
 ````
 
+## siteEntityOptions
+Additional options to be listed in the site entity type dropdown in the Schema.org CP section.
+This takes an array of :
+- the class of the Schema object (based on [spatie/schema-org](https://github.com/spatie/schema-org))
+- the label you want it be listed as
+
+For example:
+
+````php
+    "siteEntityOptions" => [
+        get_class(\Spatie\SchemaOrg\Schema::sportsOrganization()) => 'Sports Organization'
+    ],
+````
+
 ## logicallySeperatedSiteGroups <Badge type="tip" text="^4.1.3" />
 Depending on your Craft CMS setup, you may have multiple site groups that are logically separated from each other. For example, you may have a site group for your main website and another site group for a secondary brand.
 
