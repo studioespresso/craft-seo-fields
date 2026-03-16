@@ -53,7 +53,7 @@ class SchemaService extends Component
         }
         $this->renderRegistered = true;
 
-        Craft::$app->getView()->on(View::EVENT_END_PAGE, function () {
+        Craft::$app->getView()->on(View::EVENT_END_PAGE, function() {
             if ($this->graph === null) {
                 return;
             }
@@ -68,7 +68,7 @@ class SchemaService extends Component
 
             $data = $this->graph->toArray();
             // Remove standalone nodes for additional types and merge into page node
-            $data['@graph'] = array_values(array_filter($data['@graph'], function ($node) {
+            $data['@graph'] = array_values(array_filter($data['@graph'], function($node) {
                 return !in_array($node['@type'] ?? '', $this->additionalPageTypes);
             }));
             foreach ($data['@graph'] as &$node) {
@@ -92,6 +92,7 @@ class SchemaService extends Component
         $options = SeoFields::getInstance()->getSettings()->schemaOptions;
         return array_merge([
             get_class(Schema::webPage()) => 'WebPage',
+            get_class(Schema::contactPage()) => 'Contact Page',
             get_class(Schema::article()) => 'Article',
             get_class(Schema::creativeWork()) => 'Creative Work',
             get_class(Schema::review()) => 'Review',

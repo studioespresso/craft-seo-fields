@@ -33,22 +33,27 @@
 
     <h2>{{ "Organization & Website"|t('seo-fields') }}</h2>
 
-    {{ forms.selectField({
-        label: 'Site entity type'|t('seo-fields'),
-        instructions: 'The Schema.org type that represents your site\'s owner or subject'|t('seo-fields'),
-        id: 'siteEntity',
-        name: 'siteEntity',
-        options: siteEntityOptions,
-        value: data['siteEntity'],
-    }) }}
+    <div class="flex flex-nowrap" style="gap: 1rem;">
+        <div style="flex: 0 0 60%;">
+            {{ forms.textField({
+                label: 'Name'|t('seo-fields'),
+                instructions: 'Leave blank to use the default site title'|t('seo-fields'),
+                id: 'organizationName',
+                name: 'organizationName',
+                value: data['organizationName']}) }}
+        </div>
+        <div style="flex: 0 0 40%;">
+            {{ forms.selectField({
+                label: 'Site entity type'|t('seo-fields'),
+                instructions: 'The Schema.org type that represents your site\'s owner or subject'|t('seo-fields'),
+                id: 'siteEntity',
+                name: 'siteEntity',
+                options: siteEntityOptions,
+                value: data['siteEntity'],
+            }) }}
+        </div>
 
-    {{ forms.textField({
-        label: 'Organization name'|t('seo-fields'),
-        instructions: 'Leave blank to use the default site title'|t('seo-fields'),
-        id: 'organizationName',
-        name: 'organizationName',
-        size: 80,
-        value: data['organizationName']}) }}
+    </div>
 
     {% if craft.app.volumes.getAllVolumes()|length %}
         {{ forms.elementSelectField({
@@ -60,7 +65,7 @@
             criteria: {
                 kind: ["image"],
             },
-            viewMode: "cards",
+            viewMode: "field",
             limit: 1,
             selectionLabel: "Select a logo"|t('seo-fields'),
         }) }}

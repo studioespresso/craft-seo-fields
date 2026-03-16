@@ -9,7 +9,6 @@ use craft\db\Query;
 use craft\elements\Asset;
 use craft\elements\Category;
 use craft\elements\Entry;
-use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use craft\models\ImageTransform;
 use Spatie\SchemaOrg\Schema;
@@ -150,7 +149,6 @@ class SeoFieldModel extends Model
                     SeoFields::getInstance()->schemaService->setPageNode($pageNode);
                     break;
             }
-
         } catch (\Exception $e) {
             \Craft::error($e, SeoFields::class);
             return null;
@@ -342,7 +340,7 @@ class SeoFieldModel extends Model
 
         if ($seperatedSiteGroups) {
             $currentSiteGroupId = $currentSite->groupId;
-            $sites = array_filter($sites, function ($siteEntry) use ($currentSiteGroupId) {
+            $sites = array_filter($sites, function($siteEntry) use ($currentSiteGroupId) {
                 $site = Craft::$app->getSites()->getSiteById($siteEntry['siteId']);
                 return $site->groupId === $currentSiteGroupId;
             });
