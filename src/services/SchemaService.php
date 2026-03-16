@@ -43,7 +43,14 @@ class SchemaService extends Component
 
     public function addPageType(string $type): void
     {
-        $this->additionalPageTypes[] = $type;
+        if (!in_array($type, $this->additionalPageTypes, true)) {
+            $this->additionalPageTypes[] = $type;
+        }
+    }
+
+    public function getGraphMethodName(string $className): string
+    {
+        return lcfirst((new \ReflectionClass($className))->getShortName());
     }
 
     private function registerDeferredRender(): void
@@ -67,9 +74,13 @@ class SchemaService extends Component
             }
 
             $data = $this->graph->toArray();
-            // Remove standalone nodes for additional types and merge into page node
+            // Remove standalone nodes for additional types, but only if they don't have their own @id
             $data['@graph'] = array_values(array_filter($data['@graph'], function($node) {
-                return !in_array($node['@type'] ?? '', $this->additionalPageTypes);
+                if (!in_array($node['@type'] ?? '', $this->additionalPageTypes, true)) {
+                    return true;
+                }
+                // Keep nodes that have an explicit @id (they were intentionally added)
+                return isset($node['@id']);
             }));
             foreach ($data['@graph'] as &$node) {
                 if (($node['@id'] ?? '') === '#page') {
@@ -96,7 +107,7 @@ class SchemaService extends Component
             get_class(Schema::article()) => 'Article',
             get_class(Schema::creativeWork()) => 'Creative Work',
             get_class(Schema::review()) => 'Review',
-            get_class(Schema::organization()) => 'Organisation',
+            get_class(Schema::organization()) => 'Organization',
             get_class(Schema::recipe()) => 'Recipe',
             get_class(Schema::person()) => 'Person',
         ], $options);

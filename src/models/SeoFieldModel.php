@@ -75,16 +75,17 @@ class SeoFieldModel extends Model
         }
 
         try {
+            $schemaService = SeoFields::getInstance()->schemaService;
             $primarySite = Craft::$app->getSites()->getPrimarySite();
             $defaults = SeoFields::getInstance()->defaultsService->getDataBySite($primarySite);
             $settings = $defaults->getSchema();
 
-            $graph = SeoFields::getInstance()->schemaService->getGraph();
+            $graph = $schemaService->getGraph();
 
             $entityName = $defaults->organizationName ?: ($defaults->defaultSiteTitle ?: Craft::$app->getSystemName());
 
             $entityClass = $defaults->siteEntity ?: get_class(Schema::organization());
-            $entityMethod = lcfirst((new \ReflectionClass($entityClass))->getShortName());
+            $entityMethod = $schemaService->getGraphMethodName($entityClass);
 
             $entity = $graph->{$entityMethod}()
                 ->setProperty('@id', '#organization')
@@ -108,47 +109,32 @@ class SeoFieldModel extends Model
                 ->publisher(['@id' => '#organization'])
                 ->url(UrlHelper::siteUrl());
 
+            $schemaClass = WebPage::class;
+
             switch (get_class($element)) {
                 case Entry::class:
                     if (isset($settings['sections'])) {
-                        $schemaSettings = $settings['sections'];
                         $sectionId = $element->section->id;
-                        $schemaClass = $schemaSettings[$sectionId] ?? WebPage::class;
-                    } else {
-                        $schemaClass = WebPage::class;
+                        $schemaClass = $settings['sections'][$sectionId] ?? WebPage::class;
                     }
-
-                    /** @var Schema $schema */
-                    $method = lcfirst((new \ReflectionClass($schemaClass))->getShortName());
-                    $pageNode = $graph->{$method}()
-                        ->setProperty('@id', '#page')
-                        ->name($this->getMetaTitle($element) ?? "") // @phpstan-ignore-line
-                        ->author(['@id' => '#organization'])
-                        ->isPartOf(['@id' => '#website'])
-                        ->description($this->getMetaDescription() ?? "") // @phpstan-ignore-line
-                        ->url($element->getUrl() ?? ""); // @phpstan-ignore-line
-                    SeoFields::getInstance()->schemaService->setPageNode($pageNode);
                     break;
                 case Category::class:
                     if (isset($settings['categories'])) {
-                        $schemaSettings = $settings['categories'];
                         $groupId = $element->group->id;
-                        $schemaClass = $schemaSettings[$groupId] ?? WebPage::class;
-                    } else {
-                        $schemaClass = WebPage::class;
+                        $schemaClass = $settings['categories'][$groupId] ?? WebPage::class;
                     }
-
-                    $method = lcfirst((new \ReflectionClass($schemaClass))->getShortName());
-                    $pageNode = $graph->{$method}()
-                        ->setProperty('@id', '#page')
-                        ->name($this->getMetaTitle($element) ?? "") // @phpstan-ignore-line
-                        ->author(['@id' => '#organization'])
-                        ->isPartOf(['@id' => '#website'])
-                        ->description($this->getMetaDescription() ?? "") // @phpstan-ignore-line
-                        ->url($element->getUrl() ?? ""); // @phpstan-ignore-line
-                    SeoFields::getInstance()->schemaService->setPageNode($pageNode);
                     break;
             }
+
+            $method = $schemaService->getGraphMethodName($schemaClass);
+            $pageNode = $graph->{$method}()
+                ->setProperty('@id', '#page')
+                ->name($this->getMetaTitle($element) ?? "") // @phpstan-ignore-line
+                ->author(['@id' => '#organization'])
+                ->isPartOf(['@id' => '#website'])
+                ->description($this->getMetaDescription() ?? "") // @phpstan-ignore-line
+                ->url($element->getUrl() ?? ""); // @phpstan-ignore-line
+            $schemaService->setPageNode($pageNode);
         } catch (\Exception $e) {
             \Craft::error($e, SeoFields::class);
             return null;

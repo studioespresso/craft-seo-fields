@@ -16,18 +16,20 @@ class SchemaController extends Controller
 
     public function init(): void
     {
+        parent::init();
+        $this->requirePermission('seo-fields:schema');
+
         if (Craft::$app->getRequest()->getQueryParam('site')) {
             $this->site = Craft::$app->getSites()->getSiteByHandle(Craft::$app->getRequest()->getQueryParam('site'));
-        } else {
+        }
+        if (!$this->site) {
             $this->site = Craft::$app->getSites()->getPrimarySite();
         }
-        parent::init();
     }
 
     public function actionIndex()
     {
-        $primarySite = Craft::$app->getSites()->getPrimarySite();
-        $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($primarySite->handle);
+        $data = SeoFields::$plugin->defaultsService->getDataBySiteId($this->site->id);
         $sections = Craft::$app->getEntries()->getAllSections();
 
         return $this->renderTemplate('seo-fields/_schema', [
@@ -36,12 +38,14 @@ class SchemaController extends Controller
             'sections' => $sections,
             'options' => SeoFields::getInstance()->schemaService->getDefaultOptions(),
             'siteEntityOptions' => SeoFields::getInstance()->schemaService->getSiteEntityOptions(),
-            'selectedSite' => $primarySite,
+            'selectedSite' => $this->site,
         ]);
     }
 
     public function actionSave()
     {
+        $this->requirePostRequest();
+
         $data = [];
         if (Craft::$app->getRequest()->getBodyParam('id')) {
             $model = SeoFields::$plugin->defaultsService->getDataById(Craft::$app->getRequest()->getBodyParam('id'));
@@ -65,5 +69,8 @@ class SchemaController extends Controller
         $model->setAttributes($data);
         SeoFields::$plugin->defaultsService->saveDefaults($model, $data['siteId']);
         SeoFields::$plugin->sitemapService->clearCaches();
+
+        Craft::$app->getSession()->setNotice(Craft::t('seo-fields', 'Schema settings saved.'));
+        return $this->redirectToPostedUrl();
     }
 }

@@ -1,5 +1,5 @@
 {# @var craft \craft\web\twig\variables\CraftVariable #}
-{% if not currentUser.can('seo-fields:sitemap') %}
+{% if not currentUser.can('seo-fields:schema') %}
     {% exit 401 %}
 {% endif %}
 
@@ -24,6 +24,7 @@
 
 {% block content %}
     {{ actionInput('seo-fields/schema/save') }}
+    {{ redirectInput('seo-fields/schema') }}
     {% if data.id is defined %}
         {{ forms.hidden({
             name: 'id',
@@ -120,7 +121,7 @@
             </thead>
             <tbody>
 
-            {% set schemaSettings = data.schema|json_decode %}
+            {% set schemaSettings = data.getSchema() ?? [] %}
             {% set sectionSettings = schemaSettings.sections ?? [] %}
             {% for section in sections %}
                 {% set settings = attribute(sectionSettings, section.id) ??  null %}
