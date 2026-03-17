@@ -8,7 +8,9 @@ use craft\web\View;
 use Spatie\SchemaOrg\BaseType;
 use Spatie\SchemaOrg\Graph;
 use Spatie\SchemaOrg\Schema;
+use studioespresso\seofields\debug\SchemaPanel;
 use studioespresso\seofields\SeoFields;
+use yii\debug\Module as DebugModule;
 
 /**
  * @author    Studio Espresso
@@ -66,6 +68,10 @@ class SchemaService extends Component
             }
 
             if (empty($this->additionalPageTypes)) {
+                $data = $this->graph->toArray();
+                $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+                $this->_saveDebugData($data, $json);
+
                 Craft::$app->getView()->registerHtml(
                     $this->graph->toScript(),
                     View::POS_END
@@ -91,6 +97,8 @@ class SchemaService extends Component
             unset($node);
 
             $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            $this->_saveDebugData($data, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+
             Craft::$app->getView()->registerHtml(
                 '<script type="application/ld+json">' . $json . '</script>',
                 View::POS_END
@@ -130,5 +138,21 @@ class SchemaService extends Component
     public function schema()
     {
         return new Schema();
+    }
+
+    private function _saveDebugData(array $data, string $json): void
+    {
+        $debugModule = Craft::$app->getModule('debug');
+        if (
+            $debugModule instanceof DebugModule &&
+            isset($debugModule->panels['schema']) &&
+            $debugModule->panels['schema'] instanceof SchemaPanel
+        ) {
+            $debugModule->panels['schema']->data = [
+                'schema' => $data,
+                'json' => $json,
+                'nodes' => count($data['@graph'] ?? []),
+            ];
+        }
     }
 }
