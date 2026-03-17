@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.3.2 - 2026-03-12
+### Fixed
+- Fixed incorrect variable name in export code
+
+## 5.3.1 - 2026-03-10
+### Fixed
+- Allow openspout/openspout 4.x and 5.x
+
+## 5.3.0 - 2026-03-09
+### Added
+- Added support for exporting redirects to xlsx.
+
 ## 5.2.2 - 2025-12-30
 ### Fixed
 - Fixed validation for creating redirects with full urls as source urls. ([#130](https://github.com/studioespresso/craft-seo-fields/issues/130))

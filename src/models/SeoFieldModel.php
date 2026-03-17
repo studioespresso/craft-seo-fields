@@ -63,7 +63,7 @@ class SeoFieldModel extends Model
         $this->siteDefault = SeoFields::getInstance()->defaultsService->getDataBySite($site);
     }
 
-    public function getSchema(Element $element = null)
+    public function getSchema(?Element $element = null)
     {
         if (!$element) {
             return null;
@@ -265,7 +265,7 @@ class SeoFieldModel extends Model
     }
 
 
-    public function getSocialImage(Asset $asset = null)
+    public function getSocialImage(?Asset $asset = null)
     {
         if ($asset) {
             $asset = $asset;
@@ -289,13 +289,13 @@ class SeoFieldModel extends Model
         ];
     }
 
-    public function getOgImage(Asset $asset = null)
+    public function getOgImage(?Asset $asset = null)
     {
         Craft::$app->getDeprecator()->log(__CLASS__ . 'getOgImage', "getOgImage has been replaced by `getSocialImage` and will be removed in a later update");
         return $this->getSocialImage($asset);
     }
 
-    public function getTwitterImage(Asset $asset = null)
+    public function getTwitterImage(?Asset $asset = null)
     {
         Craft::$app->getDeprecator()->log(__CLASS__ . 'getTwitterImage', "getTwitterImage has been replaced by `getSocialImage` and will be removed in a later update");
         return $this->getSocialImage($asset);
