@@ -59,4 +59,15 @@
             }) }}
         </div>
     </div>
+
+    {% if schemaOptions is defined and schemaOptions|length %}
+        {{ forms.selectField({
+            label: "Schema type"|t("seo-fields"),
+            instructions: "Override the default schema type for this entry"|t("seo-fields"),
+            id: name ~ "-schema",
+            name: name ~ "[schema]",
+            options: {"": "Use section default"|t("seo-fields")}|merge(schemaOptions),
+            value: value.schema,
+        }) }}
+    {% endif %}
 </div>

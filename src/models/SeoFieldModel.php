@@ -126,6 +126,10 @@ class SeoFieldModel extends Model
                     break;
             }
 
+            if (!empty($this->schema)) {
+                $schemaClass = $this->schema;
+            }
+
             $method = $schemaService->getGraphMethodName($schemaClass);
             $pageNode = $graph->{$method}()
                 ->setProperty('@id', '#page')
@@ -452,6 +456,7 @@ class SeoFieldModel extends Model
                     'twitterDescription',
                     'twitterImage',
                     'allowIndexing',
+                    'schema',
                 ],
                 'safe',
             ],
