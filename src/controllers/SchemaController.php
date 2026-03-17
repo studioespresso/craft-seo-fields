@@ -6,7 +6,6 @@ use Craft;
 use craft\helpers\Cp;
 use craft\models\Site;
 use craft\web\Controller;
-use craft\web\Response;
 use studioespresso\seofields\models\SeoDefaultsModel;
 use studioespresso\seofields\SeoFields;
 

@@ -2,8 +2,20 @@
 /** @var studioespresso\seofields\debug\SchemaPanel $panel */
 $schema = $panel->data["schema"] ?? null;
 $json = $panel->data["json"] ?? null;
+$warnings = $panel->data["warnings"] ?? [];
 ?>
 <h1>Schema.org Markup</h1>
+
+<?php if (!empty($warnings)): ?>
+    <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 12px 16px; margin-bottom: 16px;">
+        <strong>Validation warnings (<?= count($warnings) ?>)</strong>
+        <ul style="margin: 8px 0 0; padding-left: 20px;">
+            <?php foreach ($warnings as $warning): ?>
+                <li><?= htmlspecialchars($warning) ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
 
 <?php if (empty($schema)): ?>
     <p>No schema markup was generated for this request.</p>

@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.4.0 - 2026-03-17
+### Added
+- Added improved Schema.org API
+- Added support for setting a schema type per entry
+- Added a panel in the debug bar to view the schema and any errors it may contain
+
 ## 5.3.2 - 2026-03-12
 ### Fixed
 - Fixed incorrect variable name in export code

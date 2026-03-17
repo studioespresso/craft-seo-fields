@@ -140,6 +140,59 @@ class SchemaService extends Component
         return new Schema();
     }
 
+    public function validateSchema(array $data): array
+    {
+        $warnings = [];
+
+        foreach ($data['@graph'] ?? [] as $index => $node) {
+            $types = $node['@type'] ?? null;
+            if ($types === null) {
+                $warnings[] = "Node #$index is missing @type.";
+                continue;
+            }
+
+            $typeList = is_array($types) ? $types : [$types];
+            $validProperties = [];
+
+            foreach ($typeList as $type) {
+                $className = 'Spatie\\SchemaOrg\\' . $type;
+                if (!class_exists($className)) {
+                    $warnings[] = "Node \"{$type}\": Unknown schema.org type.";
+                    continue;
+                }
+
+                $reflection = new \ReflectionClass($className);
+                foreach ($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+                    if ($method->getDeclaringClass()->getNamespaceName() === 'Spatie\\SchemaOrg'
+                        && $method->getNumberOfParameters() >= 1
+                        && !str_starts_with($method->getName(), '__')
+                        && !in_array($method->getName(), ['setProperty', 'addProperties', 'if', 'setNonce', 'getProperty', 'getProperties', 'referenced', 'toArray', 'toScript', 'jsonSerialize'], true)
+                    ) {
+                        $validProperties[$method->getName()] = true;
+                    }
+                }
+            }
+
+            if (empty($validProperties)) {
+                continue;
+            }
+
+            $nodeProperties = array_filter(
+                array_keys($node),
+                fn($k) => !str_starts_with($k, '@'),
+            );
+
+            foreach ($nodeProperties as $property) {
+                if (!isset($validProperties[$property])) {
+                    $typeLabel = is_array($types) ? implode('/', $types) : $types;
+                    $warnings[] = "Node \"{$typeLabel}\": Property \"{$property}\" is not defined for this type.";
+                }
+            }
+        }
+
+        return $warnings;
+    }
+
     private function _saveDebugData(array $data, string $json): void
     {
         $debugModule = Craft::$app->getModule('debug');
@@ -148,10 +201,12 @@ class SchemaService extends Component
             isset($debugModule->panels['schema']) &&
             $debugModule->panels['schema'] instanceof SchemaPanel
         ) {
+            $warnings = $this->validateSchema($data);
             $debugModule->panels['schema']->data = [
                 'schema' => $data,
                 'json' => $json,
                 'nodes' => count($data['@graph'] ?? []),
+                'warnings' => $warnings,
             ];
         }
     }
