@@ -9,10 +9,8 @@ use craft\db\Query;
 use craft\elements\Asset;
 use craft\elements\Category;
 use craft\elements\Entry;
-use craft\helpers\Json;
 use craft\helpers\UrlHelper;
 use craft\models\ImageTransform;
-use craft\web\View;
 use Spatie\SchemaOrg\Schema;
 use Spatie\SchemaOrg\WebPage;
 use studioespresso\seofields\SeoFields;
@@ -77,54 +75,70 @@ class SeoFieldModel extends Model
         }
 
         try {
-            $schema = null;
+            $schemaService = SeoFields::getInstance()->schemaService;
             $primarySite = Craft::$app->getSites()->getPrimarySite();
             $defaults = SeoFields::getInstance()->defaultsService->getDataBySite($primarySite);
             $settings = $defaults->getSchema();
 
+            $graph = $schemaService->getGraph();
+
+            $entityName = $defaults->organizationName ?: ($defaults->defaultSiteTitle ?: Craft::$app->getSystemName());
+
+            $entityClass = $defaults->siteEntity ?: get_class(Schema::organization());
+            $entityMethod = $schemaService->getGraphMethodName($entityClass);
+
+            $entity = $graph->{$entityMethod}()
+                ->setProperty('@id', '#organization')
+                ->name($entityName)
+                ->url(UrlHelper::siteUrl());
+
+            if (!empty($defaults->organizationLogo)) {
+                $logoAsset = Craft::$app->getAssets()->getAssetById(is_array($defaults->organizationLogo) ? $defaults->organizationLogo[0] : $defaults->organizationLogo);
+                if ($logoAsset) {
+                    $entity->logo($logoAsset->getUrl());
+                }
+            }
+
+            if (!empty($defaults->sameAs) && is_array($defaults->sameAs)) {
+                $entity->sameAs($defaults->sameAs);
+            }
+
+            $graph->webSite()
+                ->setProperty('@id', '#website')
+                ->name($entityName)
+                ->publisher(['@id' => '#organization'])
+                ->url(UrlHelper::siteUrl());
+
+            $schemaClass = WebPage::class;
+
             switch (get_class($element)) {
                 case Entry::class:
                     if (isset($settings['sections'])) {
-                        $schemaSettings = $settings['sections'];
                         $sectionId = $element->section->id;
-                        $schemaClass = $schemaSettings[$sectionId] ?? WebPage::class;
-                    } else {
-                        $schemaClass = WebPage::class;
+                        $schemaClass = $settings['sections'][$sectionId] ?? WebPage::class;
                     }
-
-                    /** @var Schema $schema */
-                    $schema = \Craft::createObject($schemaClass);
-                    $schema->name($this->getMetaTitle($element) ?? ""); // @phpstan-ignore-line
-                    $schema->description($this->getMetaDescription() ?? ""); // @phpstan-ignore-line
-                    $schema->url($element->getUrl() ?? ""); // @phpstan-ignore-line
                     break;
                 case Category::class:
                     if (isset($settings['categories'])) {
-                        $schemaSettings = $settings['categories'];
                         $groupId = $element->group->id;
-                        $schemaClass = $schemaSettings[$groupId] ?? WebPage::class;
-                    } else {
-                        $schemaClass = WebPage::class;
+                        $schemaClass = $settings['categories'][$groupId] ?? WebPage::class;
                     }
-                    $schemaSettings = $settings['groups'];
-                    $groupId = $element->group->id;
-                    $schemaClass = $schemaSettings[$groupId] ?? WebPage::class;
-
-                    /** @var Schema $schema */
-                    $schema = Craft::createObject($schemaClass);
-                    $schema->name($this->getMetaTitle($element) ?? ""); // @phpstan-ignore-line
-                    $schema->description($this->getMetaDescription() ?? ""); // @phpstan-ignore-line
-                    $schema->url($element->getUrl() ?? ""); // @phpstan-ignore-line
                     break;
             }
-            if ($schema) {
-                \Craft::$app->getView()->registerScript(
-                    Json::encode($schema),
-                    View::POS_END, [
-                        'type' => 'application/ld+json',
-                    ]
-                );
+
+            if (!empty($this->schema)) {
+                $schemaClass = $this->schema;
             }
+
+            $method = $schemaService->getGraphMethodName($schemaClass);
+            $pageNode = $graph->{$method}()
+                ->setProperty('@id', '#page')
+                ->name($this->getMetaTitle($element) ?? "")
+                ->author(['@id' => '#organization'])
+                ->isPartOf(['@id' => '#website'])
+                ->description($this->getMetaDescription() ?? "")
+                ->url($element->getUrl() ?? "");
+            $schemaService->setPageNode($pageNode);
         } catch (\Exception $e) {
             \Craft::error($e, SeoFields::class);
             return null;
@@ -442,6 +456,7 @@ class SeoFieldModel extends Model
                     'twitterDescription',
                     'twitterImage',
                     'allowIndexing',
+                    'schema',
                 ],
                 'safe',
             ],

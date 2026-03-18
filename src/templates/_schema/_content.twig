@@ -1,0 +1,121 @@
+{% import "_includes/forms" as forms %}
+
+<input type="hidden" name="siteId" value="{{ site.id }}">
+
+{% if data.id is defined and data.id %}
+    {{ forms.hidden({
+        name: 'id',
+        value: data.id
+    }) }}
+{% endif %}
+
+<h2>{{ "Organization & Website"|t('seo-fields') }}</h2>
+
+<div class="flex flex-nowrap" style="gap: 1rem;">
+    <div style="flex: 0 0 60%;">
+        {{ forms.textField({
+            label: 'Name'|t('seo-fields'),
+            instructions: 'Leave blank to use the default site title'|t('seo-fields'),
+            id: 'organizationName',
+            name: 'organizationName',
+            value: data['organizationName']}) }}
+    </div>
+    <div style="flex: 0 0 40%;">
+        {{ forms.selectField({
+            label: 'Site entity type'|t('seo-fields'),
+            instructions: 'The Schema.org type that represents your site\'s owner or subject'|t('seo-fields'),
+            id: 'siteEntity',
+            name: 'siteEntity',
+            options: siteEntityOptions,
+            value: data['siteEntity'],
+        }) }}
+    </div>
+
+</div>
+
+{% if craft.app.volumes.getAllVolumes()|length %}
+    {{ forms.elementSelectField({
+        label: "Organization logo"|t('seo-fields'),
+        id: "organizationLogo",
+        name: "organizationLogo",
+        elements: data.organizationLogo|length ? craft.assets.id(data.organizationLogo|first).all() : null,
+        elementType: "craft\\elements\\Asset",
+        criteria: {
+            kind: ["image"],
+        },
+        viewMode: "field",
+        limit: 1,
+        selectionLabel: "Select a logo"|t('seo-fields'),
+    }) }}
+{% endif %}
+
+{% set sameAsRows = {} %}
+{% if data.sameAs is iterable %}
+    {% for url in data.sameAs %}
+        {% set sameAsRows = sameAsRows|merge({('row' ~ loop.index): {url: url}}) %}
+    {% endfor %}
+{% endif %}
+
+{{ forms.editableTableField({
+    label: 'Social profiles'|t('seo-fields'),
+    instructions: 'Add your organization\'s social profile URLs (Facebook, X, LinkedIn, Instagram, YouTube, etc.)'|t('seo-fields'),
+    id: 'sameAs',
+    name: 'sameAs',
+    cols: {
+        url: {
+            heading: 'URL'|t('seo-fields'),
+            type: 'url',
+        },
+    },
+    rows: sameAsRows,
+    allowAdd: true,
+    allowDelete: true,
+    allowReorder: true,
+}) }}
+
+<hr>
+
+<div class="field">
+    <div class="heading">
+        <h2>{{ 'What is Schema Markup?'|t('seo-fields') }}</h2>
+        <div class="instructions">
+            Schema markup, also known as structured data, is the language search engines use to read and understand
+            the content on your pages. By language, we mean a semantic vocabulary (code) that helps search engines
+            characterize and categorize the content of web pages.
+        </div>
+    </div>
+</div>
+
+
+{% set allSections = craft.app.entries.getAllSections() %}
+{% if allSections|length %}
+    <table class="data fullwidth collapsible">
+        <thead>
+        <tr>
+            <th>{{ 'Section'|t('seo-fields') }}</th>
+            <th>{{ 'Type'|t('seo-fields') }}</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% set schemaSettings = data.getSchema() ?? [] %}
+        {% set sectionSettings = schemaSettings.sections ?? [] %}
+        {% for section in sections %}
+            {% set settings = attribute(sectionSettings, section.id) ??  null %}
+            <tr>
+                <th>{{ section.name }}</th>
+                <td>
+                    {{ forms.selectField({
+                        id: section.id~'-selectize',
+                        name: 'data[sections]['~ section.id ~']',
+                        options: options,
+                        includeEnvVars: false,
+                        allowedEnvValues: false,
+                        value: settings ,
+                    }) }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

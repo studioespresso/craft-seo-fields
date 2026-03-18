@@ -27,6 +27,14 @@ class SeoDefaultsModel extends Model
 
     public $sitemap;
 
+    public $organizationName;
+
+    public $organizationLogo;
+
+    public $sameAs;
+
+    public $siteEntity;
+
     /**
      * @inheritdoc
      */
@@ -45,6 +53,10 @@ class SeoDefaultsModel extends Model
                     'schema',
                     'sitemap',
                     'id',
+                    'organizationName',
+                    'organizationLogo',
+                    'sameAs',
+                    'siteEntity',
                 ],
                 'safe',
             ],

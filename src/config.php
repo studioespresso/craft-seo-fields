@@ -19,4 +19,5 @@ return [
     "notFoundLimit" => 10000,
     "createRedirectForUriChange" => true,
     'schemaOptions' => [],
+    'siteEntityOptions' => [],
 ];

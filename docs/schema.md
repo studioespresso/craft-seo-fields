@@ -21,35 +21,120 @@ The fields from the SEO field (meta title, meta description, facebook image) wil
 
 <img src="/img/schema_org.png" alt="">
 
-## Custom markup & template overrides
-In case you want to specify the schema type yourself, overwrite the values or set additional properties, you can do so by following these steps.
-### 1) Disable to plugin from rendering the schema data.
-This can be done with the following snippet:
+## Schema Builder API
+
+The plugin exposes a shared schema graph that you can add to from any template or include. All types are merged into a single `<script type="application/ld+json">` tag automatically — no manual output needed.
+
+### Adding schema types
+
+Use `seoFields.graph` to add top-level schema types to the page:
 
 ````twig
-{# make sure you add this line above any layout you're extending #}
+{% do seoFields.graph.event()
+    .name(entry.title)
+    .description(entry.intro|striptags)
+    .url(entry.url)
+%}
+````
+
+The default schema (organization + section-level type) is still added automatically. Anything you add from your templates merges into the same graph.
+
+### Building across includes
+
+Your entry template and its includes all contribute to the same graph:
+
+````twig
+{# _events/_entry.twig #}
+{% do seoFields.graph.event()
+    .name(entry.title)
+    .description(entry.intro|striptags)
+    .url(entry.url)
+%}
+
+{% include '_snippets/_faq' with { faqs: entry.faqBlocks } %}
+````
+
+````twig
+{# _snippets/_faq.twig #}
+{% if faqs|length %}
+    {% set questions = [] %}
+    {% for faq in faqs.all() %}
+        {% set questions = questions|merge([
+            seoFields.schema.question()
+                .name(faq.title)
+                .acceptedAnswer(
+                    seoFields.schema.answer().text(faq.answer|striptags)
+                )
+        ]) %}
+    {% endfor %}
+    {% do seoFields.pageNode.mainEntity(questions) %}
+    {% do seoFields.addPageType('FAQPage') %}
+{% endif %}
+````
+
+This uses `seoFields.pageNode` to add the `mainEntity` directly to the existing page node, and `seoFields.addPageType('FAQPage')` to merge `FAQPage` into the page's `@type`. The result is a single node with `"@type": ["WebPage", "FAQPage"]` instead of two separate nodes.
+
+### Multi-type page nodes
+
+Sometimes a page should be described by multiple Schema.org types at once (e.g. a WebPage that is also a FAQPage). Instead of creating a separate node, you can merge additional types into the existing page node:
+
+- **`seoFields.pageNode`** — returns the page node (WebPage, Article, etc.) that was automatically created for the current entry or category. Use this to add properties like `mainEntity` directly to it.
+- **`seoFields.addPageType(type)`** — registers an additional `@type` to merge into the page node. During rendering, the page node's `@type` becomes an array (e.g. `["WebPage", "FAQPage"]`).
+
+````twig
+{# Add FAQ data to the existing page node #}
+{% set questions = [] %}
+{% for block in entry.faqBlocks.all() %}
+    {% set questions = questions|merge([
+        seoFields.schema.question()
+            .name(block.title)
+            .acceptedAnswer(seoFields.schema.answer().text(block.answer|striptags))
+    ]) %}
+{% endfor %}
+{% do seoFields.pageNode.mainEntity(questions) %}
+{% do seoFields.addPageType('FAQPage') %}
+````
+
+This outputs:
+````json
+{
+  "@type": ["WebPage", "FAQPage"],
+  "@id": "#page",
+  "name": "...",
+  "mainEntity": [
+    { "@type": "Question", "name": "...", "acceptedAnswer": { "@type": "Answer", "text": "..." } }
+  ]
+}
+````
+
+### `seoFields.graph` vs `seoFields.schema`
+
+- **`seoFields.graph`** — the shared Graph instance for the current request. Use this for top-level schema types (Event, Article, etc.) that end up in the `@graph` array.
+- **`seoFields.pageNode`** — the page node (WebPage, Article, etc.) created for the current entry/category. Use this to add properties to the page node directly.
+- **`seoFields.schema`** — a factory for creating standalone types. Use this for nested objects like `Question` and `Answer` that get passed as properties to graph nodes.
+
+### Setting custom properties
+
+Every schema type supports the fluent API from [spatie/schema-org](https://github.com/spatie/schema-org). For properties without a named method, use `setProperty`:
+
+````twig
+{% do seoFields.graph.event()
+    .setProperty('@id', '#my-event')
+    .setProperty('eventAttendanceMode', 'https://schema.org/OfflineEventAttendanceMode')
+%}
+````
+
+## Disabling schema output
+
+::: warning Deprecated
+`setShouldRenderSchema` is deprecated and will be removed in a future version. Use `seoFields.graph` to add schema types directly instead.
+:::
+
+If you want to fully disable schema output for a specific entry, you can still do so:
+
+````twig
 {% do entry.setShouldRenderSchema(false) %}
 {% extends 'layout.twig' %}
-````
-
-### 2) Add you own schema tag
-
-You can create a new Schema object through the ``seoFields`` variable in your template.
-````twig
-{# @var schema \Spatie\SchemaOrg\Schema #}
-{% set schema = seoFields.schema %}
-````
-When using PHPStorm, it's recommended that you use the [Symfony Plugin](https://plugins.jetbrains.com/plugin/7219-symfony-plugin), to get proper autocompletion on the created object
-Doing that will make it easier to add a script like the example below:
-
-````twig
-{# @var schema \Spatie\SchemaOrg\Schema #}
-{% set schema = seoFields.schema %}
-{{ schema.organization
-    .name("Studio Espresso")
-    .email("info@studioespresso.co")
-|raw }}
-
 ````
 
 
@@ -57,12 +142,26 @@ Doing that will make it easier to add a script like the example below:
 
 Out of the box, you can set a section to one of the following types:
 - <a href="https://schema.org/WebPage" target="_blank">WebPage</a>
+- <a href="https://schema.org/ContactPage" target="_blank">Contact Page</a>
 - <a href="https://schema.org/Article" target="_blank">Article</a>
-- <a href="https://schema.org/CreativeWork" target="_blank">CreativeWork</a>
+- <a href="https://schema.org/CreativeWork" target="_blank">Creative Work</a>
 - <a href="https://schema.org/Review" target="_blank">Review</a>
-- <a href="https://schema.org/Organisation" target="_blank">Organisation</a>
+- <a href="https://schema.org/Organization" target="_blank">Organization</a>
 - <a href="https://schema.org/Recipe" target="_blank">Recipe</a>
 - <a href="https://schema.org/Person" target="_blank">Person</a>
 
-You can extend this list by setting the ``schemaOptions`` attribute in the ``seo-fields.php`` settings file. You can find the syntax [here]() 
+You can extend this list by setting the ``schemaOptions`` attribute in the ``seo-fields.php`` settings file. You can find the syntax [here](/settings.html#schemaoptions).
+
+Similarly, you can add custom options to the **site entity type** dropdown using the ``siteEntityOptions`` setting. This works the same way as ``schemaOptions``. You can find the syntax [here](/settings.html#siteentityoptions).
+
+## Debug toolbar panel
+
+When Craft's debug toolbar is enabled (`devMode`), a **Schema** panel is added to the toolbar. It shows:
+
+- **Node count** — how many nodes are in the `@graph` array for the current request
+- **Validation warnings** — issues like missing required properties, highlighted with a warning badge
+- **Node inspector** — a table listing each graph node's `@type`, `@id`, and properties
+- **JSON-LD output** — the full rendered JSON-LD for easy inspection
+
+This is useful during development to verify that your schema markup is correct and complete without needing to check the page source or use an external validator.
 

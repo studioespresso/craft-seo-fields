@@ -38,11 +38,18 @@ class ElementSeoBehavior extends Behavior
 
     public Asset|null $twitterImage = null;
 
+    /**
+     * @deprecated Use `seoFields.graph` to add schema types directly instead.
+     */
     public function setShouldRenderSchema(bool $value): void
     {
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setShouldRenderSchema', "setShouldRenderSchema is deprecated. Use `seoFields.graph` to add schema types directly instead.", __FILE__, __LINE__ - 2);
         $this->shouldRenderSchema = $value;
     }
 
+    /**
+     * @deprecated Use `seoFields.graph` to add schema types directly instead.
+     */
     public function getShouldRenderSchema(): bool
     {
         return $this->shouldRenderSchema;

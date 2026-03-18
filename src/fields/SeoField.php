@@ -189,6 +189,7 @@ class SeoField extends Field
                 'field' => $this,
                 'id' => $id,
                 'namespacedId' => $namespacedId,
+                'schemaOptions' => SeoFields::getInstance()->schemaService->getDefaultOptions(),
             ]
         );
     }
