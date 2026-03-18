@@ -386,11 +386,10 @@ class SeoFields extends Plugin
         );
 
         if (Craft::$app->getPlugins()->isPluginEnabled("feed-me")) {
-            /** @phpstan-ignore-next-line */
             Event::on(
-                feedmeFields::class,
-                feedmeFields::EVENT_REGISTER_FEED_ME_FIELDS,
-                function(RegisterFeedMeFieldsEvent $e) {
+                feedmeFields::class, // @phpstan-ignore-line
+                feedmeFields::EVENT_REGISTER_FEED_ME_FIELDS, // @phpstan-ignore-line
+                function(RegisterFeedMeFieldsEvent $e) { // @phpstan-ignore-line
                     /** @phpstan-ignore-next-line */
                     $e->fields[] = SeoFieldType::class;
                 },
@@ -545,7 +544,7 @@ class SeoFields extends Plugin
             Application::class,
             BaseApplication::EVENT_BEFORE_REQUEST,
             function() {
-                /** @var Module|null $debugModule */
+                /** @var DebugModule|null $debugModule */
                 $debugModule = Craft::$app->getModule("debug");
                 if ($debugModule instanceof DebugModule) {
                     $debugModule->panels["schema"] = new SchemaPanel([
@@ -571,10 +570,9 @@ class SeoFields extends Plugin
         });
 
         if (Craft::$app->getPlugins()->isPluginEnabled("commerce")) {
-            /** @phpstan-ignore-next-line */
             Event::on(
-                Product::class,
-                Product::EVENT_DEFINE_BEHAVIORS,
+                Product::class, // @phpstan-ignore-line
+                Product::EVENT_DEFINE_BEHAVIORS, // @phpstan-ignore-line
                 function(DefineBehaviorsEvent $event) {
                     $event->behaviors[$this->id] = ElementSeoBehavior::class;
                 },

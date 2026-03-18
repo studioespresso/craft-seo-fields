@@ -133,11 +133,11 @@ class SeoFieldModel extends Model
             $method = $schemaService->getGraphMethodName($schemaClass);
             $pageNode = $graph->{$method}()
                 ->setProperty('@id', '#page')
-                ->name($this->getMetaTitle($element) ?? "") // @phpstan-ignore-line
+                ->name($this->getMetaTitle($element) ?? "")
                 ->author(['@id' => '#organization'])
                 ->isPartOf(['@id' => '#website'])
-                ->description($this->getMetaDescription() ?? "") // @phpstan-ignore-line
-                ->url($element->getUrl() ?? ""); // @phpstan-ignore-line
+                ->description($this->getMetaDescription() ?? "")
+                ->url($element->getUrl() ?? "");
             $schemaService->setPageNode($pageNode);
         } catch (\Exception $e) {
             \Craft::error($e, SeoFields::class);

@@ -4,13 +4,16 @@ namespace studioespresso\seofields\records;
 
 use craft\db\ActiveRecord;
 
-/***
+/**
  * @author    Studio Espresso
  * @package   SeoFields
  * @since     1.0.0
- * @property $dateLastHit
- * @property $pattern
- * @property $redirect
+ * @property string $dateLastHit
+ * @property string $pattern
+ * @property string $redirect
+ * @property int $method
+ * @property int|null $siteId
+ * @property int $counter
  */
 class RedirectRecord extends ActiveRecord
 {
