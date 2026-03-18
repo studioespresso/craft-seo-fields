@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.4.1 - 2026-03-18
+### Fixed
+- Fix for overwriting schema title and description in template
+
 ## 5.4.0 - 2026-03-17
 ### Added
 - Added improved Schema.org API

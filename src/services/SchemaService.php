@@ -4,11 +4,13 @@ namespace studioespresso\seofields\services;
 
 use Craft;
 use craft\base\Component;
+use craft\base\Element;
 use craft\web\View;
 use Spatie\SchemaOrg\BaseType;
 use Spatie\SchemaOrg\Graph;
 use Spatie\SchemaOrg\Schema;
 use studioespresso\seofields\debug\SchemaPanel;
+use studioespresso\seofields\models\SeoFieldModel;
 use studioespresso\seofields\SeoFields;
 use yii\debug\Module as DebugModule;
 
@@ -23,6 +25,8 @@ class SchemaService extends Component
     private bool $renderRegistered = false;
     private ?BaseType $pageNode = null;
     private array $additionalPageTypes = [];
+    private ?SeoFieldModel $pageDefaultsModel = null;
+    private ?Element $pageDefaultsElement = null;
 
     public function getGraph(): Graph
     {
@@ -41,6 +45,12 @@ class SchemaService extends Component
     public function getPageNode(): ?BaseType
     {
         return $this->pageNode;
+    }
+
+    public function setPageDefaults(SeoFieldModel $model, Element $element): void
+    {
+        $this->pageDefaultsModel = $model;
+        $this->pageDefaultsElement = $element;
     }
 
     public function addPageType(string $type): void
@@ -65,6 +75,20 @@ class SchemaService extends Component
         Craft::$app->getView()->on(View::EVENT_END_PAGE, function() {
             if ($this->graph === null) {
                 return;
+            }
+
+            // Apply default name/description to the page node only if not already set by user template code
+            if ($this->pageNode !== null && $this->pageDefaultsModel !== null) {
+                if ($this->pageNode->getProperty('name') === null) {
+                    $this->pageNode->name(
+                        $this->pageDefaultsModel->getMetaTitle($this->pageDefaultsElement) ?? ""
+                    );
+                }
+                if ($this->pageNode->getProperty('description') === null) {
+                    $this->pageNode->description(
+                        $this->pageDefaultsModel->getMetaDescription() ?? ""
+                    );
+                }
             }
 
             if (empty($this->additionalPageTypes)) {
