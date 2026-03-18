@@ -126,6 +126,10 @@ Every schema type supports the fluent API from [spatie/schema-org](https://githu
 
 ## Disabling schema output
 
+::: warning Deprecated
+`setShouldRenderSchema` is deprecated and will be removed in a future version. Use `seoFields.graph` to add schema types directly instead.
+:::
+
 If you want to fully disable schema output for a specific entry, you can still do so:
 
 ````twig
@@ -138,14 +142,26 @@ If you want to fully disable schema output for a specific entry, you can still d
 
 Out of the box, you can set a section to one of the following types:
 - <a href="https://schema.org/WebPage" target="_blank">WebPage</a>
+- <a href="https://schema.org/ContactPage" target="_blank">Contact Page</a>
 - <a href="https://schema.org/Article" target="_blank">Article</a>
-- <a href="https://schema.org/CreativeWork" target="_blank">CreativeWork</a>
+- <a href="https://schema.org/CreativeWork" target="_blank">Creative Work</a>
 - <a href="https://schema.org/Review" target="_blank">Review</a>
-- <a href="https://schema.org/Organisation" target="_blank">Organisation</a>
+- <a href="https://schema.org/Organization" target="_blank">Organization</a>
 - <a href="https://schema.org/Recipe" target="_blank">Recipe</a>
 - <a href="https://schema.org/Person" target="_blank">Person</a>
 
 You can extend this list by setting the ``schemaOptions`` attribute in the ``seo-fields.php`` settings file. You can find the syntax [here](/settings.html#schemaoptions).
 
 Similarly, you can add custom options to the **site entity type** dropdown using the ``siteEntityOptions`` setting. This works the same way as ``schemaOptions``. You can find the syntax [here](/settings.html#siteentityoptions).
+
+## Debug toolbar panel
+
+When Craft's debug toolbar is enabled (`devMode`), a **Schema** panel is added to the toolbar. It shows:
+
+- **Node count** — how many nodes are in the `@graph` array for the current request
+- **Validation warnings** — issues like missing required properties, highlighted with a warning badge
+- **Node inspector** — a table listing each graph node's `@type`, `@id`, and properties
+- **JSON-LD output** — the full rendered JSON-LD for easy inspection
+
+This is useful during development to verify that your schema markup is correct and complete without needing to check the page source or use an external validator.
 
