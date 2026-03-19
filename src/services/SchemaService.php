@@ -25,6 +25,7 @@ class SchemaService extends Component
     private bool $renderRegistered = false;
     private ?BaseType $pageNode = null;
     private array $additionalPageTypes = [];
+    private ?string $pageType = null;
     private ?SeoFieldModel $pageDefaultsModel = null;
     private ?Element $pageDefaultsElement = null;
 
@@ -51,6 +52,11 @@ class SchemaService extends Component
     {
         $this->pageDefaultsModel = $model;
         $this->pageDefaultsElement = $element;
+    }
+
+    public function setPageType(string $type): void
+    {
+        $this->pageType = $type;
     }
 
     public function addPageType(string $type): void
@@ -89,6 +95,50 @@ class SchemaService extends Component
                         $this->pageDefaultsModel->getMetaDescription() ?? ""
                     );
                 }
+            }
+
+            // Override page type: merge properties from the standalone override node into #page, remove the standalone
+            if ($this->pageType !== null) {
+                $data = $this->graph->toArray();
+                $overrideType = $this->pageType;
+
+                // Find the standalone node of the override type (no @id) and collect its properties
+                $overrideProps = [];
+                $data['@graph'] = array_values(array_filter($data['@graph'], function($node) use ($overrideType, &$overrideProps) {
+                    if (($node['@type'] ?? '') === $overrideType && !isset($node['@id'])) {
+                        $overrideProps = array_filter($node, fn($k) => !str_starts_with($k, '@'), ARRAY_FILTER_USE_KEY);
+                        return false; // remove this node
+                    }
+                    return true;
+                }));
+
+                // Update the #page node: change @type, merge properties
+                foreach ($data['@graph'] as &$node) {
+                    if (($node['@id'] ?? '') === '#page') {
+                        $node['@type'] = $overrideType;
+                        $node = array_merge($node, $overrideProps);
+                    }
+                }
+                unset($node);
+
+                // Still apply additionalPageTypes if any
+                if (!empty($this->additionalPageTypes)) {
+                    foreach ($data['@graph'] as &$node) {
+                        if (($node['@id'] ?? '') === '#page') {
+                            $types = (array)($node['@type'] ?? []);
+                            $node['@type'] = array_values(array_unique(array_merge($types, $this->additionalPageTypes)));
+                        }
+                    }
+                    unset($node);
+                }
+
+                $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                $this->_saveDebugData($data, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+                Craft::$app->getView()->registerHtml(
+                    '<script type="application/ld+json">' . $json . '</script>',
+                    View::POS_END
+                );
+                return;
             }
 
             if (empty($this->additionalPageTypes)) {

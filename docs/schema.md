@@ -107,6 +107,32 @@ This outputs:
 }
 ````
 
+### Replacing the section default type
+
+If your section is configured as "WebPage" but a specific entry should be an Article (or any other type), use `seoFields.setPageType()` to replace the default type entirely. This prevents duplicate nodes in the output.
+
+````twig
+{% do seoFields.setPageType('Article') %}
+{% do seoFields.graph.article()
+    .headline(entry.title)
+    .description(entry.intro|striptags)
+    .url(entry.url)
+    .datePublished(entry.postDate|atom)
+    .dateModified(entry.dateUpdated|atom)
+%}
+````
+
+Without `setPageType`, the output would contain both a WebPage node (from the section default) and a separate Article node. With `setPageType('Article')`, the `#page` node's `@type` is changed to `Article` and any properties you set on the article are merged into it.
+
+This also works with `addPageType`:
+
+````twig
+{% do seoFields.setPageType('Article') %}
+{% do seoFields.addPageType('FAQPage') %}
+````
+
+This produces a single `#page` node with `"@type": ["Article", "FAQPage"]`.
+
 ### `seoFields.graph` vs `seoFields.schema`
 
 - **`seoFields.graph`** — the shared Graph instance for the current request. Use this for top-level schema types (Event, Article, etc.) that end up in the `@graph` array.
