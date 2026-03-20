@@ -86,12 +86,14 @@ class SchemaService extends Component
             // Apply default name/description to the page node only if not already set by user template code
             if ($this->pageNode !== null && $this->pageDefaultsModel !== null) {
                 if ($this->pageNode->getProperty('name') === null) {
-                    $this->pageNode->name(
+                    $this->pageNode->setProperty(
+                        'name',
                         $this->pageDefaultsModel->getMetaTitle($this->pageDefaultsElement) ?? ""
                     );
                 }
                 if ($this->pageNode->getProperty('description') === null) {
-                    $this->pageNode->description(
+                    $this->pageNode->setProperty(
+                        'description',
                         $this->pageDefaultsModel->getMetaDescription() ?? ""
                     );
                 }

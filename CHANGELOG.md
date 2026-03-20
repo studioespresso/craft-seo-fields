@@ -4,9 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.4.3 - 2026-03-20
+
 ## 5.4.2 - 2026-03-19
-### Added
-- Added `seoFields.setPageType()` to replace the section-default schema type from templates
+### Fixed
+- The schema.org debug panel now links to the correct panel.
 
 ## 5.4.1 - 2026-03-18
 ### Fixed
