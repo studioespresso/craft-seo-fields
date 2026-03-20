@@ -549,6 +549,7 @@ class SeoFields extends Plugin
                 if ($debugModule instanceof DebugModule) {
                     $debugModule->panels["schema"] = new SchemaPanel([
                         "module" => $debugModule,
+                        "id" => "schema",
                     ]);
                 }
             },
