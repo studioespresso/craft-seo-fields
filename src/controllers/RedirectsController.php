@@ -103,7 +103,7 @@ class RedirectsController extends Controller
                 $redirect->redirect,
                 $redirect->method,
                 $redirect->siteId ? Craft::$app->getSites()->getSiteById($redirect->siteId)->name : 'All Sites',
-                $redirect->dateLastHit ? DateTimeHelper::toDateTime($redirect->lastHit)->format('Y-m-d h:i:s') : '',
+                $redirect->dateLastHit ? DateTimeHelper::toDateTime($redirect->dateLastHit)->format('Y-m-d h:i:s') : '',
                 $redirect->counter,
             ]);
             $writer->addRow($row);
