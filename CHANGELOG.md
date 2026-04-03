@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.4.4 - 2026-04-03
+### Fixed
+- Fixed robots.txt saving to the wrong site in multi-site setups
+- Fixed deprecated setter methods on SeoFieldModel triggering deprecation warnings on every page load
+
 ## 5.4.3 - 2026-03-20
 
 ## 5.4.2 - 2026-03-19
