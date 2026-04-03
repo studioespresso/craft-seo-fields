@@ -201,8 +201,8 @@ class SeoFieldModel extends Model
     {
         $title = $this->getPageTitle($element, false);
 
-        if ($element->getFacebookTitle()) {
-            $title = $element->getFacebookTitle();
+        if ($element->getSocialTitle()) {
+            $title = $element->getSocialTitle();
         } elseif ($this->facebookTitle) {
             $title = $this->facebookTitle;
         }
@@ -244,9 +244,6 @@ class SeoFieldModel extends Model
         if ($this->element && $this->element->getSocialDescription()) {
             return $this->element->getSocialDescription();
         }
-        if ($this->element->getFacebookDescription()) {
-            return $this->element->getFacebookDescription();
-        }
 
         if ($this->facebookDescription) {
             return $this->facebookDescription;
@@ -272,8 +269,8 @@ class SeoFieldModel extends Model
     {
         if ($asset) {
             $asset = $asset;
-        } elseif ($this->element->getFacebookImage()) {
-            $asset = $this->element->getFacebookImage();
+        } elseif ($this->element->getSocialImage()) {
+            $asset = $this->element->getSocialImage();
         } elseif ($this->facebookImage) {
             $asset = Craft::$app->getAssets()->getAssetById($this->facebookImage[0]);
         } elseif ($this->siteDefault->defaultImage) {
@@ -348,92 +345,90 @@ class SeoFieldModel extends Model
         return $data;
     }
 
+
     /**
-     * @param $value
-     * @return void
-     * @throws \craft\errors\DeprecationException
-     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     * Override setAttributes to assign properties directly, bypassing deprecated setters.
+     * This prevents deprecation warnings from firing during normalizeValue().
      */
-    public function setMetaTitle($value = null)
+    public function setAttributes($values, $safeOnly = true): void
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setMetaTitle', "Overwriting SEO properties through `entry.seo.setMetaTitle` no longer works. Please see the docs for an upgrading guide ");
+        // These properties have deprecated setters that we don't want triggered by setAttributes()
+        $directProperties = ['metaTitle', 'metaDescription', 'facebookTitle', 'facebookDescription', 'facebookImage', 'twitterTitle', 'twitterDescription', 'twitterImage'];
+
+        if (is_array($values)) {
+            foreach ($directProperties as $prop) {
+                if (array_key_exists($prop, $values)) {
+                    $this->$prop = $values[$prop];
+                    unset($values[$prop]);
+                }
+            }
+        }
+
+        parent::setAttributes($values, $safeOnly);
     }
 
     /**
-     * @param $value
-     * @return void
-     * @throws \craft\errors\DeprecationException
-     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     * @deprecated Overwriting SEO properties through this method no longer works.
      */
-    public function setMetaDescription($value)
+    public function setMetaTitle($value = null): void
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setMetaDescription', "Overwriting SEO properties through `entry.seo.setMetaDescription` no longer works. Please see the docs for an upgrading guide ");
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setMetaTitle', "Overwriting SEO properties through `entry.seo.setMetaTitle` no longer works. Please see the docs for an upgrading guide.");
     }
 
     /**
-     * @param $value
-     * @return void
-     * @throws \craft\errors\DeprecationException
-     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     * @deprecated Overwriting SEO properties through this method no longer works.
      */
-    public function setFacebookTitle($value)
+    public function setMetaDescription($value = null): void
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookTitle', "Overwriting SEO properties through `entry.seo.setFacebookTitle` no longer works. Please see the docs for an upgrading guide ");
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setMetaDescription', "Overwriting SEO properties through `entry.seo.setMetaDescription` no longer works. Please see the docs for an upgrading guide.");
     }
 
     /**
-     * @param $value
-     * @return void
-     * @throws \craft\errors\DeprecationException
-     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     * @deprecated Overwriting SEO properties through this method no longer works.
      */
-    public function setFacebookDescription($value)
+    public function setFacebookTitle($value = null): void
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookDescription', "Overwriting SEO properties through `entry.seo.setFacebookDescription` no longer works. Please see the docs for an upgrading guide ");
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookTitle', "Overwriting SEO properties through `entry.seo.setFacebookTitle` no longer works. Please see the docs for an upgrading guide.");
     }
 
     /**
-     * @param $value
-     * @return void
-     * @throws \craft\errors\DeprecationException
-     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     * @deprecated Overwriting SEO properties through this method no longer works.
      */
-    public function setFacebookImage($value)
+    public function setFacebookDescription($value = null): void
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookImage', "Overwriting SEO properties through `entry.seo.setFacebookImage` no longer works. Please see the docs for an upgrading guide ");
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookDescription', "Overwriting SEO properties through `entry.seo.setFacebookDescription` no longer works. Please see the docs for an upgrading guide.");
     }
 
     /**
-     * @param $value
-     * @return void
-     * @throws \craft\errors\DeprecationException
-     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     * @deprecated Overwriting SEO properties through this method no longer works.
      */
-    public function setTwitterTitle($value)
+    public function setFacebookImage($value = null): void
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterTitle', "Overwriting SEO properties through `entry.seo.setTwitterTitle` no longer works. Please see the docs for an upgrading guide ");
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookImage', "Overwriting SEO properties through `entry.seo.setFacebookImage` no longer works. Please see the docs for an upgrading guide.");
     }
 
     /**
-     * @param $value
-     * @return void
-     * @throws \craft\errors\DeprecationException
-     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     * @deprecated Overwriting SEO properties through this method no longer works.
      */
-    public function setTwitterDescription($value)
+    public function setTwitterTitle($value = null): void
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterDescription', "Overwriting SEO properties through `entry.seo.setTwitterDescription` no longer works. Please see the docs for an upgrading guide ");
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterTitle', "Overwriting SEO properties through `entry.seo.setTwitterTitle` no longer works. Please see the docs for an upgrading guide.");
     }
 
     /**
-     * @param $value
-     * @return void
-     * @throws \craft\errors\DeprecationException
-     * @deprecated 5.0.0 Overwriting SEO properties through this method no longer works. Please see the docs for an upgrading guide
+     * @deprecated Overwriting SEO properties through this method no longer works.
      */
-    public function setTwitterImage($value)
+    public function setTwitterDescription($value = null): void
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterImage', "Overwriting SEO properties through `entry.seo.setTwitterImage` no longer works. Please see the docs for an upgrading guide ");
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterDescription', "Overwriting SEO properties through `entry.seo.setTwitterDescription` no longer works. Please see the docs for an upgrading guide.");
+    }
+
+    /**
+     * @deprecated Overwriting SEO properties through this method no longer works.
+     */
+    public function setTwitterImage($value = null): void
+    {
+        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterImage', "Overwriting SEO properties through `entry.seo.setTwitterImage` no longer works. Please see the docs for an upgrading guide.");
     }
 
     /**
