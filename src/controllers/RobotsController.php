@@ -67,7 +67,7 @@ class RobotsController extends Controller
         $data['robots'] = Craft::$app->getRequest()->getBodyParam('robots');
         $data['siteId'] = Craft::$app->getRequest()->getBodyParam('siteId', Craft::$app->getSites()->getPrimarySite()->id);
         $model->setAttributes($data);
-        SeoFields::$plugin->defaultsService->saveDefaults($model, Craft::$app->sites->currentSite->id);
+        SeoFields::$plugin->defaultsService->saveDefaults($model, $data['siteId']);
     }
 
     public function actionRender(): \yii\web\Response|null
