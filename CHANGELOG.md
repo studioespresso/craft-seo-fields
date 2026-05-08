@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.4.5 - 2026-05-08
+### Fixed
+- Fixed an issue where the "create redirect" link would not be correctly formatted in installs with only one site. ([#146](https://github.com/studioespresso/craft-seo-fields/issues/146))
+
 ## 5.4.4 - 2026-04-03
 ### Fixed
 - Fixed robots.txt saving to the wrong site in multi-site setups
