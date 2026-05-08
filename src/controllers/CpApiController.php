@@ -86,7 +86,7 @@ class CpApiController extends Controller
                 'siteId' => $row->getAttribute('siteId'),
                 'lastHit' => $formatter->asDatetime($lastHit, Locale::LENGTH_SHORT),
                 'site' => Craft::$app->getSites()->getSiteById($row->getAttribute('siteId'))->name,
-                'hasRedirect' => $row->getAttribute('handled') ? $row->getAttribute('handled') : $row,
+                'hasRedirect' => $this->getHasRedirect($row)
             ];
 
             $rows[] = $row;
@@ -109,6 +109,18 @@ class CpApiController extends Controller
             ],
             'data' => $rows,
         ]);
+    }
+
+    private function getHasRedirect($row) {
+        if ($row->getAttribute('handled')) {
+            return true;
+        }
+
+        $url = UrlHelper::cpUrl("seo-fields/redirects/add",
+            ["pattern" => $row->getAttribute('urlPath'), "site" => $row->getAttribute('siteId'), "record" => $row->id]
+        );
+        $row->setAttribute('referrer', $url);
+        return $row;
     }
 
     public function actionRedirects()

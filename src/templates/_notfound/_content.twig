@@ -35,13 +35,12 @@
             name: 'hasRedirect',
             title: 'Redirect?',
             sortField: 'handled',
-            callback: function(value) {
+            callback: function(value, createRedirectUrl) {
                 if (typeof value != 'object') {
                     return '<span data-icon="check" style="color: green;"></span>';
                 }
 
-                var url = "{{ cpUrl('seo-fields/redirects/add') }}" + "&pattern=" + value.urlPath + "&site=" + value.siteId + "&record=" + value.id;
-                return '<a class="add icon" href="' + url + '" title="Add"></a>';
+                return '<a class="add icon" href="' + value.referrer + '" title="Add"></a>';
             }
         }
 
