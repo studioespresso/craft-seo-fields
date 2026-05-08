@@ -86,7 +86,7 @@ class CpApiController extends Controller
                 'siteId' => $row->getAttribute('siteId'),
                 'lastHit' => $formatter->asDatetime($lastHit, Locale::LENGTH_SHORT),
                 'site' => Craft::$app->getSites()->getSiteById($row->getAttribute('siteId'))->name,
-                'hasRedirect' => $this->getHasRedirect($row)
+                'hasRedirect' => $this->getHasRedirect($row),
             ];
 
             $rows[] = $row;
@@ -111,7 +111,8 @@ class CpApiController extends Controller
         ]);
     }
 
-    private function getHasRedirect($row) {
+    private function getHasRedirect($row)
+    {
         if ($row->getAttribute('handled')) {
             return true;
         }
