@@ -179,6 +179,11 @@ class NotFoundService extends Component
     public function deletetById($id)
     {
         $record = NotFoundRecord::findOne(['id' => $id]);
+        if ($record === null) {
+            // Already deleted, e.g. by a concurrent cleanup run from shouldWeCleanupRedirects().
+            return false;
+        }
+
         if ($record->delete()) {
             return true;
         }
