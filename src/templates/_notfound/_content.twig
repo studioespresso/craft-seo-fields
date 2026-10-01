@@ -1,67 +1,47 @@
-{% do view.registerAssetBundle('craft\\web\\assets\\admintable\\AdminTableAsset') -%}
+{% import 'seo-fields/_includes/_list' as lists %}
 
-{#{% block actionButton %}#}
-{#    {% set confirmation = "Are you sure you want to remove all tracked 404's?"|t('seo-fields') %}#}
-{#    <a href="{{ actionUrl('seo-fields/not-found/clear-all') }}" class="btn"#}
-{#       onclick='return confirm("{{ confirmation }}")'>{{ "Clear all"|t('seo-fields') }}</a>#}
-{#{% endblock %}#}
+{# v-pre: cp/Screen compiles this as a Vue template, and logged URLs come from visitors #}
+<div class="cp-container" v-pre>
+    <div class="seofields-list">
+        {{ lists.search(list) }}
 
-{% import "_includes/forms" as forms %}
-<div id="seofields-notfound"></div>
+        {% if list.rows.isEmpty() %}
+            <craft-empty label="{{ "No 404's have been logged."|t('seo-fields') }}"></craft-empty>
+        {% else %}
+            <table class="seofields-list__table">
+                <thead>
+                <tr>
+                    <th scope="col">{{ 'URL'|t('seo-fields') }}</th>
+                    {{ lists.sortHeader(list, 'Hits'|t('seo-fields'), 'counter') }}
+                    {% if list.sites %}<th scope="col">{{ 'Site'|t('seo-fields') }}</th>{% endif %}
+                    {{ lists.sortHeader(list, 'Last visit'|t('seo-fields'), 'dateLastHit') }}
+                    {{ lists.sortHeader(list, 'Redirect'|t('seo-fields'), 'handled') }}
+                    <th scope="col"><span class="visually-hidden">{{ 'Actions'|t('seo-fields') }}</span></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for row in list.rows %}
+                    <tr>
+                        <td class="seofields-list__url">{{ row.urlPath }}</td>
+                        <td>{{ row.counter }}</td>
+                        {% if list.sites %}<td>{{ list.sites[row.siteId] ?? '' }}</td>{% endif %}
+                        <td>{{ row.dateLastHit ? row.dateLastHit|date('Y-m-d H:i') }}</td>
+                        <td>
+                            {% if row.redirectId %}
+                                <a href="{{ cpUrl('seo-fields/redirects/' ~ row.redirectId) }}">{{ row.redirectUrl }}</a>
+                            {% else %}
+                                <craft-button size="small" icon="plus" href="{{ cpUrl('seo-fields/redirects/new', {pattern: row.urlPath, site: row.siteId, record: row.id}) }}">{{ 'Add redirect'|t('seo-fields') }}</craft-button>
+                            {% endif %}
+                        </td>
+                        <td class="seofields-list__actions">
+                            {{ lists.deleteButton(cpUrl('seo-fields/not-found/' ~ row.id ~ '/delete'), 'Are you sure you want to delete this 404?'|t('seo-fields')) }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
 
-
-{% js %}
-    var columns = [
-        {
-            name: '__slot:title',
-            title: Craft.t('seo-fields', 'URL'),
-        },
-        {
-            name: 'hits',
-            title: Craft.t('seo-fields', 'Hits'),
-            sortField: 'counter'
-        },
-        {
-            name: 'site',
-            title: Craft.t('seo-fields', 'Site'),
-
-        },
-        {
-            name: 'lastHit',
-            title: Craft.t('seo-fields', 'Last visit'),
-
-        },
-        {
-            name: 'hasRedirect',
-            title: 'Redirect?',
-            sortField: 'handled',
-            callback: function(value) {
-                if (typeof value != 'object') {
-                    return '<span data-icon="check" style="color: green;"></span>';
-                }
-
-                var url = "{{ cpUrl('seo-fields/redirects/add') }}" + "&pattern=" + value.urlPath + "&site=" + value.siteId + "&record=" + value.id;
-                return '<a class="add icon" href="' + url + '" title="Add"></a>';
-            }
-        }
-
-    ];
-
-    {% if craft.app.sites.getEditableSites()|length < 2 %}
-        {% set site =  "" %}
-    {% else %}
-        {% set site = craft.app.request.getQueryParam('site', '') %}
-    {% endif %}
-
-    {# Readme in craftcms/cms/src/web/assets/admintable/README.md #}
-    new Craft.VueAdminTable({
-        container: '#seofields-notfound',
-        columns: columns,
-        tableDataEndpoint: "{{ cpUrl('seo-fields/cp-api/not-found') }}" ,
-        deleteAction: 'seo-fields/not-found/delete',
-        checkboxes:  0,
-        search: true,
-        allowMultipleSelections: false,
-        perPage: 10,
-    });
-{% endjs %}
+        {{ lists.pagination(list) }}
+    </div>
+</div>

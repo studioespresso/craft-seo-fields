@@ -2,114 +2,114 @@
 
 namespace studioespresso\seofields\controllers;
 
-use Craft;
-use craft\db\Query;
-use craft\helpers\Cp;
-use craft\helpers\Db;
-use craft\models\Site;
-use craft\web\Controller;
-use studioespresso\seofields\models\SeoDefaultsModel;
+use CraftCms\Cms\Form\Controls\Choice;
+use CraftCms\Cms\Form\Controls\Lightswitch;
+use CraftCms\Cms\Form\Form;
+use CraftCms\Cms\Form\Nodes\Field;
+use CraftCms\Cms\Form\Nodes\Group;
+use CraftCms\Cms\Form\Nodes\MarkdownContent;
+use CraftCms\Cms\Http\RespondsWithFlash;
+use CraftCms\Cms\Http\Responses\CpScreenResponse;
+use CraftCms\Cms\Section\Data\Section;
+use CraftCms\Cms\Support\Facades\Sections;
+use CraftCms\Cms\Support\Facades\Sites;
+use CraftCms\Cms\Support\Url;
+use Illuminate\Http\Request;
+use studioespresso\seofields\controllers\concerns\SeoCpScreen;
 use studioespresso\seofields\SeoFields;
-use yii\web\NotFoundHttpException;
+use Symfony\Component\HttpFoundation\Response;
 
-class SitemapController extends Controller
+use function CraftCms\Cms\t;
+
+class SitemapController
 {
-    protected array|bool|int $allowAnonymous = ['render', 'detail'];
+    use RespondsWithFlash;
+    use SeoCpScreen;
 
-    public Site|null $site = null;
+    private const CHANGEFREQ = ['always', 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'never'];
 
-    public function init(): void
+    public function edit(Request $request): CpScreenResponse
     {
-        if (Craft::$app->getRequest()->getQueryParam('site')) {
-            $this->site = Craft::$app->getSites()->getSiteByHandle(Craft::$app->getRequest()->getQueryParam('site'));
-        } else {
-            $this->site = Craft::$app->getSites()->getPrimarySite();
-        }
-        parent::init();
-    }
+        $site = $this->site($request);
+        $settings = SeoFields::getInstance()->defaultsService->getDataBySite($site)->getSitemap() ?? [];
 
-    public function actionIndex()
-    {
-        $sites = Craft::$app->getSites()->getEditableSites();
-        $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($this->site->handle);
-        $settings = SeoFields::$plugin->getSettings();
+        $changefreq = array_map(fn ($value) => ['label' => t($value, category: 'seo-fields'), 'value' => $value], self::CHANGEFREQ);
+        $priority = array_map(fn ($value) => ['label' => match ($value) {
+            '1.0' => t('1.0 (High)', category: 'seo-fields'),
+            '0.5' => t('0.5 (Default)', category: 'seo-fields'),
+            '0.0' => t('0.0 (Low)', category: 'seo-fields'),
+            default => $value,
+        }, 'value' => $value], array_map(fn ($i) => number_format($i / 10, 1), range(10, 0)));
 
-        $query = new Query();
+        $nodes = [
+            MarkdownContent::make('sitemap-intro', t('A sitemap tells search engines which pages on your site are important and when they were last updated. [View sitemap.xml]({url})', ['url' => Url::siteUrl('sitemap.xml', siteId: $site->id)], 'seo-fields')),
+        ];
 
-        $query->select('sectionId as id')
-            ->from('{{%sections_sites}} as ss')
-            ->leftJoin('{{%sections}} as s', 's.id = ss.sectionId')
-            ->where(Db::parseParam('siteId', $this->site->id))
-            ->andWhere(['s.dateDeleted' => null]);
-
-        $sections = [];
-        foreach ($query->all() as $s) {
-            $sections[] = Craft::$app->getEntries()->getSectionById($s['id']);
-        }
-
-        $crumbs = ['label' => $this->site->name, ];
-        if (Craft::$app->getIsMultiSite()) {
-            $crumbs['menu'] = [
-                'label' => Craft::t('site', 'Select site'),
-                'items' => Cp::siteMenuItems($sites, $this->site),
+        $values = [];
+        foreach ($this->sectionsForSite($site->id) as $section) {
+            $sectionSettings = $settings['entry'][$section->id] ?? [];
+            $values['entry'][$section->id] = [
+                'enabled' => ! empty($sectionSettings['enabled']),
+                'changefreq' => $sectionSettings['changefreq'] ?? 'weekly',
+                'priority' => $sectionSettings['priority'] ?? '0.5',
             ];
+
+            $nodes[] = Group::make("section-$section->id", [
+                Field::make(t('Enabled?', category: 'seo-fields'), Lightswitch::make("entry.$section->id.enabled")),
+                Field::make(t('Update frequency', category: 'seo-fields'), Choice::make("entry.$section->id.changefreq")->options($changefreq))->width(50),
+                Field::make(t('Priority', category: 'seo-fields'), Choice::make("entry.$section->id.priority")->options($priority))->width(50)
+                    ->instructions(t('The priority of this URL relative to other URLs on your site.', category: 'seo-fields')),
+            ])->label(t($section->name, category: 'site'));
         }
 
-        return $this->asCpScreen()
-            ->title(Craft::t('seo-fields', 'Sitemap.xml'))
-            ->selectedSubnavItem('sitemap')
-            ->crumbs([$crumbs])
-            ->action('seo-fields/sitemap/save')
-            ->additionalButtonsTemplate('seo-fields/_sitemap/_buttons', [
-                'site' => $this->site,
-            ])
-            ->contentTemplate('seo-fields/_sitemap/_content', [
-                'data' => $data,
-                'sitemapPerSite' => $settings->sitemapPerSite,
-                'sections' => $sections,
-                'site' => $this->site,
-            ]);
+        return $this->formScreen(t('Sitemap.xml', category: 'seo-fields'), $site, Form::make($nodes), $values);
     }
 
-
-    public function actionSave()
+    public function store(Request $request): Response
     {
-        $data = [];
-        if (Craft::$app->getRequest()->getBodyParam('id')) {
-            $model = SeoFields::$plugin->defaultsService->getDataById(Craft::$app->getRequest()->getBodyParam('id'));
-        } else {
-            $model = new SeoDefaultsModel();
-        }
+        $values = $request->validate([
+            'entry' => ['nullable', 'array'],
+            'entry.*.enabled' => ['boolean'],
+            'entry.*.changefreq' => ['in:'.implode(',', self::CHANGEFREQ)],
+            'entry.*.priority' => ['numeric', 'between:0,1'],
+        ]);
 
-        $data['sitemap'] = Craft::$app->getRequest()->getBodyParam('data');
-        $data['siteId'] = Craft::$app->getRequest()->getBodyParam('siteId', Craft::$app->getSites()->getPrimarySite()->id);
-        $model->setAttributes($data);
-        SeoFields::$plugin->defaultsService->saveDefaults($model, $data['siteId']);
-        SeoFields::$plugin->sitemapService->clearCaches();
+        $site = $this->site($request);
+        $service = SeoFields::getInstance()->defaultsService;
+        $defaults = $service->getDataBySite($site);
+        $defaults->setAttributes(['sitemap' => ['entry' => $values['entry'] ?? []]]);
+        $service->saveDefaults($defaults, $site->id);
+        SeoFields::getInstance()->sitemapService->clearCaches();
+
+        return $this->asSuccess(t('Sitemap settings saved.', category: 'seo-fields'));
     }
 
-    public function actionRender()
+    /** Serves `/sitemap.xml` */
+    public function index(): Response
     {
-        $data = SeoFields::getInstance()->sitemapService->shouldRenderBySiteId(Craft::$app->getSites()->getCurrentSite());
-        // keeping this here to trigger the decrepation error is the user has that set
-        SeoFields::$plugin->getSettings()->getSitemapPerSite();
-        
-        if (!$data) {
-            throw new NotFoundHttpException(Craft::t('app', 'Page not found'), 404);
-        }
+        $sections = SeoFields::getInstance()->sitemapService->getSectionsToRender(Sites::getCurrentSite());
+        abort_unless($sections, 404);
 
-        $xml = SeoFields::$plugin->sitemapService->getSitemapIndex(array_filter($data));
-
-        $headers = Craft::$app->response->headers;
-        $headers->add('Content-Type', 'text/xml; charset=utf-8');
-        $this->asRaw($xml);
+        return $this->xml(SeoFields::getInstance()->sitemapService->getSitemapIndex($sections));
     }
 
-    public function actionDetail($siteId, $type, $sectionId, $handle)
+    /** Serves `/sitemap_{siteId}_entry_{sectionId}_{handle}.xml` */
+    public function detail(int $siteId, int $sectionId): Response
     {
-        $xml = SeoFields::$plugin->sitemapService->getSitemapData($siteId, $type, $sectionId);
-        $headers = Craft::$app->response->headers;
-        $headers->add('Content-Type', 'text/xml; charset=utf-8');
-        $this->asRaw($xml);
+        $xml = SeoFields::getInstance()->sitemapService->getSitemapData($siteId, $sectionId);
+        abort_unless($xml, 404);
+
+        return $this->xml($xml);
+    }
+
+    private function xml(string $xml): Response
+    {
+        return response($xml, 200, ['Content-Type' => 'text/xml; charset=utf-8']);
+    }
+
+    /** @return iterable<Section> */
+    private function sectionsForSite(int $siteId): iterable
+    {
+        return Sections::getAllSections()->filter(fn ($section) => isset($section->getSiteSettings()[$siteId]));
     }
 }

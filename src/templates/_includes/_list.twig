@@ -1,0 +1,38 @@
+{# Building blocks for the server-rendered 404 and redirect lists. `list` comes from ListsRecords::listVariables() #}
+
+{% macro search(list) %}
+    <form method="get" class="seofields-list__search">
+        {% for name, value in list.query|filter((v, k) => k not in ['search', 'page']) %}
+            <input type="hidden" name="{{ name }}" value="{{ value }}">
+        {% endfor %}
+        <craft-input type="search" name="search" value="{{ list.query.search ?? '' }}" placeholder="{{ 'Search'|t('app') }}" label="{{ 'Search'|t('app') }}" label-sr-only></craft-input>
+        <craft-button type="submit">{{ 'Search'|t('app') }}</craft-button>
+    </form>
+{% endmacro %}
+
+{% macro sortHeader(list, label, column) %}
+    {% set current = (list.query.sort ?? null) == column %}
+    {% set dir = current and (list.query.dir ?? 'desc') == 'desc' ? 'asc' : 'desc' %}
+    <th scope="col" {% if current %}aria-sort="{{ dir == 'asc' ? 'descending' : 'ascending' }}"{% endif %}>
+        <a href="{{ url(list.baseUrl, list.query|merge({sort: column, dir: dir})|filter((v, k) => k != 'page')) }}">{{ label }}</a>
+    </th>
+{% endmacro %}
+
+{% macro pagination(list) %}
+    {% set rows = list.rows %}
+    <div class="seofields-list__footer">
+        <span>{{ '{total} items'|t('seo-fields', {total: rows.total()}) }}</span>
+        {% if rows.lastPage() > 1 %}
+            <nav class="seofields-list__pagination" aria-label="{{ 'Pagination'|t('seo-fields') }}">
+                {% if rows.previousPageUrl() %}<craft-button size="small" href="{{ rows.previousPageUrl() }}">{{ 'Previous'|t('seo-fields') }}</craft-button>{% endif %}
+                <span>{{ 'Page {page} of {pages}'|t('seo-fields', {page: rows.currentPage(), pages: rows.lastPage()}) }}</span>
+                {% if rows.nextPageUrl() %}<craft-button size="small" href="{{ rows.nextPageUrl() }}">{{ 'Next'|t('seo-fields') }}</craft-button>{% endif %}
+            </nav>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{# A delete button; forms can't be used here as cp/Screen wraps the content in its own <form> #}
+{% macro deleteButton(url, confirm) %}
+    <craft-button variant="plain" size="small" icon="trash" action="{{ {type: 'http', method: 'POST', url: url, body: {_token: csrf_token()}, confirm: confirm}|json_encode }}">{{ 'Delete'|t('app') }}</craft-button>
+{% endmacro %}

@@ -9,8 +9,9 @@ use Twig\TwigFunction;
 
 /**
  * SeoFieldsExtension class.
+ *
  * @author    Studio Espresso
- * @package   SeoFields
+ *
  * @since     1.0.0
  */
 class SeoFieldsExtension extends AbstractExtension implements GlobalsInterface
@@ -38,6 +39,7 @@ class SeoFieldsExtension extends AbstractExtension implements GlobalsInterface
     public function getSeoFields($context)
     {
         $data = SeoFields::getInstance()->renderService->getSeoFromContent($context, SeoFields::getInstance()->getSettings()->fieldHandle);
+
         return $data;
     }
 }

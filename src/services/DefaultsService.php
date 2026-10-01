@@ -2,127 +2,101 @@
 
 namespace studioespresso\seofields\services;
 
-use Craft;
-use craft\base\Component;
-use craft\helpers\Json;
-use craft\models\Site;
+use CraftCms\Cms\Site\Data\Site;
+use CraftCms\Cms\Support\Facades\Sites;
 use studioespresso\seofields\models\SeoDefaultsModel;
-
 use studioespresso\seofields\records\DefaultsRecord;
 use studioespresso\seofields\SeoFields;
 
 /**
  * @author    Studio Espresso
- * @package   SeoFields
+ *
  * @since     1.0.0
  */
-class DefaultsService extends Component
+class DefaultsService
 {
-    // Public Methods
-    // =========================================================================
-    public function saveDefaults(SeoDefaultsModel $model, $siteId)
+    public function saveDefaults(SeoDefaultsModel $model, int $siteId): bool
     {
-        $record = DefaultsRecord::findOne(
-            ['siteId' => $siteId]
-        );
+        $record = $this->getRecordForSiteId($siteId) ?? new DefaultsRecord(['siteId' => $siteId]);
 
-        if (!$record) {
-            $record = new DefaultsRecord();
-        }
-        $record->setAttribute('defaultMeta', $model->toArray(['defaultSiteTitle', 'defaultMetaDescription', 'titleSeperator', 'defaultImage', 'organizationName', 'organizationLogo', 'sameAs', 'siteEntity']));
-        $record->setAttribute('siteId', $model->siteId ?? $siteId);
-        $record->setAttribute('enableRobots', $model->enableRobots);
-        $record->setAttribute('robots', $model->robots);
-        $record->setAttribute('schema', $model->schema);
-        $record->setAttribute('sitemap', $model->sitemap);
+        $record->fill([
+            'defaultMeta' => $model->getMeta(),
+            'enableRobots' => $model->enableRobots ?? true,
+            'robots' => $model->robots,
+            'schema' => $model->schema,
+            'sitemap' => $model->sitemap,
+        ]);
 
-        if ($record->validate()) {
-            $record->save();
-            return true;
-        }
+        return $record->save();
     }
 
-    public function getDataById($id)
+    public function getDataById(int $id): ?SeoDefaultsModel
     {
-        $record = DefaultsRecord::findOne(
-            ['id' => $id]
-        );
-        if ($record) {
-            $fields = array_merge(
-                Json::decode($record->getAttribute("defaultMeta")) ?? [],
-                $record->toArray()
-            );
-            $model = new SeoDefaultsModel();
-            $model->setAttributes($fields);
-            return $model;
-        }
+        $record = DefaultsRecord::query()->find($id);
+
+        return $record ? $this->toModel($record) : null;
     }
 
-    public function getDataBySiteId($siteId)
+    public function getDataBySiteId(int $siteId): SeoDefaultsModel
     {
         $record = $this->getRecordForSiteId($siteId);
-        if ($record) {
-            $model = new SeoDefaultsModel();
-            $fields = array_merge(
-                Json::decode($record->getAttribute("defaultMeta")) ?? [],
-                [
-                    'id' => $record->id,
-                    'enableRobots' => $record->enableRobots,
-                    'robots' => $record->robots,
-                    'schema' => $record->schema,
-                    'sitemap' => $record->sitemap,
-                ]);
-            $model->setAttributes($fields);
-            return $model;
-        } else {
-            return new SeoDefaultsModel();
-        }
+
+        return $record ? $this->toModel($record) : new SeoDefaultsModel(['siteId' => $siteId]);
     }
 
-    public function getDataBySiteHandle($handle)
+    public function getDataBySiteHandle(string $handle): SeoDefaultsModel
     {
-        $site = Craft::$app->sites->getSiteByHandle($handle);
-        return $this->getDataBySiteId($site->id);
+        return $this->getDataBySiteId(Sites::getSiteByHandle($handle)->id);
     }
 
-    public function getDataBySite(Site $site)
+    public function getDataBySite(Site $site): SeoDefaultsModel
     {
         return $this->getDataBySiteId($site->id);
     }
 
-    public function getRobotsForSite(Site $site)
+    /**
+     * Returns the robots.txt settings that apply to a site, or `false` when robots.txt is disabled.
+     */
+    public function getRobotsForSite(Site $site): SeoDefaultsModel|false
     {
-        if (!SeoFields::$plugin->getSettings()->robotsPerSite) {
-            $site = Craft::$app->getSites()->getPrimarySite();
+        if (! SeoFields::getInstance()->getSettings()->robotsPerSite) {
+            $site = Sites::getPrimarySite();
         }
 
         $record = $this->getRecordForSiteId($site->id);
-        if ($record && !$record->enableRobots) {
+        if (! $record || ! $record->enableRobots) {
             return false;
-        } else {
-            $model = new SeoDefaultsModel();
-            $fields = [
-                'enableRobots' => $record->enableRobots,
-                'robots' => $record->robots,
-            ];
-            $model->setAttributes($fields);
-            return $model;
         }
+
+        return new SeoDefaultsModel([
+            'enableRobots' => $record->enableRobots,
+            'robots' => $record->robots,
+        ]);
     }
 
-    public function getRecordForSiteId($siteId)
+    public function getRecordForSiteId(int $siteId): ?DefaultsRecord
     {
-        $record = DefaultsRecord::findOne(
-            ['siteId' => $siteId]
-        );
-        return $record;
+        return DefaultsRecord::query()->where('siteId', $siteId)->first();
     }
 
-    public function copyDefaultsForSite(Site $site, $oldPrimarySiteId)
+    public function copyDefaultsForSite(Site $site, int $fromSiteId): void
     {
-        $defaults = $this->getDataBySiteId($oldPrimarySiteId);
+        $defaults = $this->getDataBySiteId($fromSiteId);
+        $defaults->id = null;
         $defaults->siteId = $site->id;
         $this->saveDefaults($defaults, $site->id);
-        return true;
+    }
+
+    private function toModel(DefaultsRecord $record): SeoDefaultsModel
+    {
+        return new SeoDefaultsModel([
+            ...($record->defaultMeta ?? []),
+            'id' => $record->id,
+            'siteId' => $record->siteId,
+            'enableRobots' => $record->enableRobots,
+            'robots' => $record->robots,
+            'schema' => $record->schema,
+            'sitemap' => $record->sitemap,
+        ]);
     }
 }

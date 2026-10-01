@@ -2,25 +2,30 @@
 
 namespace studioespresso\seofields\records;
 
-use craft\db\ActiveRecord;
+use CraftCms\Cms\Shared\BaseModel;
+use CraftCms\Cms\Shared\Concerns\HasUid;
 
 /**
- * @author    Studio Espresso
- * @package   SeoFields
- * @since     1.0.0
- * @property string $dateLastHit
+ * @property int $id
+ * @property int|null $siteId null applies to all sites
  * @property string $pattern
+ * @property string|null $sourceMatch path|pathWithoutParams|url
  * @property string $redirect
+ * @property string|null $matchType exact|regexMatch
+ * @property int|null $counter
  * @property int $method
- * @property int|null $siteId
- * @property int $counter
+ * @property \DateTimeInterface|null $dateLastHit
  */
-class RedirectRecord extends ActiveRecord
+class RedirectRecord extends BaseModel
 {
-    // Public Static Methods
-    // =========================================================================
-    public static function tableName()
-    {
-        return '{{%seofields_redirects}}';
-    }
+    use HasUid;
+
+    protected $table = 'seofields_redirects';
+
+    protected $casts = [
+        'siteId' => 'int',
+        'counter' => 'int',
+        'method' => 'int',
+        'dateLastHit' => 'datetime',
+    ];
 }

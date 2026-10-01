@@ -1,0 +1,76 @@
+/* Server-rendered 404 and redirect lists */
+.seofields-list {
+    display: grid;
+    gap: var(--c-spacing-md);
+}
+
+.seofields-list__search {
+    display: flex;
+    gap: var(--c-spacing-sm);
+    align-items: center;
+}
+
+.seofields-list__search craft-input {
+    width: 24rem;
+    max-width: 100%;
+}
+
+.seofields-list__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--c-text-sm);
+}
+
+.seofields-list__table th,
+.seofields-list__table td {
+    padding: var(--c-spacing-sm) var(--c-spacing-md);
+    border-bottom: 1px solid var(--c-color-border-quiet);
+    text-align: start;
+    vertical-align: middle;
+}
+
+.seofields-list__table thead th {
+    font-weight: 600;
+    color: var(--c-text-quiet);
+    white-space: nowrap;
+}
+
+.seofields-list__table thead a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.seofields-list__table thead th[aria-sort] a::after {
+    content: ' ↑';
+}
+
+.seofields-list__table thead th[aria-sort='descending'] a::after {
+    content: ' ↓';
+}
+
+.seofields-list__table tbody tr:hover {
+    background-color: var(--c-surface-sunken);
+}
+
+.seofields-list__url {
+    word-break: break-all;
+}
+
+.seofields-list__actions {
+    width: 1%;
+    text-align: end;
+}
+
+.seofields-list__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--c-text-quiet);
+    font-size: var(--c-text-sm);
+}
+
+.seofields-list__pagination {
+    display: flex;
+    gap: var(--c-spacing-sm);
+    align-items: center;
+}

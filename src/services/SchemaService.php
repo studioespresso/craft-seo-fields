@@ -2,39 +2,47 @@
 
 namespace studioespresso\seofields\services;
 
-use Craft;
-use craft\base\Component;
-use craft\base\Element;
-use craft\web\View;
+use CraftCms\Cms\Element\Contracts\ElementInterface;
+use CraftCms\Cms\Support\Facades\HtmlStack;
+use CraftCms\Cms\View\Enums\Position;
+use CraftCms\Cms\View\Events\ViewAssetsRendering;
+use Illuminate\Support\Facades\Event;
 use Spatie\SchemaOrg\BaseType;
 use Spatie\SchemaOrg\Graph;
 use Spatie\SchemaOrg\Schema;
-use studioespresso\seofields\debug\SchemaPanel;
 use studioespresso\seofields\models\SeoFieldModel;
 use studioespresso\seofields\SeoFields;
-use yii\debug\Module as DebugModule;
 
 /**
  * @author    Studio Espresso
- * @package   SeoFields
+ *
  * @since     4.0.0
  */
-class SchemaService extends Component
+class SchemaService
 {
     private ?Graph $graph = null;
+
     private bool $renderRegistered = false;
+
+    private bool $rendered = false;
+
     private ?BaseType $pageNode = null;
+
     private array $additionalPageTypes = [];
+
     private ?string $pageType = null;
+
     private ?SeoFieldModel $pageDefaultsModel = null;
-    private ?Element $pageDefaultsElement = null;
+
+    private ?ElementInterface $pageDefaultsElement = null;
 
     public function getGraph(): Graph
     {
         if ($this->graph === null) {
-            $this->graph = new Graph();
+            $this->graph = new Graph;
             $this->registerDeferredRender();
         }
+
         return $this->graph;
     }
 
@@ -48,7 +56,7 @@ class SchemaService extends Component
         return $this->pageNode;
     }
 
-    public function setPageDefaults(SeoFieldModel $model, Element $element): void
+    public function setPageDefaults(SeoFieldModel $model, ElementInterface $element): void
     {
         $this->pageDefaultsModel = $model;
         $this->pageDefaultsElement = $element;
@@ -61,7 +69,7 @@ class SchemaService extends Component
 
     public function addPageType(string $type): void
     {
-        if (!in_array($type, $this->additionalPageTypes, true)) {
+        if (! in_array($type, $this->additionalPageTypes, true)) {
             $this->additionalPageTypes[] = $type;
         }
     }
@@ -78,23 +86,25 @@ class SchemaService extends Component
         }
         $this->renderRegistered = true;
 
-        Craft::$app->getView()->on(View::EVENT_END_PAGE, function() {
-            if ($this->graph === null) {
+        // Fires once the page has rendered, before its registered assets are output
+        Event::listen(ViewAssetsRendering::class, function () {
+            if ($this->graph === null || $this->rendered) {
                 return;
             }
+            $this->rendered = true;
 
             // Apply default name/description to the page node only if not already set by user template code
             if ($this->pageNode !== null && $this->pageDefaultsModel !== null) {
                 if ($this->pageNode->getProperty('name') === null) {
                     $this->pageNode->setProperty(
                         'name',
-                        $this->pageDefaultsModel->getMetaTitle($this->pageDefaultsElement) ?? ""
+                        $this->pageDefaultsModel->getMetaTitle($this->pageDefaultsElement) ?? ''
                     );
                 }
                 if ($this->pageNode->getProperty('description') === null) {
                     $this->pageNode->setProperty(
                         'description',
-                        $this->pageDefaultsModel->getMetaDescription() ?? ""
+                        $this->pageDefaultsModel->getMetaDescription() ?? ''
                     );
                 }
             }
@@ -106,11 +116,13 @@ class SchemaService extends Component
 
                 // Find the standalone node of the override type (no @id) and collect its properties
                 $overrideProps = [];
-                $data['@graph'] = array_values(array_filter($data['@graph'], function($node) use ($overrideType, &$overrideProps) {
-                    if (($node['@type'] ?? '') === $overrideType && !isset($node['@id'])) {
-                        $overrideProps = array_filter($node, fn($k) => !str_starts_with($k, '@'), ARRAY_FILTER_USE_KEY);
+                $data['@graph'] = array_values(array_filter($data['@graph'], function ($node) use ($overrideType, &$overrideProps) {
+                    if (($node['@type'] ?? '') === $overrideType && ! isset($node['@id'])) {
+                        $overrideProps = array_filter($node, fn ($k) => ! str_starts_with($k, '@'), ARRAY_FILTER_USE_KEY);
+
                         return false; // remove this node
                     }
+
                     return true;
                 }));
 
@@ -124,10 +136,10 @@ class SchemaService extends Component
                 unset($node);
 
                 // Still apply additionalPageTypes if any
-                if (!empty($this->additionalPageTypes)) {
+                if (! empty($this->additionalPageTypes)) {
                     foreach ($data['@graph'] as &$node) {
                         if (($node['@id'] ?? '') === '#page') {
-                            $types = (array)($node['@type'] ?? []);
+                            $types = (array) ($node['@type'] ?? []);
                             $node['@type'] = array_values(array_unique(array_merge($types, $this->additionalPageTypes)));
                         }
                     }
@@ -135,56 +147,45 @@ class SchemaService extends Component
                 }
 
                 $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-                $this->_saveDebugData($data, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-                Craft::$app->getView()->registerHtml(
-                    '<script type="application/ld+json">' . $json . '</script>',
-                    View::POS_END
-                );
+                HtmlStack::html('<script type="application/ld+json">'.$json.'</script>', Position::BodyEnd);
+
                 return;
             }
 
             if (empty($this->additionalPageTypes)) {
-                $data = $this->graph->toArray();
-                $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
-                $this->_saveDebugData($data, $json);
+                HtmlStack::html($this->graph->toScript(), Position::BodyEnd);
 
-                Craft::$app->getView()->registerHtml(
-                    $this->graph->toScript(),
-                    View::POS_END
-                );
                 return;
             }
 
             $data = $this->graph->toArray();
             // Remove standalone nodes for additional types, but only if they don't have their own @id
-            $data['@graph'] = array_values(array_filter($data['@graph'], function($node) {
-                if (!in_array($node['@type'] ?? '', $this->additionalPageTypes, true)) {
+            $data['@graph'] = array_values(array_filter($data['@graph'], function ($node) {
+                if (! in_array($node['@type'] ?? '', $this->additionalPageTypes, true)) {
                     return true;
                 }
+
                 // Keep nodes that have an explicit @id (they were intentionally added)
                 return isset($node['@id']);
             }));
             foreach ($data['@graph'] as &$node) {
                 if (($node['@id'] ?? '') === '#page') {
-                    $types = (array)($node['@type'] ?? []);
+                    $types = (array) ($node['@type'] ?? []);
                     $node['@type'] = array_values(array_unique(array_merge($types, $this->additionalPageTypes)));
                 }
             }
             unset($node);
 
             $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-            $this->_saveDebugData($data, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
-            Craft::$app->getView()->registerHtml(
-                '<script type="application/ld+json">' . $json . '</script>',
-                View::POS_END
-            );
+            HtmlStack::html('<script type="application/ld+json">'.$json.'</script>', Position::BodyEnd);
         });
     }
 
     public function getDefaultOptions()
     {
         $options = SeoFields::getInstance()->getSettings()->schemaOptions;
+
         return array_merge([
             get_class(Schema::webPage()) => 'WebPage',
             get_class(Schema::contactPage()) => 'Contact Page',
@@ -200,6 +201,7 @@ class SchemaService extends Component
     public function getSiteEntityOptions()
     {
         $options = SeoFields::getInstance()->getSettings()->siteEntityOptions;
+
         return array_merge([
             get_class(Schema::organization()) => 'Organization',
             get_class(Schema::localBusiness()) => 'Local Business',
@@ -213,77 +215,6 @@ class SchemaService extends Component
 
     public function schema()
     {
-        return new Schema();
-    }
-
-    public function validateSchema(array $data): array
-    {
-        $warnings = [];
-
-        foreach ($data['@graph'] ?? [] as $index => $node) {
-            $types = $node['@type'] ?? null;
-            if ($types === null) {
-                $warnings[] = "Node #$index is missing @type.";
-                continue;
-            }
-
-            $typeList = is_array($types) ? $types : [$types];
-            $validProperties = [];
-
-            foreach ($typeList as $type) {
-                $className = 'Spatie\\SchemaOrg\\' . $type;
-                if (!class_exists($className)) {
-                    $warnings[] = "Node \"{$type}\": Unknown schema.org type.";
-                    continue;
-                }
-
-                $reflection = new \ReflectionClass($className);
-                foreach ($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
-                    if ($method->getDeclaringClass()->getNamespaceName() === 'Spatie\\SchemaOrg'
-                        && $method->getNumberOfParameters() >= 1
-                        && !str_starts_with($method->getName(), '__')
-                        && !in_array($method->getName(), ['setProperty', 'addProperties', 'if', 'setNonce', 'getProperty', 'getProperties', 'referenced', 'toArray', 'toScript', 'jsonSerialize'], true)
-                    ) {
-                        $validProperties[$method->getName()] = true;
-                    }
-                }
-            }
-
-            if (empty($validProperties)) {
-                continue;
-            }
-
-            $nodeProperties = array_filter(
-                array_keys($node),
-                fn($k) => !str_starts_with($k, '@'),
-            );
-
-            foreach ($nodeProperties as $property) {
-                if (!isset($validProperties[$property])) {
-                    $typeLabel = is_array($types) ? implode('/', $types) : $types;
-                    $warnings[] = "Node \"{$typeLabel}\": Property \"{$property}\" is not defined for this type.";
-                }
-            }
-        }
-
-        return $warnings;
-    }
-
-    private function _saveDebugData(array $data, string $json): void
-    {
-        $debugModule = Craft::$app->getModule('debug');
-        if (
-            $debugModule instanceof DebugModule &&
-            isset($debugModule->panels['schema']) &&
-            $debugModule->panels['schema'] instanceof SchemaPanel
-        ) {
-            $warnings = $this->validateSchema($data);
-            $debugModule->panels['schema']->data = [
-                'schema' => $data,
-                'json' => $json,
-                'nodes' => count($data['@graph'] ?? []),
-                'warnings' => $warnings,
-            ];
-        }
+        return new Schema;
     }
 }

@@ -2,378 +2,155 @@
 
 namespace studioespresso\seofields\services;
 
-use Craft;
-use craft\base\Component;
-use craft\base\Element;
-use craft\commerce\elements\Product;
-use craft\commerce\Plugin as Commerce;
-use craft\commerce\services\ProductTypes;
-use craft\db\Query;
-use craft\elements\Category;
-use craft\elements\Entry;
-use craft\helpers\ElementHelper;
-use craft\helpers\Html;
-use craft\helpers\Json;
-use craft\helpers\UrlHelper;
-use craft\models\Site;
+use CraftCms\Cms\Cms;
+use CraftCms\Cms\Database\Table;
+use CraftCms\Cms\Element\Contracts\ElementInterface;
+use CraftCms\Cms\Element\ElementHelper;
+use CraftCms\Cms\Entry\Elements\Entry;
+use CraftCms\Cms\Site\Data\Site;
+use CraftCms\Cms\Support\Facades\Sections;
+use CraftCms\Cms\Support\Facades\Sites;
+use CraftCms\Cms\Support\Url;
+use CraftCms\DependencyAwareCache\Dependency\TagDependency;
+use CraftCms\DependencyAwareCache\Facades\DependencyCache;
+use Illuminate\Support\Facades\DB;
 use studioespresso\seofields\SeoFields;
-use yii\caching\TagDependency;
 
 /**
  * @author    Studio Espresso
- * @package   SeoFields
+ *
  * @since     1.0.0
  */
-class SitemapService extends Component
+class SitemapService
 {
     public const SITEMAP_CACHE_KEY = 'seofields_cache_sitemaps';
 
-    public function shouldRenderBySiteId(Site $site)
+    /**
+     * Returns the sitemap settings of the sections that should be listed for the site,
+     * falling back to the primary site's settings, or `false` when there's nothing to render.
+     *
+     * @return array<int, array{changefreq?: string, priority?: string, enabled?: mixed}>|false
+     */
+    public function getSectionsToRender(Site $site): array|false
     {
-        $data = SeoFields::$plugin->defaultsService->getRecordForSiteId($site->id);
-        $sitemapSettings = Json::decode($data->sitemap);
+        $settings = SeoFields::getInstance()->defaultsService->getDataBySite($site)->getSitemap()
+            ?? SeoFields::getInstance()->defaultsService->getDataBySite(Sites::getPrimarySite())->getSitemap();
 
-        if (!$sitemapSettings) {
-            $data = SeoFields::$plugin->defaultsService->getDataBySiteId(Craft::$app->getSites()->getPrimarySite()->id);
-            $sitemapSettings = Json::decode($data->sitemap);
-        }
-
-        if (!$sitemapSettings) {
-            return false;
-        }
-
-        $shouldRenderProducts = false;
-        $shouldRenderSections = false;
-        $shouldRenderCategories = false;
-        $shouldRenderCustom = false;
-
-
-        if (isset($sitemapSettings['entry'])) {
-            $shouldRenderSections = $this->_shouldRenderEntries($sitemapSettings);
-        }
-
-        if (isset($sitemapSettings['category'])) {
-            $shouldRenderCategories = $this->_shouldRenderCategories($sitemapSettings);
-        }
-
-        if (isset($sitemapSettings['product'])) {
-            $shouldRenderProducts = $this->_shouldRenderProducts($sitemapSettings);
-        }
-
-
-        if ($shouldRenderSections || $shouldRenderProducts || $shouldRenderCategories || $shouldRenderCustom) {
-            return [
-                'products' => $shouldRenderProducts,
-                'sections' => $shouldRenderSections,
-                'categories' => $shouldRenderCategories,
-                'custom' => $shouldRenderCustom,
-            ];
-        } else {
-            return false;
-        }
-    }
-
-    public function getSitemapIndex($data)
-    {
-        $currentSite = Craft::$app->getSites()->getCurrentSite();
-        $cacheDependency = new TagDependency([
-            'tags' => [
-                self::SITEMAP_CACHE_KEY,
-                self::SITEMAP_CACHE_KEY . '_index_site' . $currentSite->id,
-            ],
-        ]);
-        if (!Craft::$app->getConfig()->general->devMode) {
-            $duration = null;
-        } else {
-            $duration = 1;
-        }
-
-        $xml = Craft::$app->getCache()->getOrSet(
-            self::SITEMAP_CACHE_KEY . '_index_site' . $currentSite->id,
-            function() use ($data, $currentSite) {
-                $xml[] = '<?xml version="1.0" encoding="UTF-8"?>';
-                $xml[] = '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-                if (isset($data['sections'])) {
-                    $xml[] = $this->_addSectionsToIndex($data['sections'], $currentSite);
-                }
-                if (isset($data['categories'])) {
-                    $xml[] = $this->_addCategoriesToIndex($data['categories'], $currentSite);
-                }
-                if (isset($data['products'])) {
-                    $xml[] = $this->_addProductsToIndex($data['products'], $currentSite);
-                }
-
-                $xml[] = '</sitemapindex>';
-                $xml = implode('', $xml);
-                return $xml;
-            },
-            $duration,
-            $cacheDependency
-        );
-        return $xml;
-    }
-
-    public function getSitemapData($siteId, $type, $sectionId)
-    {
-        $settings = $this->getSettingsBySiteId($siteId);
-        $data = [];
-        switch ($type) {
-            case 'product':
-                /** @phpstan-ignore-next-line */
-            $data = Product::findAll([
-                    'siteId' => $siteId,
-                    'typeId' => $sectionId,
-                    'orderBy' => 'dateUpdated DESC',
-                ]);
-                break;
-            case 'category':
-                $data = Category::findAll([
-                    'siteId' => $siteId,
-                    'groupId' => $sectionId,
-                    'orderBy' => 'dateUpdated DESC',
-                ]);
-                break;
-            case 'entry':
-                $data = Entry::findAll([
-                    'siteId' => $siteId,
-                    'sectionId' => $sectionId,
-                    'orderBy' => 'dateUpdated DESC',
-                ]);
-                break;
-        }
-
-        $cacheDependency = new TagDependency([
-            'tags' => [
-                self::SITEMAP_CACHE_KEY,
-                self::SITEMAP_CACHE_KEY . "_" . $siteId . "_" . $sectionId,
-            ],
-        ]);
-        if (!Craft::$app->getConfig()->general->devMode) {
-            $data = Craft::$app->getCache()->getOrSet(
-                self::SITEMAP_CACHE_KEY . "_" . $siteId . "_" . $sectionId,
-                function() use ($data, $type, $settings, $sectionId) {
-                    return $this->_addElementsToSitemap($data, $settings[$type][$sectionId]);
-                },
-                null,
-                $cacheDependency
-            );
-        } else {
-            $data = $this->_addElementsToSitemap($data, $settings[$type][$sectionId]);
-        }
-
-        return $data;
-    }
-
-    public function clearCaches($tags = [self::SITEMAP_CACHE_KEY])
-    {
-        TagDependency::invalidate(
-            Craft::$app->getCache(),
-            $tags
-        );
-    }
-
-    public function clearCacheForElement(Element $element)
-    {
-        if (ElementHelper::isDraftOrRevision($element)) {
-            return false;
-        }
-
-        $elementType = get_class($element);
-        $typeHandle = explode('\\', $elementType);
-        $typeHandle = end($typeHandle);
-        switch (strtolower($typeHandle)) {
-            case 'entry':
-                /**
-                 * @var Entry|null $element
-                 */
-                if ($element->sectionId) {
-                    $section = Craft::$app->getEntries()->getSectionById($element->sectionId);
-                    $id = $section->id;
-                    break;
-                }
-                // no break
-            default:
+        $sections = array_filter($settings['entry'] ?? [], function (array $sectionSettings, int|string $sectionId) use ($site) {
+            if (empty($sectionSettings['enabled'])) {
                 return false;
-                break;
-        }
+            }
+            $section = Sections::getSectionById((int) $sectionId);
 
-        if ($id) {
-            $this->clearCaches([
-                self::SITEMAP_CACHE_KEY . '_index_site' . $element->siteId,
-                self::SITEMAP_CACHE_KEY . "_" . $element->siteId . "_" . $id,
-            ]);
-        }
+            return (bool) ($section?->getSiteSettings()[$site->id]?->hasUrls ?? false);
+        }, ARRAY_FILTER_USE_BOTH);
+
+        return $sections ?: false;
     }
 
-    private function getSettingsBySiteId($siteId)
+    public function getSitemapIndex(array $sections): string
     {
-        $settings = SeoFields::$plugin->defaultsService->getDataBySiteId($siteId);
-        return Json::decodeIfJson($settings->sitemap);
+        $site = Sites::getCurrentSite();
+        $key = self::SITEMAP_CACHE_KEY.'_index_site'.$site->id;
+
+        return $this->cached($key, [self::SITEMAP_CACHE_KEY, $key], function () use ($sections, $site) {
+            $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+            $xml .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+            foreach (array_keys($sections) as $sectionId) {
+                $section = Sections::getSectionById($sectionId);
+                $latest = Entry::find()->sectionId($sectionId)->siteId($site->id)->orderBy('dateUpdated', 'desc')->first();
+                if ($section && $latest) {
+                    $loc = Url::siteUrl("sitemap_{$site->id}_entry_{$section->id}_".strtolower($section->handle).'.xml', siteId: $site->id);
+                    $xml .= '<sitemap><loc>'.e($loc).'</loc><lastmod>'.$latest->dateUpdated->format('Y-m-d').'</lastmod></sitemap>';
+                }
+            }
+
+            return $xml.'</sitemapindex>';
+        });
     }
 
-    private function _addElementsToSitemap($entries, $settings)
+    public function getSitemapData(int $siteId, int $sectionId): ?string
     {
-        $data = [];
-        $data[] = '<?xml version="1.0" encoding="UTF-8"?>';
-        $data[] = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xhtml="http://www.w3.org/1999/xhtml" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9">';
-        $currentSite = Craft::$app->getSites()->getCurrentSite();
-        $fieldHandle = SeoFields::$plugin->getSettings()->fieldHandle;
+        $settings = $this->getSectionsToRender(Sites::getSiteById($siteId))[$sectionId] ?? null;
+        if (! $settings) {
+            return null;
+        }
+
+        $key = self::SITEMAP_CACHE_KEY.'_'.$siteId.'_'.$sectionId;
+
+        return $this->cached($key, [self::SITEMAP_CACHE_KEY, $key], function () use ($siteId, $sectionId, $settings) {
+            $entries = Entry::find()->siteId($siteId)->sectionId($sectionId)->orderBy('dateUpdated', 'desc')->get();
+
+            return $this->renderUrlset($entries, $settings, $siteId);
+        });
+    }
+
+    public function clearCaches(array|string $tags = self::SITEMAP_CACHE_KEY): void
+    {
+        TagDependency::invalidate($tags);
+    }
+
+    public function clearCacheForElement(ElementInterface $element): void
+    {
+        if (! $element instanceof Entry || ! $element->sectionId || ElementHelper::isDraftOrRevision($element)) {
+            return;
+        }
+
+        $this->clearCaches([
+            self::SITEMAP_CACHE_KEY.'_index_site'.$element->siteId,
+            self::SITEMAP_CACHE_KEY.'_'.$element->siteId.'_'.$element->sectionId,
+        ]);
+    }
+
+    /** Sitemaps are cached until invalidated, except in dev mode */
+    private function cached(string $key, array $tags, \Closure $callback): string
+    {
+        if (Cms::config()->devMode) {
+            return $callback();
+        }
+
+        return DependencyCache::rememberForever($key, $callback, new TagDependency($tags));
+    }
+
+    private function renderUrlset(iterable $entries, array $settings, int $siteId): string
+    {
+        $fieldHandle = SeoFields::getInstance()->getSettings()->fieldHandle;
+
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xhtml="http://www.w3.org/1999/xhtml" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
         foreach ($entries as $entry) {
-            if ($entry->$fieldHandle->allowIndexing === 'no') {
+            $url = $entry->getUrl();
+            if (! $url || ($entry->getFieldValue($fieldHandle)?->allowIndexing ?? 'yes') === 'no') {
                 continue;
             }
 
-            $siteEntries =
-                (new Query())
-                    ->select(['elements_sites.siteId', 'uri', 'language'])
-                    ->from('{{%elements_sites}} as elements_sites')
-                    ->leftJoin('{{%sites}} as sites', 'sites.id = elements_sites.siteId')
-                    ->where('[[elements_sites.elementId]] = ' . $entry->id)
-                    ->andWhere('sites.enabled = true')->all();
-            if (!$siteEntries) {
-                continue;
+            $xml .= '<url>';
+            $xml .= '<loc>'.e(Url::encodeUrl($url)).'</loc>';
+            $xml .= '<lastmod>'.$entry->dateUpdated->format('Y-m-d').'</lastmod>';
+            $xml .= '<changefreq>'.e($settings['changefreq'] ?? 'weekly').'</changefreq>';
+            $xml .= '<priority>'.e($settings['priority'] ?? '0.5').'</priority>';
+            foreach ($this->alternates($entry->id, $siteId) as $alternate) {
+                $href = Url::siteUrl($alternate->uri === '__home__' ? '' : $alternate->uri, siteId: $alternate->siteId);
+                $xml .= '<xhtml:link rel="alternate" hreflang="'.e($alternate->language).'" href="'.e($href).'"/>';
             }
-            $sites = array_filter($siteEntries, function($item) use ($currentSite) {
-                if ($item['siteId'] != $currentSite->id) {
-                    return true;
-                }
-                return false;
-            });
-
-            if ($entry->getUrl()) {
-                $url = Html::encode(UrlHelper::encodeUrl($entry->getUrl()));
-                $data[] = "<url>";
-                $data[] = "<loc>" . $url . "</loc>";
-                $data[] = "<lastmod>" . $entry->dateUpdated->format("Y-m-d") . "</lastmod>";
-                $data[] = "<changefreq>" . $settings['changefreq'] . "</changefreq>";
-                $data[] = "<priority>" . $settings['priority'] . "</priority>";
-                if ($sites) {
-                    foreach ($sites as $site) {
-                        $url = UrlHelper::siteUrl($site['uri'], null, null, $site['siteId']);
-                        $data[] = "<xhtml:link rel='alternate' hreflang='{$site['language']}' href='{$url}'/>";
-                    }
-                }
-                $data[] = "</url>";
-            }
-        }
-        $data[] = '</urlset>';
-        return $data = implode('', $data);
-    }
-
-    private function _addSectionsToIndex($sections, $site)
-    {
-        $data = [];
-        foreach ($sections as $id => $settings) {
-            $type = Craft::$app->getEntries()->getSectionById($id);
-            $entry = Entry::findOne(['sectionId' => $id, 'orderBy' => 'dateUpdated DESC']);
-            if ($entry) {
-                $data[] = implode('', $this->_addItemToIndex($site, $type, $entry));
-            }
-        }
-        return $data = implode('', $data);
-    }
-
-    private function _addCategoriesToIndex($groups, $site)
-    {
-        $data = [];
-        foreach ($groups as $id => $settings) {
-            $type = Craft::$app->getCategories()->getGroupById($id);
-            $entry = Category::findOne(['groupId' => $type->id, 'orderBy' => 'dateUpdated DESC']);
-            if ($entry) {
-                $data[] = implode('', $this->_addItemToIndex($site, $type, $entry));
-            }
+            $xml .= '</url>';
         }
 
-        return $data = implode('', $data);
+        return $xml.'</urlset>';
     }
 
-    private function _addProductsToIndex($productTypes, $site)
+    /** The element's URIs in the other enabled sites */
+    private function alternates(int $elementId, int $siteId): iterable
     {
-        $data = [];
-        foreach ($productTypes as $id => $settings) {
-            /** @phpstan-ignore-next-line */
-            $type = Commerce::getInstance()->productTypes->getProductTypeById($id);
-            /** @phpstan-ignore-next-line */
-            $entry = Product::findOne(['typeId' => $type->id, 'orderBy' => 'dateUpdated DESC']);
-            if ($entry) {
-                $data[] = implode('', $this->_addItemToIndex($site, $type, $entry));
-            }
-        }
-        return $data = implode('', $data);
-    }
-
-    private function _addItemToIndex($site, $type, $entry)
-    {
-        $data = [];
-        $class = explode('\\', get_class($entry));
-        $elementName = strtolower(end($class));
-        $data[] = '<sitemap><loc>';
-        $data[] = UrlHelper::siteUrl(htmlentities('/sitemap_' . $site->id . '_' . $elementName . '_' . $type->id . '_' . strtolower($type->handle) . '.xml'), null, null, $site->id);
-        $data[] = '</loc><lastmod>';
-        $data[] = $entry->dateUpdated->format('Y-m-d');
-        $data[] = '</lastmod></sitemap>';
-        return $data;
-    }
-
-    private function _shouldRenderEntries($sitemapSettings)
-    {
-        $shouldRenderSections = array_filter($sitemapSettings['entry'], function($sectionId) use ($sitemapSettings) {
-            $section = Craft::$app->getEntries()->getSectionById($sectionId);
-            if (!$section) {
-                return false;
-            }
-            if (isset($sitemapSettings['entry'][$sectionId]['enabled'])) {
-                $site = Craft::$app->getSites()->getCurrentSite();
-                $sectionSites = $section->siteSettings;
-                if (isset($sectionSites[$site->id]) && $sectionSites[$site->id]->hasUrls) {
-                    return true;
-                }
-            } else {
-                return false;
-            }
-        }, ARRAY_FILTER_USE_KEY);
-
-        return $shouldRenderSections;
-    }
-
-    private function _shouldRenderCategories($sitemapSettings)
-    {
-        $shouldRenderCategories = array_filter($sitemapSettings['category'], function($group) use ($sitemapSettings) {
-            if (isset($sitemapSettings['category'][$group]['enabled'])) {
-                $site = Craft::$app->getSites()->getCurrentSite();
-                $groupSites = Craft::$app->getCategories()->getGroupById($group)->siteSettings;
-                if (isset($groupSites[$site->id]) && $groupSites[$site->id]->hasUrls) {
-                    return true;
-                }
-            } else {
-                return false;
-            }
-        }, ARRAY_FILTER_USE_KEY);
-        return $shouldRenderCategories;
-    }
-
-    private function _shouldRenderProducts($sitemapSettings)
-    {
-        if (!class_exists('craft\commerce\models\ProductTypeSite')) {
-            return false;
-        }
-
-        $shouldRenderProducts = array_filter($sitemapSettings['product'], function($productType) use ($sitemapSettings) {
-            if (isset($sitemapSettings['product'][$productType]['enabled'])) {
-                /** @phpstan-ignore-next-line */
-                $productTypeService = new ProductTypes();
-                $site = Craft::$app->getSites()->getCurrentSite();
-                /** @phpstan-ignore-next-line */
-                foreach ($productTypeService->getProductTypeSites($productType) as $productTypeSite) {
-                    if ($productTypeSite->siteId == $site->id && $productTypeSite->hasUrls) {
-                        return true;
-                    }
-                }
-            } else {
-                return false;
-            }
-        }, ARRAY_FILTER_USE_KEY);
-        return $shouldRenderProducts;
+        return DB::table(Table::ELEMENTS_SITES.' as es')
+            ->join(Table::SITES.' as s', 's.id', '=', 'es.siteId')
+            ->where('es.elementId', $elementId)
+            ->where('es.siteId', '!=', $siteId)
+            ->whereNotNull('es.uri')
+            ->where('s.enabled', true)
+            ->whereNull('s.dateDeleted')
+            ->select(['es.siteId', 'es.uri', 's.language'])
+            ->get();
     }
 }

@@ -1,85 +1,68 @@
 <?php
+
 /**
- * SEO Fields plugin for Craft CMS 3.x
+ * SEO Fields plugin for Craft CMS
  *
  * Fields for your SEO & OG data
  *
  * @link      https://studioespresso.co
+ *
  * @copyright Copyright (c) 2019 Studio Espresso
  */
 
 namespace studioespresso\seofields\fields;
 
-use Craft;
-use craft\base\ElementInterface;
-
-use craft\base\Field;
-use craft\helpers\Json;
+use CraftCms\Cms\Asset\Elements\Asset;
+use CraftCms\Cms\Element\Contracts\ElementInterface;
+use CraftCms\Cms\Field\Field;
+use CraftCms\Cms\Field\FieldContext;
+use CraftCms\Cms\Form\Contracts\Control;
+use CraftCms\Cms\Form\Controls\AssetSelect;
+use CraftCms\Cms\Form\Controls\Choice;
+use CraftCms\Cms\Form\Controls\ContentBlock;
+use CraftCms\Cms\Form\Controls\Lightswitch;
+use CraftCms\Cms\Form\Controls\Text;
+use CraftCms\Cms\Form\Controls\Textarea;
+use CraftCms\Cms\Form\Form;
+use CraftCms\Cms\Form\FormContext;
+use CraftCms\Cms\Form\Nodes\Field as FormField;
+use CraftCms\Cms\Form\Nodes\Group;
+use CraftCms\Cms\Form\Nodes\MarkdownContent;
+use CraftCms\Cms\Form\Nodes\TemplateContent;
+use CraftCms\Cms\Support\Json;
+use CraftCms\Cms\Support\Query;
 use studioespresso\seofields\models\SeoFieldModel;
 use studioespresso\seofields\SeoFields;
-use yii\db\Schema;
+
+use function CraftCms\Cms\t;
 
 /**
- * SeoField Field
- *
- * Whenever someone creates a new field in Craft, they must specify what
- * type of field it is. The system comes with a handful of field types baked in,
- * and we’ve made it extremely easy for plugins to add new ones.
- *
- * https://craftcms.com/docs/plugins/field-types
- *
  * @author    Studio Espresso
- * @package   SeoFields
+ *
  * @since     1.0.0
  */
 class SeoField extends Field
 {
-    // Public Properties
-    // =========================================================================
+    /** @var array{general?: bool, facebook?: bool, advanced?: bool} Which groups to show; all by default */
+    public array $tabs = [];
 
-    /**
-     * Some attribute
-     *
-     * @var string
-     */
+    public bool $allowSitenameOverwrite = false;
 
-    public $tabs = [];
-    public $allowSitenameOverwrite = false;
-    public $allowSitenameDisable = false;
+    public bool $allowSitenameDisable = false;
 
-    // Static Methods
-    // =========================================================================
-
-    /**
-     * @return string The display name of this class.
-     */
     public static function displayName(): string
     {
-        return Craft::t('seo-fields', 'SEO Fields');
+        return t('SEO Fields', category: 'seo-fields');
     }
 
-    // Public Methods
-    // =========================================================================
-
-    /**
-     * Returns the validation rules for attributes.
-     *
-     * Validation rules are used by [[validate()]] to check if attribute values are valid.
-     * Child classes may override this method to declare different validation rules.
-     *
-     * More info: http://www.yiiframework.com/doc-2.0/guide-input-validation.html
-     *
-     * @return array
-     */
-    public function rules(): array
+    public static function icon(): string
     {
-        $rules = parent::rules();
-        $rules = array_merge($rules, [
-            ['allowSitenameOverwrite', 'boolean'],
-            ['allowSitenameDisable', 'boolean'],
+        return 'magnifying-glass';
+    }
 
-        ]);
-        return $rules;
+    public static function phpType(): string
+    {
+        return SeoFieldModel::class;
     }
 
     public static function isMultiInstance(): bool
@@ -87,110 +70,133 @@ class SeoField extends Field
         return false;
     }
 
-
-    /**
-     * Returns the column type that this field should get within the content table.
-     *
-     * This method will only be called if [[hasContentColumn()]] returns true.
-     *
-     * @return string The column type. [[\yii\db\QueryBuilder::getColumnType()]] will be called
-     * to convert the give column type to the physical one. For example, `string` will be converted
-     * as `varchar(255)` and `string(100)` becomes `varchar(100)`. `not null` will automatically be
-     * appended as well.
-     * @see \yii\db\QueryBuilder::getColumnType()
-     */
     public static function dbType(): string
     {
-        return Schema::TYPE_JSON;
+        return Query::TYPE_JSON;
     }
 
-    /**
-     * Normalizes the field’s value for use.
-     *
-     * @param mixed $value The raw field value
-     * @param ElementInterface|null $element The element the field is associated with, if there is one
-     *
-     * @return mixed The prepared field value
-     */
-    public function normalizeValue($value, ?ElementInterface $element = null): mixed
+    public function getRules(): array
     {
-        $model = new SeoFieldModel();
-        if (is_array($value)) {
-            $model->setAttributes($value);
-        } elseif ($value instanceof SeoFieldModel) {
-            $model = $value;
-        } elseif ($value) {
-            $model->setAttributes(Json::decodeIfJson($value));
+        return array_merge(parent::getRules(), [
+            'allowSitenameOverwrite' => ['boolean'],
+            'allowSitenameDisable' => ['boolean'],
+        ]);
+    }
+
+    public function normalizeValue(mixed $value, ?ElementInterface $element): SeoFieldModel
+    {
+        if ($value instanceof SeoFieldModel) {
+            return $value;
         }
+
+        $model = new SeoFieldModel(is_array($value) ? $value : (Json::decodeIfJson($value) ?: []));
+        $model->siteId = $element?->siteId;
+
         return $model;
     }
 
-    /**
-     * Modifies an element query.
-     *
-     * This method will be called whenever elements are being searched for that may have this field assigned to them.
-     *
-     * @return null|false `false` in the event that the method is sure that no elements are going to be found.
-     */
-    public function serializeValue($value, ?ElementInterface $element = null): mixed
+    public function serializeValue(mixed $value, ?ElementInterface $element): ?array
     {
-        return parent::serializeValue($value, $element);
+        return $value instanceof SeoFieldModel ? $value->toArray() : null;
     }
 
-    /**
-     * Returns the component’s settings HTML.
-     *
-     * @return string|null
-     */
-    public function getSettingsHtml(): ? string
+    public function settingsForm(FormContext $context = new FormContext): Form
     {
-        // Render the settings template
-        return Craft::$app->getView()->renderTemplate(
-            'seo-fields/_components/fields/SeoField_settings',
-            [
-                'field' => $this,
-            ]
-        );
+        return Form::make([
+            MarkdownContent::make('seo-fields-handle-note', t('Note that if your field handle is **not** `seo`, you will have to set [`fieldHandle`]({link}) in the plugin config to tell it about your field.', ['link' => 'https://studioespresso.github.io/craft-seo-fields/field.html#your-field'], 'seo-fields')),
+            FormField::make(t('Show general tab', category: 'seo-fields'), Lightswitch::make('tabs.general')->value($this->showTab('general'))),
+            FormField::make(t('Show social media tab', category: 'seo-fields'), Lightswitch::make('tabs.facebook')->value($this->showTab('facebook'))),
+            FormField::make(t('Show advanced tab', category: 'seo-fields'), Lightswitch::make('tabs.advanced')->value($this->showTab('advanced'))),
+            FormField::make(t('Allow sitename overwrite', category: 'seo-fields'), Lightswitch::make('allowSitenameOverwrite'))
+                ->instructions(t('Allow the user to overwrite the sitename that gets added to the entry title on a per-entry basis', category: 'seo-fields')),
+            FormField::make(t('Allow sitename to be hidden', category: 'seo-fields'), Lightswitch::make('allowSitenameDisable'))
+                ->instructions(t('Allow the user to hide the sitename on a per entry basis', category: 'seo-fields')),
+        ]);
     }
 
-    /**
-     *
-     * @param mixed $value The field’s value. This will either be the [[normalizeValue() normalized value]],
-     *                                               raw POST data (i.e. if there was a validation error), or null
-     * @param ElementInterface|null $element The element the field is associated with, if there is one
-     *
-     * @return string The input HTML.
-     */
-    public function getInputHtml($value, ?ElementInterface $element = null): string
+    public function formControl(FieldContext $context): Control
     {
-        $value->siteId = $element->siteId;
+        /** @var SeoFieldModel $value */
+        $value = $context->value;
+        $element = $context->element;
+        $value->siteId = $element?->siteId;
 
-        // Get our id and namespace
-        $id = Craft::$app->getView()->formatInputId($this->handle);
-        $namespacedId = Craft::$app->getView()->namespaceInputId($id);
+        $groups = [];
 
-        // Variables to pass down to our field JavaScript to let it namespace properly
-        $jsonVars = [
-            'id' => $id,
-            'name' => $this->handle,
-            'namespace' => $namespacedId,
-            'prefix' => Craft::$app->getView()->namespaceInputId(''),
-        ];
-        $jsonVars = Json::encode($jsonVars);
-        Craft::$app->getView()->registerJs("$('#{$namespacedId}-field').SeoField(" . $jsonVars . ");");
+        if ($this->showTab('general')) {
+            $groups[] = Group::make('seo-general', array_values(array_filter([
+                $element ? TemplateContent::make('seo-preview', $this->searchPreview($value, $element)) : null,
+                FormField::make(t('Meta title', category: 'seo-fields'), Text::make('metaTitle')->value($value->metaTitle)),
+                $this->allowSitenameOverwrite
+                    ? FormField::make(t('Site name', category: 'seo-fields'), Text::make('siteName')->value($value->siteName))
+                    : null,
+                $this->allowSitenameDisable
+                    ? FormField::make(t('Hide site name', category: 'seo-fields'), Lightswitch::make('hideSiteName')->value($value->hideSiteName))
+                    : null,
+                FormField::make(t('Meta description', category: 'seo-fields'), Textarea::make('metaDescription')->maxLength(300)->value($value->metaDescription)),
+                FormField::make(t('Schema type', category: 'seo-fields'), Choice::make('schema')
+                    ->options($this->schemaOptions())
+                    ->value($value->schema ?? ''))
+                    ->instructions(t('Override the default schema type for this entry', category: 'seo-fields')),
+            ])))->label(t('General meta', category: 'seo-fields'));
+        }
 
-        // Render the input template
-        return Craft::$app->getView()->renderTemplate(
-            'seo-fields/_components/fields/SeoField_input',
-            [
-                'element' => $element,
-                'name' => $this->handle,
-                'value' => $value,
-                'field' => $this,
-                'id' => $id,
-                'namespacedId' => $namespacedId,
-                'schemaOptions' => SeoFields::getInstance()->schemaService->getDefaultOptions(),
-            ]
+        if ($this->showTab('facebook')) {
+            $groups[] = Group::make('seo-social', [
+                FormField::make(t('Social Media title', category: 'seo-fields'), Text::make('facebookTitle')->value($value->facebookTitle)),
+                FormField::make(t('Social Media description', category: 'seo-fields'), Textarea::make('facebookDescription')->maxLength(300)->value($value->facebookDescription)),
+                FormField::make(t('Social Media image', category: 'seo-fields'), AssetSelect::make('facebookImage')
+                    ->elementType(Asset::class)
+                    ->criteria(['kind' => ['image']])
+                    ->single()
+                    ->viewMode(AssetSelect::VIEW_MODE_LIST)
+                    ->selectionLabel(t('Select an image', category: 'seo-fields'))
+                    ->value($value->facebookImage ?? [])),
+            ])->label(t('Social Media', category: 'seo-fields'));
+        }
+
+        if ($this->showTab('advanced')) {
+            $groups[] = Group::make('seo-advanced', [
+                FormField::make(t('Allow search engines to index this page?', category: 'seo-fields'), Choice::make('allowIndexing')
+                    ->options([
+                        ['label' => t('Yes', category: 'seo-fields'), 'value' => 'yes'],
+                        ['label' => t('No', category: 'seo-fields'), 'value' => 'no'],
+                    ])
+                    ->value($value->allowIndexing))
+                    ->instructions(t('Disabling this option will add a noindex header and will remove the page from any sitemaps', category: 'seo-fields')),
+            ])->label(t('Advanced', category: 'seo-fields'));
+        }
+
+        return ContentBlock::make($context->path)
+            ->form(Form::make($groups))
+            ->value($value->toArray());
+    }
+
+    /** Whether the field settings show a group; all are shown until configured */
+    private function showTab(string $tab): bool
+    {
+        return (bool) ($this->tabs[$tab] ?? true);
+    }
+
+    /** @return list<array{label: string, value: string}> */
+    private function schemaOptions(): array
+    {
+        $options = [['label' => t('Use section default', category: 'seo-fields'), 'value' => '']];
+        foreach (SeoFields::getInstance()->schemaService->getDefaultOptions() as $class => $label) {
+            $options[] = ['label' => $label, 'value' => $class];
+        }
+
+        return $options;
+    }
+
+    /** A static preview of the saved values as a search result */
+    private function searchPreview(SeoFieldModel $value, ElementInterface $element): string
+    {
+        return sprintf(
+            '<p><strong>%s</strong><br><small>%s</small><br>%s</p>',
+            e($value->getPageTitle($element)),
+            e($element->getUrl() ?? ''),
+            e($value->metaDescription ?? ''),
         );
     }
 }

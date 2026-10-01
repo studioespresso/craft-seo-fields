@@ -2,90 +2,67 @@
 
 namespace studioespresso\seofields\controllers;
 
-use Craft;
-use craft\helpers\Cp;
-use craft\helpers\Template;
-use craft\models\Site;
-use craft\web\Controller;
-use studioespresso\seofields\models\SeoDefaultsModel;
+use CraftCms\Cms\Form\Controls\Lightswitch;
+use CraftCms\Cms\Form\Controls\Textarea;
+use CraftCms\Cms\Form\Form;
+use CraftCms\Cms\Form\Nodes\Field;
+use CraftCms\Cms\Form\Nodes\MarkdownContent;
+use CraftCms\Cms\Http\RespondsWithFlash;
+use CraftCms\Cms\Http\Responses\CpScreenResponse;
+use CraftCms\Cms\Support\Facades\Sites;
+use Illuminate\Http\Request;
+use studioespresso\seofields\controllers\concerns\SeoCpScreen;
 use studioespresso\seofields\SeoFields;
+use Symfony\Component\HttpFoundation\Response;
 
-class RobotsController extends Controller
+use function CraftCms\Cms\renderString;
+use function CraftCms\Cms\t;
+
+class RobotsController
 {
-    protected array|bool|int $allowAnonymous = ['render'];
+    use RespondsWithFlash;
+    use SeoCpScreen;
 
-    public Site|null $site = null;
-
-    public function init(): void
+    public function edit(Request $request): CpScreenResponse
     {
-        if (Craft::$app->getRequest()->getQueryParam('site')) {
-            $this->site = Craft::$app->getSites()->getSiteByHandle(Craft::$app->getRequest()->getQueryParam('site'));
-        } else {
-            $this->site = Craft::$app->getSites()->getPrimarySite();
-        }
-        parent::init();
+        $perSite = SeoFields::getInstance()->getSettings()->robotsPerSite;
+        $site = $perSite ? $this->site($request) : Sites::getPrimarySite();
+        $data = SeoFields::getInstance()->defaultsService->getDataBySite($site);
+
+        return $this->formScreen(t('Robots.txt', category: 'seo-fields'), $perSite ? $site : null, Form::make([
+            MarkdownContent::make('robots-intro', t("A robots.txt file tells search engine crawlers which pages or files the crawler can or can't request from your site. This is used mainly to avoid overloading your site with requests; it is not a mechanism for keeping a web page out of Google.", category: 'seo-fields')),
+            Field::make(t('Enable robots.txt', category: 'seo-fields'), Lightswitch::make('enableRobots'))
+                ->instructions(t('Let the plugin handle your robots.txt', category: 'seo-fields')),
+            Field::make(t('Robots.txt content', category: 'seo-fields'), Textarea::make('robots')->rows(25)->monospace())
+                ->instructions(t('Rendered as a Twig template.', category: 'seo-fields')),
+        ]), [
+            'enableRobots' => $data->enableRobots ?? true,
+            'robots' => $data->robots,
+        ]);
     }
 
-    public function actionIndex()
+    public function store(Request $request): Response
     {
-        $sites = Craft::$app->getSites()->getEditableSites();
-        $data = SeoFields::$plugin->defaultsService->getDataBySiteHandle($this->site->handle);
-        $settings = SeoFields::$plugin->getSettings();
+        $values = $request->validate([
+            'enableRobots' => ['boolean'],
+            'robots' => ['nullable', 'string'],
+        ]);
 
-        $sites = Craft::$app->getSites()->getEditableSites();
+        $site = SeoFields::getInstance()->getSettings()->robotsPerSite ? $this->site($request) : Sites::getPrimarySite();
+        $service = SeoFields::getInstance()->defaultsService;
+        $defaults = $service->getDataBySite($site);
+        $defaults->setAttributes($values);
+        $service->saveDefaults($defaults, $site->id);
 
-        $crumbs = ['label' => $this->site->name, ];
-        if (Craft::$app->getIsMultiSite() && $settings->robotsPerSite) {
-            $crumbs['menu'] = [
-                'label' => Craft::t('site', 'Select site'),
-                'items' => Cp::siteMenuItems($sites, $this->site),
-            ];
-        }
-
-        return $this->asCpScreen()
-            ->selectedSubnavItem('robots')
-
-            ->title(Craft::t('seo-fields', 'Robots.txt'))
-            ->crumbs([$crumbs])
-            ->action('seo-fields/robots/save')
-            ->contentTemplate('seo-fields/_robots/_content', [
-                'data' => $data,
-                'site' => $this->site,
-                'robotsPerSite' => $settings->robotsPerSite,
-            ]);
+        return $this->asSuccess(t('Robots.txt saved.', category: 'seo-fields'));
     }
 
-    public function actionSave()
+    /** Serves `/robots.txt` */
+    public function render(): Response
     {
-        $data = [];
-        if (Craft::$app->getRequest()->getBodyParam('id')) {
-            $model = SeoFields::$plugin->defaultsService->getDataById(Craft::$app->getRequest()->getBodyParam('id'));
-        } else {
-            $model = new SeoDefaultsModel();
-        }
-        $data['enableRobots'] = Craft::$app->getRequest()->getBodyParam('enableRobots');
-        $data['robots'] = Craft::$app->getRequest()->getBodyParam('robots');
-        $data['siteId'] = Craft::$app->getRequest()->getBodyParam('siteId', Craft::$app->getSites()->getPrimarySite()->id);
-        $model->setAttributes($data);
-        SeoFields::$plugin->defaultsService->saveDefaults($model, $data['siteId']);
-        return $this->redirectToPostedUrl();
+        $robots = SeoFields::getInstance()->defaultsService->getRobotsForSite(Sites::getCurrentSite());
+        abort_unless($robots, 404);
 
-    }
-
-    public function actionRender(): \yii\web\Response|null
-    {
-        if (SeoFields::$plugin->getSettings()->robotsPerSite) {
-            $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getCurrentSite());
-        } else {
-            $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(Craft::$app->getSites()->getPrimarySite());
-        }
-        try {
-            $string = Craft::$app->getView()->renderString(Template::raw($robots->robots));
-            $headers = Craft::$app->response->headers;
-            $headers->add('Content-Type', 'text/plain; charset=utf-8');
-            return $this->asRaw($string);
-        } catch (\Exception $e) {
-        }
-        return null;
+        return response(renderString((string) $robots->robots), 200, ['Content-Type' => 'text/plain; charset=utf-8']);
     }
 }

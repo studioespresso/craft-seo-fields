@@ -1,14 +1,7 @@
 includes:
-    - vendor/craftcms/phpstan/phpstan.neon
+    - vendor/larastan/larastan/extension.neon
 
 parameters:
     level: 2
     paths:
         - src
-    scanFiles:
-        - lib/craft/behaviors/CustomFieldBehavior.php
-    bootstrapFiles:
-        - lib/craft/bootstrap.php
-    excludePaths:
-        - src/services/migrate/Ether.php
-        - src/feedme/fields/SeoFieldType.php

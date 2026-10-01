@@ -2,104 +2,145 @@
 
 namespace studioespresso\seofields\models;
 
-use Craft;
-use craft\base\Element;
-use craft\base\Model;
-use craft\db\Query;
-use craft\elements\Asset;
-use craft\elements\Category;
-use craft\elements\Entry;
-use craft\helpers\UrlHelper;
-use craft\models\ImageTransform;
+use CraftCms\Cms\Asset\Elements\Asset;
+use CraftCms\Cms\Cms;
+use CraftCms\Cms\Database\Table;
+use CraftCms\Cms\Element\Contracts\ElementInterface;
+use CraftCms\Cms\Entry\Elements\Entry;
+use CraftCms\Cms\Support\Facades\Deprecator;
+use CraftCms\Cms\Support\Facades\Sites;
+use CraftCms\Cms\Support\Url;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Spatie\SchemaOrg\Schema;
 use Spatie\SchemaOrg\WebPage;
+use studioespresso\seofields\behaviors\ElementSeoMacros;
 use studioespresso\seofields\SeoFields;
+use Throwable;
 
-class SeoFieldModel extends Model
+/**
+ * The value of an SEO field.
+ */
+class SeoFieldModel
 {
-    public $metaTitle;
-    public $metaDescription;
+    /** The keys that are stored in the field's content */
+    public const ATTRIBUTES = [
+        'metaTitle',
+        'metaDescription',
+        'siteName',
+        'hideSiteName',
+        'facebookTitle',
+        'facebookDescription',
+        'facebookImage',
+        'twitterTitle',
+        'twitterDescription',
+        'twitterImage',
+        'allowIndexing',
+        'schema',
+    ];
 
-    public $facebookTitle;
-    public $facebookDescription;
-    public $facebookImage;
+    public ?string $metaTitle = null;
 
-    public $twitterTitle;
-    public $twitterDescription;
-    public $twitterImage;
+    public ?string $metaDescription = null;
 
-    public $siteName;
-    public $hideSiteName;
-    public $siteId;
-    public $canonical;
+    public ?string $facebookTitle = null;
 
-    public $schema;
-    public $allowIndexing = 'yes';
+    public ?string $facebookDescription = null;
+
+    /** @var int[]|null */
+    public ?array $facebookImage = null;
+
+    public ?string $twitterTitle = null;
+
+    public ?string $twitterDescription = null;
+
+    /** @var int[]|null */
+    public ?array $twitterImage = null;
+
+    public ?string $siteName = null;
+
+    public bool $hideSiteName = false;
+
+    public ?int $siteId = null;
+
+    public ?string $canonical = null;
+
+    public ?string $schema = null;
+
+    public string $allowIndexing = 'yes';
+
+    public ?ElementInterface $element = null;
+
+    private ?SeoDefaultsModel $_siteDefault = null;
+
+    public function __construct(array $attributes = [])
+    {
+        $this->setAttributes($attributes);
+    }
 
     /**
-     * @var SeoDefaultsModel
+     * Assigns stored attributes. Unknown keys are ignored.
      */
-    public $siteDefault;
-
-    public $element;
-
-    public function init(): void
+    public function setAttributes(array $values): void
     {
-        if ($this->siteId) {
-            $site = Craft::$app->getSites()->getSiteById($this->siteId);
-        } else {
-            $site = Craft::$app->getSites()->getCurrentSite();
+        foreach (array_intersect_key($values, array_flip([...self::ATTRIBUTES, 'siteId'])) as $name => $value) {
+            $this->$name = match ($name) {
+                'facebookImage', 'twitterImage' => $value ? array_values(array_map('intval', (array) $value)) : null,
+                'hideSiteName' => (bool) $value,
+                'siteId' => $value ? (int) $value : null,
+                'allowIndexing' => $value === 'no' ? 'no' : 'yes',
+                default => $value === '' ? null : $value,
+            };
         }
-        $this->siteDefault = SeoFields::getInstance()->defaultsService->getDataBySite($site);
     }
 
-    public function getDefaults()
+    /** @return array<string, mixed> */
+    public function toArray(): array
     {
-        if ($this->siteId) {
-            $site = Craft::$app->getSites()->getSiteById($this->siteId);
-        } else {
-            $site = Craft::$app->getSites()->getCurrentSite();
-        }
-        $this->siteDefault = SeoFields::getInstance()->defaultsService->getDataBySite($site);
+        return array_intersect_key(get_object_vars($this), array_flip(self::ATTRIBUTES));
     }
 
-    public function getSchema(?Element $element = null)
-    {
-        if (!$element) {
-            return null;
-        }
+    /** The defaults of the field's site */
+    public SeoDefaultsModel $siteDefault {
+        get {
+            $site = ($this->siteId ? Sites::getSiteById($this->siteId) : null) ?? Sites::getCurrentSite();
 
-        /** @phpstan-ignore-next-line */
-        if (!$element->getShouldRenderSchema()) {
-            return null;
+            return $this->_siteDefault ??= SeoFields::getInstance()->defaultsService->getDataBySite($site);
+        }
+    }
+
+    /** @deprecated The site defaults are loaded on demand through `siteDefault` */
+    public function getDefaults(): SeoDefaultsModel
+    {
+        return $this->siteDefault;
+    }
+
+    public function getSchema(?ElementInterface $element = null): void
+    {
+        if (! $element || ! (ElementSeoMacros::get($element, 'shouldRenderSchema') ?? true)) {
+            return;
         }
 
         try {
             $schemaService = SeoFields::getInstance()->schemaService;
-            $primarySite = Craft::$app->getSites()->getPrimarySite();
-            $defaults = SeoFields::getInstance()->defaultsService->getDataBySite($primarySite);
-            $settings = $defaults->getSchema();
+            $defaults = SeoFields::getInstance()->defaultsService->getDataBySite(Sites::getPrimarySite());
+            $settings = $defaults->getSchema() ?? [];
 
             $graph = $schemaService->getGraph();
 
-            $entityName = $defaults->organizationName ?: ($defaults->defaultSiteTitle ?: Craft::$app->getSystemName());
-
+            $entityName = $defaults->organizationName ?: ($defaults->defaultSiteTitle ?: Cms::systemName());
             $entityClass = $defaults->siteEntity ?: get_class(Schema::organization());
-            $entityMethod = $schemaService->getGraphMethodName($entityClass);
 
-            $entity = $graph->{$entityMethod}()
+            $entity = $graph->{$schemaService->getGraphMethodName($entityClass)}()
                 ->setProperty('@id', '#organization')
                 ->name($entityName)
-                ->url(UrlHelper::siteUrl());
+                ->url(Url::siteUrl());
 
-            if (!empty($defaults->organizationLogo)) {
-                $logoAsset = Craft::$app->getAssets()->getAssetById(is_array($defaults->organizationLogo) ? $defaults->organizationLogo[0] : $defaults->organizationLogo);
-                if ($logoAsset) {
-                    $entity->logo($logoAsset->getUrl());
-                }
+            if ($defaults->organizationLogo && $logo = Asset::find()->id($defaults->organizationLogo[0])->first()) {
+                $entity->logo($logo->getUrl());
             }
 
-            if (!empty($defaults->sameAs) && is_array($defaults->sameAs)) {
+            if ($defaults->sameAs) {
                 $entity->sameAs($defaults->sameAs);
             }
 
@@ -107,365 +148,221 @@ class SeoFieldModel extends Model
                 ->setProperty('@id', '#website')
                 ->name($entityName)
                 ->publisher(['@id' => '#organization'])
-                ->url(UrlHelper::siteUrl());
+                ->url(Url::siteUrl());
 
             $schemaClass = WebPage::class;
-
-            switch (get_class($element)) {
-                case Entry::class:
-                    if (isset($settings['sections'])) {
-                        $sectionId = $element->section->id;
-                        $schemaClass = $settings['sections'][$sectionId] ?? WebPage::class;
-                    }
-                    break;
-                case Category::class:
-                    if (isset($settings['categories'])) {
-                        $groupId = $element->group->id;
-                        $schemaClass = $settings['categories'][$groupId] ?? WebPage::class;
-                    }
-                    break;
+            if ($element instanceof Entry && isset($settings['sections'])) {
+                $schemaClass = $settings['sections'][$element->sectionId] ?? WebPage::class;
             }
-
-            if (!empty($this->schema)) {
+            if (! empty($this->schema)) {
                 $schemaClass = $this->schema;
             }
 
-            $method = $schemaService->getGraphMethodName($schemaClass);
-            $pageNode = $graph->{$method}()
+            $pageNode = $graph->{$schemaService->getGraphMethodName($schemaClass)}()
                 ->setProperty('@id', '#page')
                 ->author(['@id' => '#organization'])
                 ->isPartOf(['@id' => '#website'])
-                ->url($element->getUrl() ?? "");
+                ->url($element->getUrl() ?? '');
             $schemaService->setPageNode($pageNode);
             $schemaService->setPageDefaults($this, $element);
-        } catch (\Exception $e) {
-            \Craft::error($e, SeoFields::class);
-            return null;
+        } catch (Throwable $e) {
+            Log::error($e->getMessage(), ['exception' => $e]);
         }
     }
 
-    public function getSiteNameWithSeperator()
+    public function getSiteNameWithSeperator(): string|false
     {
-        $this->getDefaults();
         if ($this->hideSiteName) {
             return false;
         }
-        if ($this->siteName) {
-            $siteName = $this->siteName;
-        } elseif ($this->siteDefault->defaultSiteTitle) {
-            $siteName = $this->siteDefault->defaultSiteTitle;
-        } else {
-            $siteName = Craft::$app->getSystemName();
-        }
 
-        $seperator = $this->siteDefault->titleSeperator ? $this->siteDefault->titleSeperator : '-';
-        return ' ' . $seperator . ' ' . $siteName;
+        $siteName = $this->siteName ?: ($this->siteDefault->defaultSiteTitle ?: Cms::systemName());
+        $seperator = $this->siteDefault->titleSeperator ?: '-';
+
+        return ' '.$seperator.' '.$siteName;
     }
 
-
-    public function getPageTitle($element = null, $includeSiteName = true)
+    public function getPageTitle(?ElementInterface $element = null, bool $includeSiteName = true): string
     {
         if ($element) {
             $this->element = $element;
         }
-        if ($element && $element->getSocialTitle()) {
-            return $element->getSocialTitle() . ($includeSiteName ? $this->getSiteNameWithSeperator() : '');
-        }
-        if ($element && !$this->metaTitle) {
-            return $element->title . ($includeSiteName ? $this->getSiteNameWithSeperator() : '');
-        }
-        return $this->metaTitle . ($includeSiteName ? $this->getSiteNameWithSeperator() : '');
+
+        $title = match (true) {
+            (bool) ElementSeoMacros::get($element, 'socialTitle') => ElementSeoMacros::get($element, 'socialTitle'),
+            $element && ! $this->metaTitle => $element->title,
+            default => $this->metaTitle,
+        };
+
+        return $title.($includeSiteName ? $this->getSiteNameWithSeperator() : '');
     }
 
-    public function getCanonical()
+    public function getCanonical(): string
     {
-        $request = Craft::$app->getRequest();
-        return $request->hostInfo . '/' . $request->getPathInfo(true);
+        return request()->getSchemeAndHttpHost().'/'.ltrim(request()->path(), '/');
     }
 
-
-    public function getMetaTitle($element)
+    public function getMetaTitle(?ElementInterface $element = null): ?string
     {
-        $element = $element ?? $this->element;
-        $title = $this->getPageTitle($element, false);
-
-        if ($element->getMetaTitle()) {
-            $title = $element->getMetaTitle();
-        } elseif ($this->metaTitle) {
-            $title = $this->metaTitle;
-        }
-        return $title;
-    }
-
-    public function getSocialTitle($element)
-    {
-        $title = $this->getPageTitle($element, false);
-
-        if ($element->getSocialTitle()) {
-            $title = $element->getSocialTitle();
-        } elseif ($this->facebookTitle) {
-            $title = $this->facebookTitle;
+        $element ??= $this->element;
+        if (ElementSeoMacros::get($element, 'metaTitle')) {
+            return ElementSeoMacros::get($element, 'metaTitle');
         }
 
-        return $title . $this->getSiteNameWithSeperator();
+        return $this->metaTitle ?: $this->getPageTitle($element, false);
     }
 
-    public function getOgTitle($element = null)
+    public function getSocialTitle(?ElementInterface $element = null): string
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'getOgTitle', "getOgTitle has been replaced by `getSocialTitle` and will be removed in a later update");
-        return $this->getSocialTitle($element);
+        $title = match (true) {
+            (bool) ElementSeoMacros::get($element, 'socialTitle') => ElementSeoMacros::get($element, 'socialTitle'),
+            (bool) $this->facebookTitle => $this->facebookTitle,
+            default => $this->getPageTitle($element, false),
+        };
+
+        return $title.$this->getSiteNameWithSeperator();
     }
 
-    public function getTwitterTitle($element = null)
+    public function getMetaDescription(): ?string
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'getTwitterTitle', "getTwitterTitle has been replaced by `getSocialTitle` and will be removed in a later update");
-        return $this->getSocialTitle($element);
+        return ElementSeoMacros::get($this->element, 'socialDescription')
+            ?: ElementSeoMacros::get($this->element, 'metaDescription')
+            ?: $this->metaDescription
+            ?: $this->siteDefault->defaultMetaDescription;
     }
 
-    public function getMetaDescription()
+    public function getSocialDescription(): ?string
     {
-        if ($this->element && $this->element->getSocialDescription()) {
-            return $this->element->getSocialDescription();
+        return ElementSeoMacros::get($this->element, 'socialDescription')
+            ?: $this->facebookDescription
+            ?: $this->siteDefault->defaultMetaDescription;
+    }
+
+    /**
+     * @return array{height: int|null, width: int|null, url: string|null, alt: string|null}|false
+     */
+    public function getSocialImage(?Asset $asset = null): array|false
+    {
+        $asset ??= ElementSeoMacros::get($this->element, 'socialImage');
+
+        $id = $this->facebookImage[0] ?? $this->siteDefault->defaultImage[0] ?? null;
+        if (! $asset && $id) {
+            $asset = Asset::find()->id($id)->first();
         }
 
-        if ($this->element->getMetaDescription()) {
-            return $this->element->getMetaDescription();
-        }
-
-        if ($this->metaDescription) {
-            return $this->metaDescription;
-        }
-
-        return $this->siteDefault->defaultMetaDescription;
-    }
-
-    public function getSocialDescription()
-    {
-        if ($this->element && $this->element->getSocialDescription()) {
-            return $this->element->getSocialDescription();
-        }
-
-        if ($this->facebookDescription) {
-            return $this->facebookDescription;
-        }
-
-        return $this->siteDefault->defaultMetaDescription;
-    }
-
-    public function getOgDescription()
-    {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'getOgDescription', "getOgDescription has been replaced by `getSocialDescription` and will be removed in a later update");
-        return $this->getSocialDescription();
-    }
-
-    public function getTwitterDescription()
-    {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'getTwitterDescription', "getTwitterDescription has been replaced by `getSocialDescription` and will be removed in a later update");
-        return $this->getSocialDescription();
-    }
-
-
-    public function getSocialImage(?Asset $asset = null)
-    {
-        if ($asset) {
-            $asset = $asset;
-        } elseif ($this->element->getSocialImage()) {
-            $asset = $this->element->getSocialImage();
-        } elseif ($this->facebookImage) {
-            $asset = Craft::$app->getAssets()->getAssetById($this->facebookImage[0]);
-        } elseif ($this->siteDefault->defaultImage) {
-            $asset = Craft::$app->getAssets()->getAssetById($this->siteDefault->defaultImage[0]);
-        }
-        if (!isset($asset)) {
+        if (! $asset) {
             return false;
         }
 
-        $transform = $this->_getPreviewTransform($asset);
+        $transform = ['width' => 1200, 'height' => 590, 'mode' => 'crop'];
+
         return [
             'height' => $asset->getHeight($transform),
             'width' => $asset->getWidth($transform),
-            'url' => $asset->getUrl($transform, true),
+            'url' => $asset->getUrl($transform),
             'alt' => $asset->title,
         ];
     }
 
-    public function getOgImage(?Asset $asset = null)
+    /**
+     * @return list<array{url: string, language: string}>|false
+     */
+    public function getAlternate(?ElementInterface $element = null): array|false
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'getOgImage', "getOgImage has been replaced by `getSocialImage` and will be removed in a later update");
-        return $this->getSocialImage($asset);
-    }
-
-    public function getTwitterImage(?Asset $asset = null)
-    {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'getTwitterImage', "getTwitterImage has been replaced by `getSocialImage` and will be removed in a later update");
-        return $this->getSocialImage($asset);
-    }
-
-    public function getAlternate($element = null)
-    {
-        if (!$element) {
-            return false;
-        }
-        $siteEntries =
-            (new Query())->select(['siteId', 'uri', 'language', 'sites.primary as primary'])
-                ->from('{{%elements_sites}} as  elements')
-                ->leftJoin('{{%sites}} as sites', 'sites.id = elements.siteId')
-                ->where('[[elementId]] = ' . $element->id)
-                ->andWhere('sites.enabled = 1')
-                ->andWhere('sites.dateDeleted IS NULL')
-                ->andWhere('elements.enabled = true')
-                ->distinct(true)
-                ->all();
-        $seperatedSiteGroups = SeoFields::getInstance()->getSettings()->logicallySeperatedSiteGroups;
-        $currentSite = Craft::$app->getSites()->getCurrentSite();
-
-        $sites = $siteEntries;
-        if (empty($sites)) {
+        if (! $element) {
             return false;
         }
 
-        if ($seperatedSiteGroups) {
-            $currentSiteGroupId = $currentSite->groupId;
-            $sites = array_filter($sites, function($siteEntry) use ($currentSiteGroupId) {
-                $site = Craft::$app->getSites()->getSiteById($siteEntry['siteId']);
-                return $site->groupId === $currentSiteGroupId;
-            });
+        $sites = DB::table(Table::ELEMENTS_SITES.' as es')
+            ->join(Table::SITES.' as s', 's.id', '=', 'es.siteId')
+            ->where('es.elementId', $element->id)
+            ->where('es.enabled', true)
+            ->where('s.enabled', true)
+            ->whereNull('s.dateDeleted')
+            ->whereNotNull('es.uri')
+            ->select(['es.siteId', 'es.uri', 's.language'])
+            ->distinct()
+            ->get();
+
+        if (SeoFields::getInstance()->getSettings()->logicallySeperatedSiteGroups) {
+            $groupId = Sites::getCurrentSite()->groupId;
+            $sites = $sites->filter(fn ($site) => Sites::getSiteById($site->siteId)?->groupId === $groupId);
         }
 
-        $data = [];
-        foreach ($sites as $site) {
-            if ($site['uri']) {
-                $data[] = [
-                    'url' => UrlHelper::siteUrl($site['uri'] === '__home__' ? '' : $site['uri'], null, null, $site['siteId']),
-                    'language' => $site['language'],
-                ];
-            }
+        if ($sites->isEmpty()) {
+            return false;
         }
 
-        return $data;
+        return $sites->map(fn ($site) => [
+            'url' => Url::siteUrl($site->uri === '__home__' ? '' : $site->uri, siteId: $site->siteId),
+            'language' => $site->language,
+        ])->values()->all();
     }
 
+    /** @deprecated Use `getSocialTitle()` */
+    public function getOgTitle(?ElementInterface $element = null): string
+    {
+        $this->deprecated('getOgTitle', 'getOgTitle has been replaced by `getSocialTitle` and will be removed in a later update');
+
+        return $this->getSocialTitle($element);
+    }
+
+    /** @deprecated Use `getSocialTitle()` */
+    public function getTwitterTitle(?ElementInterface $element = null): string
+    {
+        $this->deprecated('getTwitterTitle', 'getTwitterTitle has been replaced by `getSocialTitle` and will be removed in a later update');
+
+        return $this->getSocialTitle($element);
+    }
+
+    /** @deprecated Use `getSocialDescription()` */
+    public function getOgDescription(): ?string
+    {
+        $this->deprecated('getOgDescription', 'getOgDescription has been replaced by `getSocialDescription` and will be removed in a later update');
+
+        return $this->getSocialDescription();
+    }
+
+    /** @deprecated Use `getSocialDescription()` */
+    public function getTwitterDescription(): ?string
+    {
+        $this->deprecated('getTwitterDescription', 'getTwitterDescription has been replaced by `getSocialDescription` and will be removed in a later update');
+
+        return $this->getSocialDescription();
+    }
+
+    /** @deprecated Use `getSocialImage()` */
+    public function getOgImage(?Asset $asset = null): array|false
+    {
+        $this->deprecated('getOgImage', 'getOgImage has been replaced by `getSocialImage` and will be removed in a later update');
+
+        return $this->getSocialImage($asset);
+    }
+
+    /** @deprecated Use `getSocialImage()` */
+    public function getTwitterImage(?Asset $asset = null): array|false
+    {
+        $this->deprecated('getTwitterImage', 'getTwitterImage has been replaced by `getSocialImage` and will be removed in a later update');
+
+        return $this->getSocialImage($asset);
+    }
 
     /**
-     * Override setAttributes to assign properties directly, bypassing deprecated setters.
-     * This prevents deprecation warnings from firing during normalizeValue().
+     * Overwriting SEO properties through `entry.seo.setX()` no longer works; set them on the element instead.
      */
-    public function setAttributes($values, $safeOnly = true): void
+    public function __call(string $name, array $arguments): mixed
     {
-        // These properties have deprecated setters that we don't want triggered by setAttributes()
-        $directProperties = ['metaTitle', 'metaDescription', 'facebookTitle', 'facebookDescription', 'facebookImage', 'twitterTitle', 'twitterDescription', 'twitterImage'];
+        if (preg_match('/^set(MetaTitle|MetaDescription|FacebookTitle|FacebookDescription|FacebookImage|TwitterTitle|TwitterDescription|TwitterImage)$/', $name)) {
+            $this->deprecated($name, "Overwriting SEO properties through `entry.seo.$name` no longer works. Please see the docs for an upgrading guide.");
 
-        if (is_array($values)) {
-            foreach ($directProperties as $prop) {
-                if (array_key_exists($prop, $values)) {
-                    $this->$prop = $values[$prop];
-                    unset($values[$prop]);
-                }
-            }
+            return null;
         }
 
-        parent::setAttributes($values, $safeOnly);
+        throw new \BadMethodCallException(sprintf('Call to undefined method %s::%s()', static::class, $name));
     }
 
-    /**
-     * @deprecated Overwriting SEO properties through this method no longer works.
-     */
-    public function setMetaTitle($value = null): void
+    private function deprecated(string $method, string $message): void
     {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setMetaTitle', "Overwriting SEO properties through `entry.seo.setMetaTitle` no longer works. Please see the docs for an upgrading guide.");
-    }
-
-    /**
-     * @deprecated Overwriting SEO properties through this method no longer works.
-     */
-    public function setMetaDescription($value = null): void
-    {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setMetaDescription', "Overwriting SEO properties through `entry.seo.setMetaDescription` no longer works. Please see the docs for an upgrading guide.");
-    }
-
-    /**
-     * @deprecated Overwriting SEO properties through this method no longer works.
-     */
-    public function setFacebookTitle($value = null): void
-    {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookTitle', "Overwriting SEO properties through `entry.seo.setFacebookTitle` no longer works. Please see the docs for an upgrading guide.");
-    }
-
-    /**
-     * @deprecated Overwriting SEO properties through this method no longer works.
-     */
-    public function setFacebookDescription($value = null): void
-    {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookDescription', "Overwriting SEO properties through `entry.seo.setFacebookDescription` no longer works. Please see the docs for an upgrading guide.");
-    }
-
-    /**
-     * @deprecated Overwriting SEO properties through this method no longer works.
-     */
-    public function setFacebookImage($value = null): void
-    {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setFacebookImage', "Overwriting SEO properties through `entry.seo.setFacebookImage` no longer works. Please see the docs for an upgrading guide.");
-    }
-
-    /**
-     * @deprecated Overwriting SEO properties through this method no longer works.
-     */
-    public function setTwitterTitle($value = null): void
-    {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterTitle', "Overwriting SEO properties through `entry.seo.setTwitterTitle` no longer works. Please see the docs for an upgrading guide.");
-    }
-
-    /**
-     * @deprecated Overwriting SEO properties through this method no longer works.
-     */
-    public function setTwitterDescription($value = null): void
-    {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterDescription', "Overwriting SEO properties through `entry.seo.setTwitterDescription` no longer works. Please see the docs for an upgrading guide.");
-    }
-
-    /**
-     * @deprecated Overwriting SEO properties through this method no longer works.
-     */
-    public function setTwitterImage($value = null): void
-    {
-        Craft::$app->getDeprecator()->log(__CLASS__ . 'setTwitterImage', "Overwriting SEO properties through `entry.seo.setTwitterImage` no longer works. Please see the docs for an upgrading guide.");
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function rules(): array
-    {
-        return [
-            [
-                [
-                    'metaTitle',
-                    'metaDescription',
-                    'siteName',
-                    'hideSiteName',
-                    'facebookTitle',
-                    'facebookDescription',
-                    'facebookImage',
-                    'twitterTitle',
-                    'twitterDescription',
-                    'twitterImage',
-                    'allowIndexing',
-                    'schema',
-                ],
-                'safe',
-            ],
-        ];
-    }
-
-    private function _getPreviewTransform(Asset $asset)
-    {
-        $transform = new ImageTransform();
-        $transform->width = 1200;
-        $transform->height = 590;
-        $transform->mode = 'crop';
-        if ($asset->hasFocalPoint) {
-            $transform->position = implode(',', $asset->focalPoint);
-        }
-        return $transform;
+        Deprecator::log(self::class.'::'.$method, $message);
     }
 }

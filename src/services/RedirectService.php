@@ -2,242 +2,149 @@
 
 namespace studioespresso\seofields\services;
 
-use Craft;
-use craft\base\Component;
-use craft\base\Element;
-use craft\helpers\App;
-use craft\helpers\DateTimeHelper;
-use craft\helpers\ElementHelper;
-use craft\helpers\Json;
-use craft\helpers\UrlHelper;
-use studioespresso\seofields\models\RedirectModel;
+use CraftCms\Cms\Cms;
+use CraftCms\Cms\Element\Contracts\ElementInterface;
+use CraftCms\Cms\Element\ElementHelper;
+use CraftCms\Cms\Support\Facades\Elements;
+use CraftCms\Cms\Support\Facades\Sites;
+use CraftCms\Cms\Support\Url;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use studioespresso\seofields\records\RedirectRecord;
-use studioespresso\seofields\SeoFields;
-use yii\base\ExitException;
 
 /**
  * @author    Studio Espresso
- * @package   SeoFields
+ *
  * @since     1.0.0
  */
-class RedirectService extends Component
+class RedirectService
 {
-    public $oldUris = [];
+    /** @var array<int, array<int, string>> Element URIs per site, captured before a save */
+    private array $oldUris = [];
 
-
-    public function trackElementUris(Element $element)
+    public function trackElementUris(ElementInterface $element): void
     {
         if (empty($this->oldUris[$element->id])) {
-            $this->oldUris[$element->id] = $this->getElementUrls($element);
+            $this->oldUris[$element->id] = $this->getElementUris($element);
         }
     }
 
-    public function handleUriChange(Element $element)
+    public function handleUriChange(ElementInterface $element): void
     {
         if (empty($this->oldUris[$element->id])) {
             return;
         }
 
         foreach ($this->oldUris[$element->id] as $siteId => $oldUri) {
-            $newUri = Craft::$app->getElements()->getElementUriForSite($element->id, $siteId);
-            // It's possible that the element has no URI in this site, so we skip it (https://github.com/studioespresso/craft-seo-fields/issues/116)
-            if (!$newUri) {
+            $newUri = Elements::getElementUriForSite($element->id, $siteId);
+            // It's possible that the element has no URI in this site (https://github.com/studioespresso/craft-seo-fields/issues/116)
+            if (! $newUri) {
                 continue;
             }
 
-            // Should be keep trailing slashes into account here (or when the old one have those as well)
-            if (Craft::$app->config->general->addTrailingSlashesToUrls) {
-                $oldUri = rtrim($oldUri, '/') . '/';
-                $newUri = rtrim($newUri, '/') . '/';
+            if (Cms::config()->addTrailingSlashesToUrls) {
+                $oldUri = rtrim($oldUri, '/').'/';
+                $newUri = rtrim($newUri, '/').'/';
             }
 
             if ($newUri !== $oldUri) {
-                // Let's add a redirect
-                $oldUrl = parse_url(UrlHelper::siteUrl($oldUri, null, null, $siteId));
-                $newUrl = UrlHelper::siteUrl($newUri, null, null, $siteId);
-                $redirect = new RedirectModel();
-                $redirect->pattern = $oldUrl['path'];
-                $redirect->sourceMatch = 'path';
-                $redirect->redirect = $newUrl;
-                $redirect->matchType = 'exact';
-                $redirect->siteId = $siteId;
-                $redirect->method = 301;
-                $this->saveRedirect($redirect);
+                $this->saveRedirect(new RedirectRecord([
+                    'pattern' => parse_url(Url::siteUrl($oldUri, siteId: $siteId), PHP_URL_PATH),
+                    'sourceMatch' => 'path',
+                    'redirect' => Url::siteUrl($newUri, siteId: $siteId),
+                    'matchType' => 'exact',
+                    'siteId' => $siteId,
+                    'method' => 301,
+                ]));
             }
         }
+
+        unset($this->oldUris[$element->id]);
     }
 
-
-    public function handleRedirect(RedirectRecord|array $redirect)
+    /**
+     * Builds the response for a matched redirect and records the hit.
+     *
+     * @param  string|null  $url  The target, already resolved for regex redirects
+     */
+    public function redirectResponse(RedirectRecord $redirect, Request $request, ?string $url = null): RedirectResponse
     {
-        if (is_array($redirect)) {
-            $record = $redirect['record'];
-            $model = new RedirectModel($record->getAttributes());
-        } else {
-            $model = new RedirectModel($redirect->getAttributes());
-        }
-        Craft::debug("Found a redirect for this 404, redirecting", SeoFields::class);
-        $this->updateOnRedirect($model);
-        $this->redirect($redirect);
+        $redirect->counter = ($redirect->counter ?? 0) + 1;
+        $redirect->dateLastHit = now();
+        $redirect->save();
 
-        try {
-            Craft::$app->end();
-        } catch (ExitException $e) {
-            Craft::error($e->getMessage(), __METHOD__);
+        $url ??= $redirect->siteId
+            ? Url::siteUrl($redirect->redirect, siteId: $redirect->siteId)
+            : $redirect->redirect;
+
+        if ($query = $request->getQueryString()) {
+            $url .= (str_contains($url, '?') ? '&' : '?').$query;
         }
+
+        return new RedirectResponse($url, $redirect->method);
     }
 
-    public function getRedirectById($id)
+    public function saveRedirect(RedirectRecord $redirect): bool
     {
-        $record = RedirectRecord::findOne(['id' => $id]);
-        $model = new RedirectModel();
-        $model->setAttributes($record->getAttributes());
-        return $model;
+        // "0" is the "All sites" option
+        $redirect->siteId = $redirect->siteId ?: null;
+
+        if ($redirect->sourceMatch !== 'url' && ! str_starts_with($redirect->pattern, '/')) {
+            $redirect->pattern = '/'.$redirect->pattern;
+        }
+
+        return $redirect->save();
     }
 
-    public function getAllRedirects($searchParam = null)
+    /**
+     * @param  array<int, array<int, string>>  $rows  CSV rows without the header
+     * @param  array{patternCol: int, redirectCol: int, siteId: int|string|null, method: int|string}  $settings
+     * @return array{imported: array, invalid: array}
+     */
+    public function import(array $rows, array $settings): array
     {
-        $query = RedirectRecord::find();
-        if ($searchParam) {
-            $query->where(['like', 'pattern', $searchParam]);
-            $query->orWhere(['like', 'redirect', $searchParam]);
-        }
-        return $query->all();
-    }
+        $imported = [];
+        $invalid = [];
 
-    private function updateOnRedirect(RedirectModel $model)
-    {
-        $model->counter++;
-        $model->dateLastHit = DateTimeHelper::toIso8601(time());
-
-        $model->validate();
-        $this->saveRedirect($model);
-    }
-
-    public function saveRedirect(RedirectModel $model)
-    {
-        $record = false;
-        if ($model->id) {
-            $record = RedirectRecord::findOne(['id' => $model->id]);
-        } else {
-            $record = new RedirectRecord();
-        }
-        $record->setAttribute('siteId', $model->siteId === "0" ? null : $model->siteId);
-
-        if ($model->sourceMatch !== 'url') {
-            if (substr($model->pattern, 0, 1) == '/') {
-                $record->setAttribute('pattern', $model->pattern);
-            } else {
-                $record->setAttribute('pattern', "/" . $model->pattern);
-            }
-        } else {
-            $record->setAttribute('pattern', $model->pattern);
-        }
-//        dd($record->getAttributes());
-        $record->setAttribute('sourceMatch', $model->sourceMatch);
-        $record->setAttribute('redirect', $model->redirect);
-        $record->setAttribute('matchType', $model->matchType);
-        $record->setAttribute('counter', $model->counter);
-        $record->setAttribute('dateLastHit', $model->dateLastHit);
-        $record->setAttribute('method', $model->method);
-        if ($record->save()) {
-            return true;
-        }
-    }
-
-    public function deleteAll()
-    {
-        $records = RedirectRecord::find();
-        foreach ($records->all() as $record) {
-            $record->delete();
-        }
-        return true;
-    }
-
-    public function deleteRedirectById($id)
-    {
-        $record = RedirectRecord::findOne(['id' => $id]);
-        if ($record->delete()) {
-            return true;
-        }
-    }
-
-    public function import($data, $settings)
-    {
-        App::maxPowerCaptain();
-        $patternCol = $settings['patternCol'];
-        $redirectCol = $settings['redirectCol'];
-        $validRedirects = [];
-        $invalidRedirects = [];
-
-        foreach ($data as $row) {
+        foreach ($rows as $row) {
             $row = array_values($row);
-            $pattern = $row[$patternCol];
-            $redirect = $row[$redirectCol];
+            $pattern = (string) ($row[$settings['patternCol']] ?? '');
+            $redirect = (string) ($row[$settings['redirectCol']] ?? '');
+
             if ($pattern === $redirect) {
                 continue;
-            } elseif (substr($redirect, 0, 1) != "/") {
-                $invalidRedirects[] = $row;
+            }
+            if ($pattern === '' || ! str_starts_with($redirect, '/')) {
+                $invalid[] = $row;
+
                 continue;
             }
-            $validRedirects[] = $row;
+
+            $this->saveRedirect(new RedirectRecord([
+                'pattern' => $pattern,
+                'redirect' => $redirect,
+                'matchType' => 'exact',
+                'sourceMatch' => 'path',
+                'siteId' => $settings['siteId'],
+                'method' => (int) $settings['method'],
+            ]));
+            $imported[] = $row;
         }
 
-        foreach ($validRedirects as $row) {
-            $model = new RedirectModel();
-            $model->pattern = $row[$patternCol];
-            $model->redirect = $row[$redirectCol];
-            $model->matchType = 'exact';
-            $model->sourceMatch = 'path';
-            $model->siteId = $settings['siteId'];
-            $model->method = $settings['method'];
-            if (!$model->validate()) {
-                Craft::error(Json::encode($model->getErrors()));
-            }
-            $this->saveRedirect($model);
-        }
-
-        return [
-            'imported' => $validRedirects,
-            'invalid' => $invalidRedirects,
-        ];
+        return ['imported' => $imported, 'invalid' => $invalid];
     }
 
-    private function redirect(RedirectModel|RedirectRecord|array $redirect)
-    {
-        try {
-            if (is_array($redirect)) {
-                $url = $redirect['url'];
-                $method = $redirect['record']->method;
-            } else {
-                $method = $redirect->method;
-                if ($redirect->siteId) {
-                    $url = UrlHelper::siteUrl($redirect->redirect, null, null, $redirect->siteId);
-                } else {
-                    $url = $redirect->redirect;
-                }
-            }
-
-            $response = Craft::$app->response;
-            if (Craft::$app->getRequest()->getQueryStringWithoutPath()) {
-                $response->redirect($url . "?" . Craft::$app->getRequest()->getQueryStringWithoutPath(), $method)->send();
-            }
-
-            $response->redirect($url, $method)->send();
-        } catch (\Exception $e) {
-        }
-        return;
-    }
-
-    private function getElementUrls(Element $element)
+    /** @return array<int, string> */
+    private function getElementUris(ElementInterface $element): array
     {
         $uris = [];
-        if (!ElementHelper::isDraftOrRevision($element) && $element->id) {
-            foreach (Craft::$app->getSites()->getAllSites(true) as $site) {
-                $uri = Craft::$app->getElements()->getElementUriForSite($element->id, $site->id);
-                if ($uri) {
-                    $uris[$site->id] = $uri;
-                }
+        if (! $element->id || ElementHelper::isDraftOrRevision($element)) {
+            return $uris;
+        }
+
+        foreach (Sites::getAllSites(true) as $site) {
+            if ($uri = Elements::getElementUriForSite($element->id, $site->id)) {
+                $uris[$site->id] = $uri;
             }
         }
 

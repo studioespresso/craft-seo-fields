@@ -9,7 +9,7 @@
     <title>{{ meta.getPageTitle(element) }}</title>
     <meta name="description" content="{{ meta.getMetaDescription() }}">
     {# Facebook #}
-    <meta property="og:url" content="{{ craft.app.request.absoluteUrl }}"/>
+    <meta property="og:url" content="{{ requestUrl }}"/>
     <meta property="og:type" content="website"/>
     <meta property="og:title" content="{{ meta.getSocialTitle(element ?? '') }}"/>
     {% set ogImage = meta.getSocialImage() %}
@@ -27,7 +27,7 @@
     <meta name="twitter:site" content="" />
     <meta name="twitter:title" content="{{ meta.getSocialTitle(element ?? '') }}" />
     <meta name="twitter:description" content="{{ meta.getSocialDescription() }}" />
-    <meta name="twitter:url" content="{{ craft.app.request.absoluteUrl }}" />
+    <meta name="twitter:url" content="{{ requestUrl }}" />
     {% if ogImage %}
         <meta property="twitter:image" content="{{ ogImage.url }}"/>
         <meta property="twitter:image:width" content="{{ ogImage.width }}"/>
@@ -39,12 +39,8 @@
         <meta name="robots" content="noindex">
     {% endif %}
 
-    {% if craft.app.response.statusCode < 400 %}
+    {% if statusCode < 400 %}
         <link rel="canonical" href="{{ meta.getCanonical() }}" />
-    {% endif %}
-
-    {% if meta.allowIndexing == 'no' %}
-        <meta name="robots" content="noindex">
     {% endif %}
 
     {% do meta.getSchema(element) %}

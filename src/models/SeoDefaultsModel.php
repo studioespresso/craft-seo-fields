@@ -2,69 +2,103 @@
 
 namespace studioespresso\seofields\models;
 
-use craft\base\Model;
-use craft\helpers\Json;
+use CraftCms\Cms\Support\Json;
 
-class SeoDefaultsModel extends Model
+/**
+ * Per-site defaults: meta, robots.txt, sitemap and schema settings.
+ */
+class SeoDefaultsModel
 {
-    public $id;
+    /** The keys stored together in the `defaultMeta` JSON column */
+    public const META_KEYS = [
+        'defaultSiteTitle',
+        'defaultMetaDescription',
+        'titleSeperator',
+        'defaultImage',
+        'organizationName',
+        'organizationLogo',
+        'sameAs',
+        'siteEntity',
+    ];
 
-    public $defaultSiteTitle;
+    public ?int $id = null;
 
-    public $defaultMetaDescription;
+    public ?string $defaultSiteTitle = null;
 
-    public $defaultImage;
+    public ?string $defaultMetaDescription = null;
 
-    public $titleSeperator;
+    /** @var int[]|null */
+    public ?array $defaultImage = null;
 
-    public $siteId;
+    public ?string $titleSeperator = null;
 
-    public $enableRobots;
+    public ?int $siteId = null;
 
-    public $robots;
+    public ?bool $enableRobots = null;
 
-    public $schema;
+    public ?string $robots = null;
 
-    public $sitemap;
+    /** @var string|null JSON */
+    public ?string $schema = null;
 
-    public $organizationName;
+    /** @var string|null JSON */
+    public ?string $sitemap = null;
 
-    public $organizationLogo;
+    public ?string $organizationName = null;
 
-    public $sameAs;
+    /** @var int[]|null */
+    public ?array $organizationLogo = null;
 
-    public $siteEntity;
+    /** @var string[]|null */
+    public ?array $sameAs = null;
 
-    /**
-     * @inheritdoc
-     */
-    public function rules(): array
+    public ?string $siteEntity = null;
+
+    public function __construct(array $attributes = [])
     {
-        return [
-            [
-                [
-                    'defaultSiteTitle',
-                    'defaultMetaDescription',
-                    'defaultImage',
-                    'titleSeperator',
-                    'siteId',
-                    'enableRobots',
-                    'robots',
-                    'schema',
-                    'sitemap',
-                    'id',
-                    'organizationName',
-                    'organizationLogo',
-                    'sameAs',
-                    'siteEntity',
-                ],
-                'safe',
-            ],
-        ];
+        $this->setAttributes($attributes);
     }
 
-    public function getSchema()
+    public function setAttributes(array $attributes): void
     {
-        return Json::decodeIfJson($this->schema);
+        foreach ($attributes as $name => $value) {
+            if (! property_exists($this, $name)) {
+                continue;
+            }
+            $this->$name = match ($name) {
+                'id', 'siteId' => $value === null || $value === '' ? null : (int) $value,
+                'enableRobots' => $value === null ? null : (bool) $value,
+                'defaultImage', 'organizationLogo' => $this->normalizeIds($value),
+                'sameAs' => is_array($value) ? array_values($value) : null,
+                'schema', 'sitemap' => is_array($value) ? Json::encode($value) : ($value === '' ? null : $value),
+                default => $value === '' ? null : $value,
+            };
+        }
+    }
+
+    public function getSchema(): ?array
+    {
+        return Json::decodeIfJson($this->schema) ?: null;
+    }
+
+    public function getSitemap(): ?array
+    {
+        return Json::decodeIfJson($this->sitemap) ?: null;
+    }
+
+    /** @return array<string, mixed> */
+    public function getMeta(): array
+    {
+        return array_intersect_key(get_object_vars($this), array_flip(self::META_KEYS));
+    }
+
+    /** @return int[]|null */
+    private function normalizeIds(mixed $value): ?array
+    {
+        if ($value === null || $value === '' || $value === []) {
+            return null;
+        }
+
+        return array_values(array_map('intval', (array) $value));
     }
 }

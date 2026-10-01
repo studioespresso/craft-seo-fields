@@ -2,17 +2,21 @@
 
 namespace studioespresso\seofields\events;
 
-use yii\base\Event;
-
 /**
- * RegisterSeoElementEvent class.
+ * Fired to collect the element types whose template variables carry SEO data.
+ *
+ * ```php
+ * Event::listen(fn (RegisterSeoElementEvent $event) => $event->elements[] = MyElement::class);
+ * ```
+ *
  * @author    Studio Espresso
- * @package   SeoFields
+ *
  * @since     1.0.0
  */
-class RegisterSeoElementEvent extends Event
+class RegisterSeoElementEvent
 {
-    // Properties
-    // =========================================================================
-    public $elements = [];
+    /** @param class-string[] $elements */
+    public function __construct(
+        public array $elements = [],
+    ) {}
 }

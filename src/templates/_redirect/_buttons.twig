@@ -1,31 +1,19 @@
-<form method="post" accept-charset="UTF-8" enctype="multipart/form-data">
-    {{ csrfInput() }}
-    {{ actionInput('seo-fields/redirects/upload') }}
-    <input type="file" name="file" id="file" class="btn" accept=".csv" onchange="this.form.submit();"
-           style="display: none;">
-    <label class="btn" for="file">{{ "Import CSV File"|t('seo-fields') }}</label>
-</form>
+<div class="flex gap-2 items-center">
+    <form method="post" action="{{ cpUrl('seo-fields/redirects/upload') }}" enctype="multipart/form-data">
+        {{ csrfInput() }}
+        <input type="file" name="file" id="seofields-import" accept=".csv" hidden onchange="this.form.submit();">
+        <craft-button type="button" icon="upload" onclick="document.getElementById('seofields-import').click();">{{ 'Import CSV File'|t('seo-fields') }}</craft-button>
+    </form>
 
-{% if currentUser.admin %}
-    {% tag 'a' with {
-        href: actionUrl('seo-fields/redirects/clear-all'),
-        class: 'btn',
-        onclick: 'return confirm("Are you sure you want to remove all redirects for this site?")',
-    } %}
-        {{ 'Clear all'|t('seo-fields') }}
-    {% endtag %}
-{% endif %}
+    <craft-button href="{{ cpUrl('seo-fields/redirects/export', {site: site}|filter) }}" icon="download">{{ 'Export'|t('seo-fields') }}</craft-button>
 
-{% tag 'a' with {
-    href: cpUrl('seo-fields/redirects/export'),
-    class: 'btn',
-} %}
-    {{ 'Export'|t('seo-fields') }}
-{% endtag %}
+    {% if currentUser.admin %}
+        <form method="post" action="{{ cpUrl('seo-fields/redirects/clear-all') }}"
+              onsubmit="return confirm({{ 'Are you sure you want to remove all redirects?'|t('seo-fields')|json_encode }})">
+            {{ csrfInput() }}
+            <craft-button type="submit" variant="danger">{{ 'Clear all'|t('seo-fields') }}</craft-button>
+        </form>
+    {% endif %}
 
-{% tag 'a' with {
-    href: cpUrl('seo-fields/redirects/add'),
-    class: 'btn submit add icon',
-} %}
-    {{ 'New redirect'|t('seo-fields') }}
-{% endtag %}
+    <craft-button href="{{ cpUrl('seo-fields/redirects/new') }}" variant="primary" icon="plus">{{ 'New redirect'|t('seo-fields') }}</craft-button>
+</div>

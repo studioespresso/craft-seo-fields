@@ -2,87 +2,63 @@
 
 namespace studioespresso\seofields\services;
 
-use Craft;
-use craft\base\Component;
-use craft\elements\Category;
-use craft\elements\Entry;
-use craft\web\View;
+use CraftCms\Cms\Entry\Elements\Entry;
+use CraftCms\Cms\View\TemplateMode;
 use studioespresso\seofields\events\RegisterSeoElementEvent;
 use studioespresso\seofields\models\SeoFieldModel;
-use studioespresso\seofields\SeoFields;
-use yii\base\Event;
+
+use function CraftCms\Cms\template;
 
 /**
- *
  * @author    Studio Espresso
- * @package   SeoFields
+ *
  * @since     1.0.0
  */
-class RenderService extends Component
+class RenderService
 {
-    // Public Methods
-    // =========================================================================
-    public function renderMeta($context, $handle = 'seo')
+    public function renderMeta(array $context, string $handle = 'seo'): string
     {
-        Craft::beginProfile('renderMeta', __METHOD__);
         $data = $this->getSeoFromContent($context, $handle);
 
-        $template = Craft::$app->getView()->renderTemplate(
-            'seo-fields/_meta',
-            ['meta' => $data['meta'], 'element' => $data['entry']],
-            View::TEMPLATE_MODE_CP
-        );
-
-        Craft::endProfile('renderMeta', __METHOD__);
-        return $template;
+        return template('seo-fields/_meta', [
+            'meta' => $data['meta'],
+            'element' => $data['element'],
+            'requestUrl' => request()->fullUrl(),
+            // Error templates get a `statusCode` variable; canonical links are left out on those
+            'statusCode' => $context['statusCode'] ?? 200,
+        ], TemplateMode::Cp);
     }
 
-    public function getSeoFromContent($context, $handle)
+    /**
+     * Finds the SEO field value of the element the template is rendering (e.g. `entry`).
+     *
+     * @return array{meta: SeoFieldModel, element: mixed, entry: mixed}
+     */
+    public function getSeoFromContent(array $context, string $handle): array
     {
         $meta = null;
         $element = null;
 
-        Craft::beginProfile('renderMeta', __METHOD__);
-
-        $registeredElements = $this->_registerElementsEvent();
-
-        try {
-            foreach ($registeredElements as $item) {
-                $class = explode('\\', $item);
-                $elementName = strtolower(end($class));
-                if (isset($context[$elementName])) {
-                    if (isset($context[$elementName][$handle])) {
-                        $meta = $context[$elementName][$handle];
-                    } else {
-                        $meta = new SeoFieldModel();
-                    }
-                    $element = $context[$elementName];
-                }
+        foreach ($this->registeredElements() as $class) {
+            $variable = strtolower(class_basename($class));
+            if (isset($context[$variable])) {
+                $element = $context[$variable];
+                $meta = $element->$handle ?? null;
             }
-
-            if (!$meta) {
-                $meta = new SeoFieldModel();
-            }
-
-            return ['meta' => $meta, 'entry' => $element, 'element' => $element];
-        } catch (\Exception $e) {
-            return null;
         }
+
+        if (! $meta instanceof SeoFieldModel) {
+            $meta = new SeoFieldModel;
+        }
+
+        return ['meta' => $meta, 'entry' => $element, 'element' => $element];
     }
 
-    private function _registerElementsEvent()
+    /** @return class-string[] */
+    private function registeredElements(): array
     {
-        $elements = [];
-        $event = new RegisterSeoElementEvent([
-            'elements' => $elements,
-        ]);
+        event($event = new RegisterSeoElementEvent);
 
-        Event::trigger(SeoFields::class, SeoFields::EVENT_SEOFIELDS_REGISTER_ELEMENT, $event);
-        $registeredElements = array_filter($event->elements);
-
-        array_push($registeredElements, Entry::class);
-        array_push($registeredElements, Category::class);
-
-        return $registeredElements;
+        return [...array_filter($event->elements), Entry::class];
     }
 }

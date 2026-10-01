@@ -2,74 +2,74 @@
 
 namespace studioespresso\seofields\controllers;
 
-use Craft;
-use craft\helpers\Cp;
-use craft\helpers\UrlHelper;
-use craft\models\Site;
-use craft\web\Controller;
-use craft\web\Response;
-use studioespresso\seofields\SeoFields;
+use CraftCms\Cms\Http\RespondsWithFlash;
+use CraftCms\Cms\Http\Responses\CpScreenResponse;
+use CraftCms\Cms\Support\Facades\Sites;
+use Illuminate\Http\Request;
+use studioespresso\seofields\controllers\concerns\ListsRecords;
+use studioespresso\seofields\controllers\concerns\SeoCpScreen;
+use studioespresso\seofields\records\NotFoundRecord;
+use Symfony\Component\HttpFoundation\Response;
 
-class NotFoundController extends Controller
+use function CraftCms\Cms\t;
+
+class NotFoundController
 {
-    public Site|null $site = null;
+    use ListsRecords;
+    use RespondsWithFlash;
+    use SeoCpScreen;
 
-    public function init(): void
+    public function index(Request $request): CpScreenResponse
     {
-        if (Craft::$app->getRequest()->getQueryParam('site')) {
-            $this->site = Craft::$app->getSites()->getSiteByHandle(Craft::$app->getRequest()->getQueryParam('site'));
-        } else {
-            $this->site = Craft::$app->getSites()->getPrimarySite();
+        $site = Sites::isMultiSite() && $request->query('site') ? $this->site($request) : null;
+        $this->registerListStyles();
+        $display = $request->query('display', 'all');
+
+        $query = NotFoundRecord::query()->with('redirectRecord');
+        if ($site) {
+            $query->where('siteId', $site->id);
         }
-        parent::init();
+        match ($display) {
+            'handled' => $query->where('handled', true),
+            'unhandled' => $query->where('handled', false),
+            default => null,
+        };
+
+        return $this->screen(t('404 Overview', category: 'seo-fields'), $site)
+            ->toolbarTemplate('seo-fields/_notfound/_buttons', [
+                'display' => $display,
+                'viewOptions' => [
+                    ['value' => 'all', 'label' => t("Show all 404's", category: 'seo-fields')],
+                    ['value' => 'unhandled', 'label' => t('Items without a redirect', category: 'seo-fields')],
+                    ['value' => 'handled', 'label' => t('Items with a redirect', category: 'seo-fields')],
+                ],
+            ])
+            ->contentTemplate('seo-fields/_notfound/_content', [
+                ...$this->listVariables($this->paginate($query, $request, ['urlPath', 'fullUrl'], ['counter', 'dateLastHit', 'handled'])
+                    ->through(fn (NotFoundRecord $row) => [
+                        'id' => $row->id,
+                        'urlPath' => $row->urlPath,
+                        'counter' => $row->counter,
+                        'siteId' => $row->siteId,
+                        'dateLastHit' => $row->dateLastHit,
+                        'redirectId' => $row->redirectRecord?->id,
+                        'redirectUrl' => $row->redirectRecord?->redirect,
+                    ]), $request),
+            ])
+            ->inertiaPage('cp/Screen');
     }
 
-    public function actionIndex(): Response
+    public function delete(int $id): Response
     {
-        $sites = Craft::$app->getSites()->getEditableSites();
+        NotFoundRecord::query()->whereKey($id)->delete();
 
-        $crumbs = ['label' => $this->site->name, ];
-        if (Craft::$app->getIsMultiSite()) {
-            $crumbs['menu'] = [
-                'label' => Craft::t('site', 'Select site'),
-                'items' => Cp::siteMenuItems($sites, $this->site),
-            ];
-        }
-
-        $viewOptions = [
-            ['value' => 'all', 'label' => Craft::t('seo-fields', 'Show all 404\'s')],
-            ['value' => 'unhandled', 'label' => Craft::t('seo-fields', 'Items without a redirect')],
-            ['value' => 'handled', 'label' => Craft::t('seo-fields', 'Items with a redirect')],
-        ];
-
-        return $this->asCpScreen()
-            ->title(Craft::t('seo-fields', '404 Overview'))
-            ->selectedSubnavItem('notfound')
-            ->additionalButtonsTemplate('seo-fields/_notfound/_buttons', ['viewOptions' => $viewOptions])
-            ->crumbs([$crumbs])
-            ->contentTemplate('seo-fields/_notfound/_content');
+        return $this->asSuccess(t('404 removed', category: 'seo-fields'), redirect: url()->previous());
     }
 
-    /**
-     * @param $id
-     * @throws \craft\errors\MissingComponentException
-     */
-    public function actionDelete()
+    public function clearAll(): Response
     {
-        $id = $this->request->getBodyParam('id');
-        if (SeoFields::getInstance()->notFoundService->deletetById($id)) {
-            Craft::$app->getSession()->setNotice(Craft::t('seo-fields', '404 removed'));
-            return $this->asJson(['success' => true]);
-        }
-    }
+        NotFoundRecord::query()->delete();
 
-    /**
-     * @return \yii\web\Response
-     * @todo Should this also take the current site into account?
-     */
-    public function actionClearAll()
-    {
-        SeoFields::getInstance()->notFoundService->deleteAll();
-        return $this->redirect(UrlHelper::cpUrl('seo-fields/not-found'));
+        return $this->asSuccess(t("All 404's removed", category: 'seo-fields'));
     }
 }

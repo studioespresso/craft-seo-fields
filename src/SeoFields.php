@@ -1,581 +1,191 @@
 <?php
 
 /**
- * SEO Fields plugin for Craft CMS 3.x
+ * SEO Fields plugin for Craft CMS
  *
  * Fields for your SEO & OG data
  *
  * @link      https://studioespresso.co
+ *
  * @copyright Copyright (c) 2019 Studio Espresso
  */
 
 namespace studioespresso\seofields;
 
-use Craft;
-use craft\base\Model;
-use craft\base\Plugin;
-use craft\commerce\elements\Product;
-use craft\elements\Category;
-use craft\elements\Entry;
-use craft\events\DefineBehaviorsEvent;
-use craft\events\ElementEvent;
-use craft\events\EntryTypeEvent;
-use craft\events\ExceptionEvent;
-use craft\events\RegisterCacheOptionsEvent;
-use craft\events\RegisterComponentTypesEvent;
-use craft\events\RegisterUrlRulesEvent;
-use craft\events\RegisterUserPermissionsEvent;
-use craft\events\SectionEvent;
-use craft\events\SiteEvent;
-use craft\feedme\events\RegisterFeedMeFieldsEvent;
-use craft\feedme\services\Fields as feedmeFields;
-use craft\helpers\ElementHelper;
-use craft\helpers\UrlHelper;
-use craft\services\Elements;
-use craft\services\Entries;
-use craft\services\Fields;
-use craft\services\Gc;
-use craft\services\Sites;
-use craft\services\UserPermissions;
-use craft\utilities\ClearCaches;
-use craft\web\Application;
-use craft\web\ErrorHandler;
-use craft\web\UrlManager;
-use studioespresso\seofields\behaviors\ElementSeoBehavior;
-use studioespresso\seofields\debug\SchemaPanel;
-use studioespresso\seofields\events\RegisterSeoElementEvent;
+use CraftCms\Cms\Cp\Data\NavItem;
+use CraftCms\Cms\Element\ElementHelper;
+use CraftCms\Cms\Element\Events\ElementDeleted;
+use CraftCms\Cms\Element\Events\ElementSaved;
+use CraftCms\Cms\Element\Events\ElementSaving;
+use CraftCms\Cms\Element\Events\ElementSlugAndUriUpdated;
+use CraftCms\Cms\Element\Events\ElementSlugAndUriUpdating;
+use CraftCms\Cms\Entry\Events\EntryTypeDeleted;
+use CraftCms\Cms\Form\Controls\Lightswitch;
+use CraftCms\Cms\Form\Controls\Text;
+use CraftCms\Cms\Form\Form;
+use CraftCms\Cms\Form\FormContext;
+use CraftCms\Cms\Form\Nodes\Field;
+use CraftCms\Cms\GarbageCollection\Events\RunningGarbageCollection;
+use CraftCms\Cms\Plugin\Plugin;
+use CraftCms\Cms\Plugin\PluginSettings;
+use CraftCms\Cms\Section\Events\SectionDeleted;
+use CraftCms\Cms\Site\Events\SiteSaved;
+use CraftCms\Cms\Support\Facades\Sites;
+use CraftCms\Cms\Support\Facades\TemplateHooks;
+use CraftCms\Cms\Support\Facades\Twig;
+use CraftCms\Cms\User\Data\Permission;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
+use studioespresso\seofields\behaviors\ElementSeoMacros;
+use studioespresso\seofields\console\MigrateFieldsCommand;
 use studioespresso\seofields\extensions\SeoFieldsExtension;
-use studioespresso\seofields\feedme\fields\SeoFieldType;
 use studioespresso\seofields\fields\SeoField;
+use studioespresso\seofields\http\HandleNotFound;
 use studioespresso\seofields\models\Settings;
-use studioespresso\seofields\records\NotFoundRecord;
 use studioespresso\seofields\services\DefaultsService;
 use studioespresso\seofields\services\NotFoundService;
 use studioespresso\seofields\services\RedirectService;
 use studioespresso\seofields\services\RenderService;
 use studioespresso\seofields\services\SchemaService;
 use studioespresso\seofields\services\SitemapService;
-use yii\base\Application as BaseApplication;
-use yii\base\Event;
-use yii\base\Exception;
-use yii\console\Application as ConsoleApplication;
-use yii\debug\Module as DebugModule;
-use yii\web\HttpException;
+
+use function CraftCms\Cms\t;
 
 /**
- * https://craftcms.com/docs/plugins/introduction
- *
  * @author    Studio Espresso
- * @package   SeoFields
+ *
  * @since     1.0.0
  *
- *
- * @property  SitemapService $sitemapService
- * @property  DefaultsService $defaultsService
- * @property RenderService $renderService
- * @property RedirectService $redirectService
- * @property NotFoundService $notFoundService
- * @property SchemaService $schemaService
- * @method    Settings getSettings()
+ * @method Settings getSettings()
  */
 class SeoFields extends Plugin
 {
-    // Static Properties
-    // =========================================================================
+    public string $schemaVersion = '4.0.0';
 
-    /**
-     * Static property that is an instance of this plugin class so that it can be accessed via
-     * SeoFields::$plugin
-     *
-     * @var SeoFields
-     */
-    public static $plugin;
+    protected array $fieldTypes = [SeoField::class];
 
-    // Public Properties
-    // =========================================================================
-    public string $schemaVersion = "4.0.0";
+    protected array $commands = [MigrateFieldsCommand::class];
 
-    public const EVENT_SEOFIELDS_REGISTER_ELEMENT = "registerSeoElement";
+    protected array $publishables = [
+        __DIR__.'/../resources/dist' => 'dist',
+    ];
 
-    // Public Methods
-    // =========================================================================
-    public function init()
+    public DefaultsService $defaultsService { get => $this->defaultsService ??= new DefaultsService; }
+
+    public SitemapService $sitemapService { get => $this->sitemapService ??= new SitemapService; }
+
+    public RenderService $renderService { get => $this->renderService ??= new RenderService; }
+
+    public RedirectService $redirectService { get => $this->redirectService ??= new RedirectService; }
+
+    public NotFoundService $notFoundService { get => $this->notFoundService ??= new NotFoundService; }
+
+    public SchemaService $schemaService { get => $this->schemaService ??= new SchemaService; }
+
+    /** Sections in the CP subnav: handle => [label, permission] */
+    private const SECTIONS = [
+        'defaults' => ['Meta', 'seo-fields:default'],
+        'not-found' => ["404's", 'seo-fields:notfound'],
+        'redirects' => ['Redirects', 'seo-fields:redirects'],
+        'schema' => ['Schema.org', 'seo-fields:schema'],
+        'robots' => ['Robots.txt', 'seo-fields:robots'],
+        'sitemap' => ['Sitemap.xml', 'seo-fields:sitemap'],
+    ];
+
+    public function boot(): void
     {
-        parent::init();
-        self::$plugin = $this;
+        ElementSeoMacros::register();
 
-        $this->setComponents([
-            "defaultsService" => DefaultsService::class,
-            "sitemapService" => SitemapService::class,
-            "renderService" => RenderService::class,
-            "redirectService" => RedirectService::class,
-            "notFoundService" => NotFoundService::class,
-            "schemaService" => SchemaService::class,
-        ]);
+        // ponytail: registered once per boot; per-request registration (like core's CP hooks) if this runs under Octane
+        TemplateHooks::register('seo-fields', fn (array &$context) => $this->renderService->renderMeta($context, $this->getSettings()->fieldHandle));
+        Twig::registerExtension(new SeoFieldsExtension);
 
-        if (Craft::$app instanceof ConsoleApplication) {
-            $this->controllerNamespace =
-                "studioespresso\seofields\console\controllers";
-        }
+        $this->app['router']->prependMiddlewareToGroup('craft.web', HandleNotFound::class);
 
-        Craft::setAlias("@studioespresso/seofields", $this->getBasePath());
-        if (Craft::$app->request->getIsSiteRequest()) {
-            $this->registerDebugPanel();
-        }
-
-        Craft::$app->view->hook("seo-fields", function (array &$context) {
-            return $this->renderService->renderMeta($context);
-        });
-
-        $this->_registerField();
-        $this->_registerCpRoutes();
-        $this->_registerFrontendRoutes();
-        $this->_registerPermissions();
-        $this->_registerTwigExtension();
-        $this->_registerCpListeners();
-        $this->_registerSiteListeners();
-        $this->_registerCacheOptions();
-        $this->_registerCustomElements();
-        $this->_registerUrlChangeListeners();
-        $this->_registerElementBehaviors();
+        $this->registerListeners();
     }
 
-    public function getCpNavItem(): ?array
+    protected static function createSettings(): ?PluginSettings
     {
-        $subNavs = [];
-        $navItem = parent::getCpNavItem();
-        $navItem["label"] = $this->getSettings()->pluginLabel;
-        $currentUser = Craft::$app->getUser()->getIdentity();
-        // Only show sub-navs the user has permission to view
-        if ($currentUser->can("seo-fields:default")) {
-            $subNavs["defaults"] = [
-                "label" => "Meta",
-                "url" => "seo-fields/defaults",
-            ];
-        }
-        if ($currentUser->can("seo-fields:notfound")) {
-            $subNavs["notfound"] = [
-                "label" => "404's",
-                "url" => "seo-fields/not-found",
-            ];
-        }
-        if ($currentUser->can("seo-fields:redirects")) {
-            $subNavs["redirects"] = [
-                "label" => "Redirects",
-                "url" => "seo-fields/redirects",
-            ];
-        }
-        if ($currentUser->can("seo-fields:schema")) {
-            $subNavs["schema"] = [
-                "label" => "Schema.org",
-                "url" => "seo-fields/schema",
-            ];
-        }
-        if ($currentUser->can("seo-fields:robots")) {
-            $subNavs["robots"] = [
-                "label" => "Robots.txt",
-                "url" => "seo-fields/robots",
-            ];
-        }
-        if ($currentUser->can("seo-fields:sitemap")) {
-            $subNavs["sitemap"] = [
-                "label" => "Sitemap.xml",
-                "url" => "seo-fields/sitemap",
-            ];
-        }
-        $navItem = array_merge($navItem, [
-            "subnav" => $subNavs,
-        ]);
-        return $navItem;
+        return new Settings;
     }
 
-    // Protected Methods
-    // =========================================================================
-    protected function createSettingsModel(): ?Model
+    public function settingsForm(FormContext $context = new FormContext): ?Form
     {
-        return new Settings();
-    }
-
-    protected function settingsHtml(): string
-    {
-        return Craft::$app->view->renderTemplate("seo-fields/_settings", [
-            "settings" => $this->getSettings(),
+        return Form::make([
+            Field::make(t('Plugin sidebar label', category: 'seo-fields'), Text::make('pluginLabel')->size(25)),
+            Field::make(t('Title seperator', category: 'seo-fields'), Text::make('titleSeperator')->size(3))
+                ->instructions(t('A character used to seperate your `<title>` from the site name', category: 'seo-fields')),
+            Field::make(t("Should redirects be created automatically when uri's change?", category: 'seo-fields'), Lightswitch::make('createRedirectForUriChange')),
         ]);
     }
 
-    protected function afterInstall(): void
+    public function getCpNavItem(): NavItem|array|null
     {
-        if (!Craft::$app->getRequest()->isConsoleRequest) {
-            parent::afterInstall();
-            Craft::$app
-                ->getResponse()
-                ->redirect(
-                    UrlHelper::cpUrl("seo-fields", [
-                        "showIntroduction" => true,
-                    ]),
-                )
-                ->send();
+        $subnav = [];
+        foreach (self::SECTIONS as $handle => [$label, $permission]) {
+            if (Gate::check($permission)) {
+                $subnav[] = new NavItem()->label(t($label, category: 'seo-fields'))->href("seo-fields/$handle");
+            }
         }
+
+        return parent::getCpNavItem()
+            ->label($this->getSettings()->pluginLabel)
+            ->icon(null)
+            ->iconSvg(file_get_contents($this->getBasePath().'/icon-mask.svg'))
+            ->subnav($subnav);
     }
 
-    private function _registerField()
+    protected function getPermissions(): array
     {
-        Event::on(Fields::class, Fields::EVENT_REGISTER_FIELD_TYPES, function (
-            RegisterComponentTypesEvent $event,
-        ) {
-            $event->types[] = SeoField::class;
-        });
-    }
-
-    private function _registerPermissions()
-    {
-        Event::on(
-            UserPermissions::class,
-            UserPermissions::EVENT_REGISTER_PERMISSIONS,
-            function (RegisterUserPermissionsEvent $event) {
-                // Register our custom permissions
-                $permissions = [
-                    "heading" => Craft::t("seo-fields", "SEO Fields"),
-                    "permissions" => [
-                        "seo-fields:default" => [
-                            "label" => Craft::t("seo-fields", "Meta"),
-                        ],
-                        "seo-fields:notfound" => [
-                            "label" => Craft::t("seo-fields", "404's"),
-                        ],
-                        "seo-fields:redirects" => [
-                            "label" => Craft::t("seo-fields", "redirects"),
-                        ],
-                        "seo-fields:schema" => [
-                            "label" => Craft::t("seo-fields", "Schema.org"),
-                        ],
-                        "seo-fields:robots" => [
-                            "label" => Craft::t("seo-fields", "Robots"),
-                        ],
-                        "seo-fields:sitemap" => [
-                            "label" => Craft::t("seo-fields", "Sitemap"),
-                        ],
-                    ],
-                ];
-                $event->permissions[Craft::t("seo-fields", "SEO Fields")] = $permissions;
-            },
+        return array_map(
+            fn (array $section) => new Permission($section[1], t($section[0], category: 'seo-fields')),
+            array_values(self::SECTIONS),
         );
     }
 
-    private function _registerTwigExtension()
+    protected function getCacheOptions(): array
     {
-        $request = Craft::$app->getRequest();
-        if (!$request->isConsoleRequest) {
-            Craft::$app
-                ->getView()
-                ->registerTwigExtension(new SeoFieldsExtension());
-        }
+        return [
+            'seofields_sitemaps' => [
+                'label' => t('Sitemap caches (SEO Fields)', category: 'seo-fields'),
+                'action' => fn () => $this->sitemapService->clearCaches(),
+            ],
+        ];
     }
 
-    private function _registerFrontendRoutes()
+    private function registerListeners(): void
     {
-        Event::on(
-            UrlManager::class,
-            UrlManager::EVENT_REGISTER_SITE_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
-                $robots = SeoFields::$plugin->defaultsService->getRobotsForSite(
-                    Craft::$app->getSites()->getCurrentSite(),
-                );
-                if ($robots) {
-                    $event->rules = array_merge($event->rules, [
-                        "robots.txt" => "seo-fields/robots/render",
-                    ]);
-                }
-                if (SeoFields::$plugin->getSettings()->sitemapPerSite) {
-                    $shouldRender = SeoFields::getInstance()->sitemapService->shouldRenderBySiteId(
-                        Craft::$app->getSites()->getCurrentSite(),
-                    );
-                } else {
-                    $shouldRender = SeoFields::getInstance()->sitemapService->shouldRenderBySiteId(
-                        Craft::$app->getSites()->getPrimarySite(),
-                    );
-                }
-                if ($shouldRender) {
-                    $event->rules = array_merge($event->rules, [
-                        "sitemap.xml" => "seo-fields/sitemap/render",
-                        "sitemap_<siteId:\d+>_<type:(entry|product|category)>_<sectionId:\d+>_<handle:.*>.xml" =>
-                            "seo-fields/sitemap/detail",
-                    ]);
-                }
-            },
-        );
-    }
-
-    private function _registerCpRoutes()
-    {
-        Event::on(
-            UrlManager::class,
-            UrlManager::EVENT_REGISTER_CP_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
-                // Register our Control Panel routes
-                $event->rules = array_merge($event->rules, [
-                    "seo-fields" => "seo-fields/defaults/index",
-                    "seo-fields/cp-api/<action>" =>
-                        "seo-fields/cp-api/<action>",
-                    "seo-fields/<controller:(not-found)>/<siteHandle:{handle}>" =>
-                        "seo-fields/<controller>/index",
-                    "seo-fields/<controller:(defaults|robots|sitemap|not-found|redirects|schema)>" =>
-                        "seo-fields/<controller>/index",
-                    "seo-fields/<controller:(redirects)>/<id:\d+>" =>
-                        "seo-fields/<controller>/<action>",
-                    "seo-fields/<controller:(redirects|not-found)>/<action>" =>
-                        "seo-fields/<controller>/<action>",
-                    "seo-fields/<controller:(redirects|not-found)>/<action>/<id:\d+>" =>
-                        "seo-fields/<controller>/<action>",
-                    "seo-fields/<controller:(defaults|robots|sitemap|schema)>/<siteHandle:{handle}>" =>
-                        "seo-fields/<controller>/settings",
-                ]);
-            },
-        );
-    }
-
-    private function _registerCpListeners()
-    {
-        Event::on(Sites::class, Sites::EVENT_AFTER_SAVE_SITE, function (
-            SiteEvent $event,
-        ) {
+        Event::listen(SiteSaved::class, function (SiteSaved $event) {
             if ($event->isNew) {
-                SeoFields::$plugin->defaultsService->copyDefaultsForSite(
-                    $event->site,
-                    $event->oldPrimarySiteId,
-                );
+                $this->defaultsService->copyDefaultsForSite($event->site, $event->oldPrimarySiteId ?? Sites::getPrimarySite()->id);
             }
         });
 
-        Event::on(
-            Elements::class,
-            Elements::EVENT_AFTER_SAVE_ELEMENT,
-            function (ElementEvent $event) {
-                SeoFields::$plugin->sitemapService->clearCacheForElement(
-                    $event->element,
-                );
-            },
-        );
+        Event::listen(ElementSaved::class, fn (ElementSaved $event) => $this->sitemapService->clearCacheForElement($event->element));
+        Event::listen(ElementDeleted::class, fn (ElementDeleted $event) => $this->sitemapService->clearCacheForElement($event->element));
+        Event::listen([SectionDeleted::class, EntryTypeDeleted::class], fn () => $this->sitemapService->clearCaches());
 
-        Event::on(
-            Elements::class,
-            Elements::EVENT_AFTER_DELETE_ELEMENT,
-            function (ElementEvent $event) {
-                SeoFields::$plugin->sitemapService->clearCacheForElement(
-                    $event->element,
-                );
-            },
-        );
+        Event::listen(RunningGarbageCollection::class, fn () => $this->notFoundService->cleanup());
 
-        Event::on(
-            Entries::class,
-            Entries::EVENT_AFTER_DELETE_SECTION,
-            function (SectionEvent $event) {
-                SeoFields::$plugin->sitemapService->clearCaches();
-            },
-        );
-
-        Event::on(
-            Entries::class,
-            Entries::EVENT_AFTER_DELETE_ENTRY_TYPE,
-            function (EntryTypeEvent $event) {
-                SeoFields::$plugin->sitemapService->clearCaches();
-            },
-        );
-
-        if (Craft::$app->getPlugins()->isPluginEnabled("feed-me")) {
-            Event::on(
-                feedmeFields::class, // @phpstan-ignore-line
-                feedmeFields::EVENT_REGISTER_FEED_ME_FIELDS, // @phpstan-ignore-line
-                function (RegisterFeedMeFieldsEvent $e) { // @phpstan-ignore-line
-                    /** @phpstan-ignore-next-line */
-                    $e->fields[] = SeoFieldType::class;
-                },
-            );
-        }
-
-        Event::on(Gc::class, Gc::EVENT_RUN, function () {
-            try {
-                $limit = SeoFields::$plugin->getSettings()->notFoundLimit;
-                if (!is_int($limit)) {
-                    return;
+        if ($this->getSettings()->createRedirectForUriChange) {
+            Event::listen([ElementSaving::class, ElementSlugAndUriUpdating::class], function (ElementSaving|ElementSlugAndUriUpdating $event) {
+                if ($this->shouldTrackUris($event->element)) {
+                    $this->redirectService->trackElementUris($event->element);
                 }
-
-                $query = NotFoundRecord::find();
-                $query->offset($limit);
-                $query->orderBy("dateLastHit ASC");
-                foreach ($query->all() as $row) {
-                    $row->delete();
+            });
+            Event::listen([ElementSaved::class, ElementSlugAndUriUpdated::class], function (ElementSaved|ElementSlugAndUriUpdated $event) {
+                if ($this->shouldTrackUris($event->element)) {
+                    $this->redirectService->handleUriChange($event->element);
                 }
-            } catch (Exception $e) {
-                Craft::error($e->getMessage(), __CLASS__);
-            }
-        });
-    }
-
-    private function _registerSiteListeners()
-    {
-        Event::on(
-            ErrorHandler::class,
-            ErrorHandler::EVENT_BEFORE_HANDLE_EXCEPTION,
-            function (ExceptionEvent $event) {
-                try {
-                    if (
-                        $event->exception instanceof HttpException &&
-                        $event->exception->statusCode === 404 &&
-                        Craft::$app->getRequest()->getIsSiteRequest()
-                    ) {
-                        Craft::debug("404 exception, processing...", __CLASS__);
-                        SeoFields::getInstance()->notFoundService->handleNotFoundException();
-                    }
-                } catch (Exception $e) {
-                    Craft::error($e->getMessage(), __CLASS__);
-                }
-            },
-        );
-    }
-
-    private function _registerUrlChangeListeners()
-    {
-        if (self::getInstance()->getSettings()->createRedirectForUriChange) {
-            $beforeEvents = [
-                Elements::EVENT_BEFORE_SAVE_ELEMENT,
-                Elements::EVENT_BEFORE_UPDATE_SLUG_AND_URI,
-            ];
-
-            $afterEvents = [
-                Elements::EVENT_AFTER_SAVE_ELEMENT,
-                Elements::EVENT_AFTER_UPDATE_SLUG_AND_URI,
-            ];
-
-            foreach ($beforeEvents as $event) {
-                Event::on(Elements::class, $event, function (
-                    ElementEvent $event,
-                ) {
-                    $shouldCheckSlug = true;
-                    if (ElementHelper::isDraftOrRevision($event->element)) {
-                        $shouldCheckSlug = false;
-                    }
-
-                    if (ElementHelper::isTempSlug($event->element)) {
-                        $shouldCheckSlug = false;
-                    }
-
-                    if ($shouldCheckSlug && !$event->element->propagating) {
-                        self::getInstance()->redirectService->trackElementUris(
-                            $event->element,
-                        );
-                    }
-                });
-            }
-
-            foreach ($afterEvents as $event) {
-                Event::on(Elements::class, $event, function (
-                    ElementEvent $event,
-                ) {
-                    $shouldCheckSlug = true;
-                    if (ElementHelper::isDraftOrRevision($event->element)) {
-                        $shouldCheckSlug = false;
-                    }
-
-                    if (ElementHelper::isTempSlug($event->element)) {
-                        $shouldCheckSlug = false;
-                    }
-
-                    if ($shouldCheckSlug && !$event->element->propagating) {
-                        self::getInstance()->redirectService->handleUriChange(
-                            $event->element,
-                        );
-                    }
-                });
-            }
+            });
         }
     }
 
-    private function _registerCacheOptions()
+    private function shouldTrackUris($element): bool
     {
-        Event::on(
-            ClearCaches::class,
-            ClearCaches::EVENT_REGISTER_CACHE_OPTIONS,
-            function (RegisterCacheOptionsEvent $event) {
-                // Register our Control Panel routes
-                $event->options = array_merge($event->options, [
-                    [
-                        "key" => "seofields_sitemaps",
-                        "label" => "Sitemap caches (SEO Fields)",
-                        "action" => [
-                            SeoFields::$plugin->sitemapService,
-                            "clearCaches",
-                        ],
-                    ],
-                ]);
-            },
-        );
-    }
-
-    private function _registerCustomElements()
-    {
-        $elements = [];
-        if (Craft::$app->getPlugins()->isPluginEnabled("calendar")) {
-            /** @phpstan-ignore-next-line */
-            $elements[] = \Solspace\Calendar\Elements\Event::class;
-        }
-        if (Craft::$app->getPlugins()->isPluginEnabled("commerce")) {
-            /** @phpstan-ignore-next-line */
-            $elements[] = \craft\commerce\elements\Product::class;
-        }
-
-        if ($elements) {
-            Event::on(
-                SeoFields::class,
-                SeoFields::EVENT_SEOFIELDS_REGISTER_ELEMENT,
-                function (RegisterSeoElementEvent $event) use ($elements) {
-                    $event->elements = array_merge($event->elements, $elements);
-                },
-            );
-        }
-    }
-
-    private function registerDebugPanel(): void
-    {
-        Event::on(
-            Application::class,
-            BaseApplication::EVENT_BEFORE_REQUEST,
-            function () {
-                /** @var DebugModule|null $debugModule */
-                $debugModule = Craft::$app->getModule("debug");
-                if ($debugModule instanceof DebugModule) {
-                    $debugModule->panels["schema"] = new SchemaPanel([
-                        "module" => $debugModule,
-                        "id" => "schema",
-                    ]);
-                }
-            },
-        );
-    }
-
-    private function _registerElementBehaviors(): void
-    {
-        Event::on(Entry::class, Entry::EVENT_DEFINE_BEHAVIORS, function (DefineBehaviorsEvent $event) {
-            $event->behaviors[$this->id] = ElementSeoBehavior::class;
-        });
-
-
-        Event::on(Category::class, Category::EVENT_DEFINE_BEHAVIORS, function (
-            DefineBehaviorsEvent $event,
-        ) {
-            $event->behaviors[$this->id] = ElementSeoBehavior::class;
-        });
-
-
-        if (Craft::$app->getPlugins()->isPluginEnabled("commerce")) {
-            Event::on(
-                Product::class, // @phpstan-ignore-line
-                Product::EVENT_DEFINE_BEHAVIORS, // @phpstan-ignore-line
-                function (DefineBehaviorsEvent $event) {
-                    $event->behaviors[$this->id] = ElementSeoBehavior::class;
-                },
-            );
-        }
+        return ! $element->propagating
+            && ! ElementHelper::isDraftOrRevision($element)
+            && ! ElementHelper::isTempSlug($element->slug);
     }
 }

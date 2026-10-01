@@ -2,271 +2,277 @@
 
 namespace studioespresso\seofields\controllers;
 
-use Craft;
-use craft\helpers\App;
-use craft\helpers\Cp;
-use craft\helpers\DateTimeHelper;
-use craft\helpers\UrlHelper;
-use craft\models\Site;
-use craft\services\Path;
-use craft\web\Controller;
+use CraftCms\Cms\Form\Controls\Choice;
+use CraftCms\Cms\Form\Controls\Text;
+use CraftCms\Cms\Form\Form;
+use CraftCms\Cms\Form\Nodes\Field;
+use CraftCms\Cms\Form\Nodes\HiddenField;
+use CraftCms\Cms\Http\RespondsWithFlash;
+use CraftCms\Cms\Http\Responses\CpScreenResponse;
+use CraftCms\Cms\Support\Facades\Path;
+use CraftCms\Cms\Support\Facades\Sites;
+use CraftCms\Cms\Support\Url;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Reader\CSV\Reader as CsvReader;
 use OpenSpout\Writer\XLSX\Writer;
-use studioespresso\seofields\models\RedirectModel;
+use studioespresso\seofields\controllers\concerns\ListsRecords;
+use studioespresso\seofields\controllers\concerns\SeoCpScreen;
 use studioespresso\seofields\records\RedirectRecord;
 use studioespresso\seofields\SeoFields;
-use yii\web\UploadedFile;
+use Symfony\Component\HttpFoundation\Response;
 
-class RedirectsController extends Controller
+use function CraftCms\Cms\cp_redirect;
+use function CraftCms\Cms\t;
+
+class RedirectsController
 {
-    public const IMPORT_FILE = 'seofields_redirects_import.csv';
+    use ListsRecords;
+    use RespondsWithFlash;
+    use SeoCpScreen;
 
-    public Site|null $site = null;
+    private const IMPORT_FILE = 'seofields_redirects_import.csv';
 
-    public function init(): void
+    public function index(Request $request): CpScreenResponse
     {
-        if (Craft::$app->getRequest()->getQueryParam('site')) {
-            $this->site = Craft::$app->getSites()->getSiteByHandle(Craft::$app->getRequest()->getQueryParam('site'));
-        } else {
-            $this->site = Craft::$app->getSites()->getPrimarySite();
-        }
-        parent::init();
-    }
+        $site = Sites::isMultiSite() && $request->query('site') ? $this->site($request) : null;
+        $this->registerListStyles();
 
-    public function actionIndex()
-    {
-        $searchParam = Craft::$app->getRequest()->getParam('search');
-        $redirects = SeoFields::getInstance()->redirectService->getAllRedirects($searchParam);
-
-        $sites = Craft::$app->getSites()->getEditableSites();
-
-        $crumbs = ['label' => $this->site->name, ];
-        if (Craft::$app->getIsMultiSite()) {
-            $crumbs['menu'] = [
-                'label' => Craft::t('site', 'Select site'),
-                'items' => Cp::siteMenuItems($sites, $this->site),
-            ];
-        }
-
-        return $this->asCpScreen()
-            ->selectedSubnavItem('redirects')
-            ->additionalButtonsTemplate('seo-fields/_redirect/_buttons')
-            ->title(Craft::t('seo-fields', 'Redirects'))
-            ->crumbs([$crumbs])
-            ->contentTemplate('seo-fields/_redirect/_content');
-    }
-
-    public function actionAdd()
-    {
-        return $this->renderTemplate('seo-fields/_redirect/_entry', [
-            'pattern' => Craft::$app->getRequest()->getParam('pattern') ?? null,
-            'record' => Craft::$app->getRequest()->getParam('record') ?? null,
-            'sites' => $this->getSitesMenu(),
-        ]);
-    }
-
-    public function actionEdit($id)
-    {
-        $redirect = SeoFields::getInstance()->redirectService->getRedirectById($id);
-        return $this->renderTemplate('seo-fields/_redirect/_entry', [
-            'data' => $redirect,
-            'sites' => $this->getSitesMenu(),
-        ]);
-    }
-
-    public function actionSave()
-    {
-        $id = $this->request->getBodyParam('redirectId');
-        $record = $this->request->getBodyParam('record');
-        if ($id) {
-            $model = SeoFields::getInstance()->redirectService->getRedirectById($id);
-        } else {
-            $model = new RedirectModel();
-        }
-
-        $model->setAttributes(Craft::$app->getRequest()->getBodyParam('fields'));
-
-        if ($model->validate()) {
-            $saved = SeoFields::getInstance()->redirectService->saveRedirect($model);
-            if ($saved) {
-                if ($record) {
-                    SeoFields::getInstance()->notFoundService->markAsHandled($record);
-                }
-                Craft::$app->getSession()->setNotice(Craft::t('seo-fields', 'Redirect saved'));
-                $this->redirectToPostedUrl();
-            }
-        }
-
-        Craft::$app->getSession()->setError(Craft::t('app', 'Couldn’t save redirect.'));
-        return $this->renderTemplate('seo-fields/_redirect/_entry', [
-            'data' => $model,
-            'sites' => $this->getSitesMenu(),
-        ]);
-    }
-
-    public function actionUpload()
-    {
-        $this->requirePostRequest();
-
-        $file = UploadedFile::getInstanceByName('file');
-
-        if ($file !== null) {
-            $filename = self::IMPORT_FILE;
-            $filePath = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . $filename;
-            $file->saveAs($filePath, false);
-        }
-
-        $this->redirect(UrlHelper::cpUrl('seo-fields/redirects/import'));
-    }
-
-    public function actionExport()
-    {
-        $site = $this->request->getQueryParam('site', null);
-        /** @var Path $pathService */
-        $pathService = Craft::$app->getPath();
-        $now = DateTimeHelper::now();
-        $path = $pathService->getTempPath() . "/redirect-{$now->format('Y-m-d h:i:s')}.xlsx";
-
-        $writer = new Writer();
-        $writer->openToFile($path);
-
-        $headerRow = Row::fromValues(["Old url", "Redirected to", "Type", "Site Name", "Last hit on", "Total hits"]);
-
-        $writer->addRow($headerRow);
+        $query = RedirectRecord::query();
         if ($site) {
-            $site = Craft::$app->getSites()->getSiteByHandle($site);
-            $redirects = RedirectRecord::findAll(['siteId' => $site->id]);
-        } else {
-            $redirects = RedirectRecord::find()->all();
+            $query->where(fn ($query) => $query->where('siteId', $site->id)->orWhereNull('siteId'));
         }
-        /** @var RedirectRecord[] $redirects */
-        foreach ($redirects as $redirect) {
-            $row = Row::fromValues([
+
+        return $this->screen(t('Redirects', category: 'seo-fields'), $site)
+            ->toolbarTemplate('seo-fields/_redirect/_buttons', ['site' => $site?->handle])
+            ->contentTemplate('seo-fields/_redirect/_content', [
+                ...$this->listVariables($this->paginate($query, $request, ['pattern', 'redirect'], ['counter', 'dateLastHit', 'pattern', 'matchType', 'method'])
+                    ->through(fn (RedirectRecord $row) => $row->only(['id', 'pattern', 'redirect', 'siteId', 'counter', 'matchType', 'dateLastHit', 'method'])), $request),
+            ])
+            ->inertiaPage('cp/Screen');
+    }
+
+    public function edit(Request $request, ?int $id = null): CpScreenResponse
+    {
+        $redirect = $id ? RedirectRecord::query()->findOrFail($id) : new RedirectRecord([
+            'pattern' => $request->query('pattern'),
+            'siteId' => $request->integer('site') ?: null,
+            'sourceMatch' => 'path',
+            'matchType' => 'exact',
+            'method' => 301,
+        ]);
+
+        $title = $id ? t('Redirect', category: 'seo-fields') : t('New redirect', category: 'seo-fields');
+
+        return $this->formScreen($title, null, $this->redirectForm(), [
+            'siteId' => (string) ($redirect->siteId ?? 0),
+            'pattern' => $redirect->pattern,
+            'sourceMatch' => $redirect->sourceMatch ?? 'path',
+            'redirect' => $redirect->redirect,
+            'matchType' => $redirect->matchType ?? 'exact',
+            'method' => (string) $redirect->method,
+            'record' => $request->query('record'),
+        ])->addCrumb(t('Redirects', category: 'seo-fields'), 'seo-fields/redirects');
+    }
+
+    public function store(Request $request, ?int $id = null): Response
+    {
+        $values = $request->validate([
+            'siteId' => ['nullable', 'integer'],
+            'pattern' => [
+                'required',
+                'string',
+                'max:255',
+                function (string $attribute, mixed $value, \Closure $fail) use ($request) {
+                    if ($request->input('sourceMatch') !== 'url' && preg_match('/^(https?:\/\/|\/\/)/i', trim($value))) {
+                        $fail(t('Remove "http(s)://" and the domain, the old pattern should only contain the slug', category: 'seo-fields'));
+                    }
+                },
+            ],
+            'sourceMatch' => ['required', 'in:path,pathWithoutParams,url'],
+            'redirect' => ['required', 'string', 'max:255'],
+            'matchType' => ['required', 'in:exact,regexMatch'],
+            'method' => ['required', 'in:301,302'],
+        ]);
+
+        $redirect = $id ? RedirectRecord::query()->findOrFail($id) : new RedirectRecord;
+        $redirect->fill($values);
+        SeoFields::getInstance()->redirectService->saveRedirect($redirect);
+
+        if ($record = $request->integer('record')) {
+            SeoFields::getInstance()->notFoundService->markAsHandled($record);
+        }
+
+        return $this->asSuccess(t('Redirect saved', category: 'seo-fields'), redirect: Url::cpUrl('seo-fields/redirects'));
+    }
+
+    public function delete(int $id): Response
+    {
+        RedirectRecord::query()->whereKey($id)->delete();
+
+        return $this->asSuccess(t('Redirect removed', category: 'seo-fields'), redirect: url()->previous());
+    }
+
+    public function clearAll(): Response
+    {
+        RedirectRecord::query()->delete();
+
+        return $this->asSuccess(t('All redirects removed', category: 'seo-fields'));
+    }
+
+    public function export(Request $request): Response
+    {
+        $path = Path::temp('redirects-'.now()->format('Y-m-d-His').'.xlsx');
+
+        $writer = new Writer;
+        $writer->openToFile($path);
+        $writer->addRow(Row::fromValues(['Old url', 'Redirected to', 'Type', 'Site Name', 'Last hit on', 'Total hits']));
+
+        $query = RedirectRecord::query();
+        if ($site = $request->query('site')) {
+            $query->where('siteId', Sites::getSiteByHandle($site)?->id);
+        }
+
+        foreach ($query->cursor() as $redirect) {
+            $writer->addRow(Row::fromValues([
                 $redirect->pattern,
                 $redirect->redirect,
                 $redirect->method,
-                $redirect->siteId ? Craft::$app->getSites()->getSiteById($redirect->siteId)->name : 'All Sites',
-                $redirect->dateLastHit ? DateTimeHelper::toDateTime($redirect->dateLastHit)->format('Y-m-d h:i:s') : '',
+                $redirect->siteId ? Sites::getSiteById($redirect->siteId)?->getName() : 'All Sites',
+                $redirect->dateLastHit?->format('Y-m-d H:i') ?? '',
                 $redirect->counter,
-            ]);
-            $writer->addRow($row);
+            ]));
         }
         $writer->close();
-        return Craft::$app->getResponse()->sendFile($path);
+
+        return response()->download($path)->deleteFileAfterSend();
     }
 
-    public function actionImport()
+    public function upload(Request $request): RedirectResponse
     {
-        $filename = self::IMPORT_FILE;
-        $filePath = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . $filename;
-        if (!file_exists($filePath)) {
-            return $this->redirect(UrlHelper::cpUrl('seo-fields/redirects'));
-        }
-        $headers = $this->getHeaders($filePath);
-        $variables['headers'] = $headers;
-        $variables['filename'] = $filePath;
-        $variables['sites'] = $this->getSitesMenu();
+        $request->validate(['file' => ['required', 'file', 'mimes:csv,txt']]);
+        $request->file('file')->move(Path::temp(), self::IMPORT_FILE);
 
-        $this->renderTemplate('seo-fields/_redirect/_import', $variables);
+        return cp_redirect('seo-fields/redirects/import');
     }
 
-    public function actionRunImport()
+    public function import(): CpScreenResponse|RedirectResponse
     {
-        $request = Craft::$app->getRequest();
-        $data = $request->getBodyParam('fields');
-        if (!$data['pattern'] || $data['redirect'] || $data['method']) {
+        if (! file_exists($this->importFile())) {
+            return cp_redirect('seo-fields/redirects');
         }
 
-        App::maxPowerCaptain();
-        $settings = [
-            'patternCol' => $data['pattern'],
-            'redirectCol' => $data['redirect'],
-            'siteId' => $data['siteId'],
-            'method' => $data['method'],
-        ];
-
-        $filename = self::IMPORT_FILE;
-        $filePath = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . $filename;
-
-        $rows = $this->getRows($filePath);
-        $headers = $this->getHeaders($filePath);
-
-        $results = SeoFields::getInstance()->redirectService->import($rows, $settings);
-        return $this->renderTemplate('seo-fields/_redirect/_import_results', $results);
-    }
-
-    public function actionDelete()
-    {
-        $id = $this->request->getBodyParam('id');
-        if (SeoFields::getInstance()->redirectService->deleteRedirectById($id)) {
-            Craft::$app->getSession()->setNotice(Craft::t('seo-fields', 'Redirect removed'));
-            return $this->asJson(['success' => true]);
-        }
-    }
-
-    public function actionClearAll()
-    {
-        SeoFields::getInstance()->redirectService->deleteAll();
-        return $this->redirect(UrlHelper::cpUrl('seo-fields/redirects'));
-    }
-
-    private function getSitesMenu()
-    {
-        $sites = [
-            0 => Craft::t('seo-fields', 'All Sites'),
-        ];
-
-        if (Craft::$app->getIsMultiSite()) {
-            $editableSites = Craft::$app->getSites()->getEditableSiteIds();
-            foreach (Craft::$app->getSites()->getAllGroups() as $group) {
-                $groupSites = Craft::$app->getSites()->getSitesByGroupId($group->id);
-                $sites[$group->name]
-                    = ['optgroup' => $group->name];
-                foreach ($groupSites as $groupSite) {
-                    if (in_array($groupSite->id, $editableSites, false)) {
-                        $sites[$groupSite->id] = $groupSite->name;
-                    }
-                }
-            }
-        }
-        return $sites;
-    }
-
-    private function getHeaders(string $filePath): array
-    {
-        $reader = new CsvReader();
-        $reader->open($filePath);
-
-        foreach ($reader->getSheetIterator() as $sheet) {
-            foreach ($sheet->getRowIterator() as $row) {
-                $reader->close();
-                return $row->toArray();
-            }
+        $columns = [['label' => '---', 'value' => '']];
+        foreach ($this->rows($this->importFile(), headersOnly: true) as $index => $header) {
+            $columns[] = ['label' => (string) $header, 'value' => (string) $index];
         }
 
-        $reader->close();
-        return [];
+        return $this->formScreen(t('Import redirects', category: 'seo-fields'), null, Form::make([
+            Field::make(t('Pattern / URL', category: 'seo-fields'), Choice::make('patternCol')->options($columns))->required(),
+            Field::make(t('Redirect to', category: 'seo-fields'), Choice::make('redirectCol')->options($columns))->required(),
+            Field::make(t('Site', category: 'seo-fields'), Choice::make('siteId')->options($this->siteOptions())),
+            Field::make(t('Method', category: 'seo-fields'), Choice::make('method')->options([
+                ['label' => t('301 (Permanent redirect)', category: 'seo-fields'), 'value' => '301'],
+                ['label' => t('302 (Temporary redirect)', category: 'seo-fields'), 'value' => '302'],
+            ]))->required(),
+        ]), ['siteId' => '0', 'method' => '301'])->addCrumb(t('Redirects', category: 'seo-fields'), 'seo-fields/redirects');
     }
 
-    private function getRows(string $filePath): array
+    public function runImport(Request $request): Response
     {
-        $reader = new CsvReader();
-        $reader->open($filePath);
+        $settings = $request->validate([
+            'patternCol' => ['required', 'integer'],
+            'redirectCol' => ['required', 'integer'],
+            'siteId' => ['nullable', 'integer'],
+            'method' => ['required', 'in:301,302'],
+        ]);
+
+        $results = SeoFields::getInstance()->redirectService->import($this->rows($this->importFile()), $settings);
+        @unlink($this->importFile());
+        session()->flash('seofields.import', $results);
+
+        return $this->asSuccess(
+            t('{count} redirects imported', ['count' => count($results['imported'])], 'seo-fields'),
+            redirect: Url::cpUrl('seo-fields/redirects/import/results'),
+        );
+    }
+
+    public function importResults(): CpScreenResponse|RedirectResponse
+    {
+        if (! $results = session('seofields.import')) {
+            return cp_redirect('seo-fields/redirects');
+        }
+
+        return $this->screen(t('Import results', category: 'seo-fields'))
+            ->addCrumb(t('Redirects', category: 'seo-fields'), 'seo-fields/redirects')
+            ->contentTemplate('seo-fields/_redirect/_import_results', $results)
+            ->inertiaPage('cp/Screen');
+    }
+
+    private function redirectForm(): Form
+    {
+        return Form::make([
+            HiddenField::make('record'),
+            ...(Sites::isMultiSite() ? [
+                Field::make(t('Enable for site', category: 'seo-fields'), Choice::make('siteId')->options($this->siteOptions()))
+                    ->instructions(t('For which site should this redirect be active?', category: 'seo-fields')),
+            ] : [HiddenField::make('siteId')]),
+            Field::make(t('Old pattern or URL to redirect', category: 'seo-fields'), Text::make('pattern')->maxLength(255))
+                ->required()
+                ->instructions(t('Enter a URL or pattern that should be matched. Depending on the options below, this matches the path (`/news`) or the full URL (`https://www.example.com/news`).', category: 'seo-fields')),
+            Field::make(t('Which part of the old URL should be matched?', category: 'seo-fields'), Choice::make('sourceMatch')->options([
+                ['label' => t('Path only', category: 'seo-fields'), 'value' => 'path'],
+                ['label' => t('Path only (ignore parameters)', category: 'seo-fields'), 'value' => 'pathWithoutParams'],
+                ['label' => t('Full URL', category: 'seo-fields'), 'value' => 'url'],
+            ])),
+            Field::make(t('URL to redirect to', category: 'seo-fields'), Text::make('redirect')->maxLength(255))->required(),
+            Field::make(t('Match type', category: 'seo-fields'), Choice::make('matchType')->options([
+                ['label' => t('Exact match', category: 'seo-fields'), 'value' => 'exact'],
+                ['label' => t('Regex match', category: 'seo-fields'), 'value' => 'regexMatch'],
+            ])),
+            Field::make(t('Method', category: 'seo-fields'), Choice::make('method')->options([
+                ['label' => '301', 'value' => '301'],
+                ['label' => '302', 'value' => '302'],
+            ]))->instructions(t('Select whether the redirect should be permanent or temporary.', category: 'seo-fields')),
+        ]);
+    }
+
+    /** @return list<array{label: string, value: string, group?: string}> */
+    private function siteOptions(): array
+    {
+        $options = [['label' => t('All Sites', category: 'seo-fields'), 'value' => '0']];
+        foreach (Sites::getEditableSites() as $site) {
+            $options[] = ['label' => $site->getName(), 'value' => (string) $site->id, 'group' => $site->getGroup()->getName()];
+        }
+
+        return $options;
+    }
+
+    private function importFile(): string
+    {
+        return Path::temp(self::IMPORT_FILE);
+    }
+
+    /** @return array<int, array<int, mixed>>|array<int, mixed> The rows after the header, or the header itself */
+    private function rows(string $file, bool $headersOnly = false): array
+    {
+        $reader = new CsvReader;
+        $reader->open($file);
 
         $rows = [];
-        $isFirstRow = true;
         foreach ($reader->getSheetIterator() as $sheet) {
             foreach ($sheet->getRowIterator() as $row) {
-                if ($isFirstRow) {
-                    $isFirstRow = false;
-                    continue;
+                if ($headersOnly) {
+                    $reader->close();
+
+                    return $row->toArray();
                 }
                 $rows[] = $row->toArray();
             }
         }
-
         $reader->close();
-        return $rows;
+
+        return array_slice($rows, 1);
     }
 }

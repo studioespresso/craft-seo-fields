@@ -2,19 +2,27 @@
 
 namespace studioespresso\seofields\records;
 
-use craft\db\ActiveRecord;
+use CraftCms\Cms\Shared\BaseModel;
+use CraftCms\Cms\Shared\Concerns\HasUid;
 
-/***
- * @author    Studio Espresso
- * @package   SeoFields
- * @since     1.0.0
+/**
+ * @property int $id
+ * @property int $siteId
+ * @property array|null $defaultMeta
+ * @property bool $enableRobots
+ * @property string|null $robots
+ * @property string|null $schema
+ * @property string|null $sitemap
  */
-class DefaultsRecord extends ActiveRecord
+class DefaultsRecord extends BaseModel
 {
-    // Public Static Methods
-    // =========================================================================
-    public static function tableName()
-    {
-        return '{{%seofields_data}}';
-    }
+    use HasUid;
+
+    protected $table = 'seofields_data';
+
+    protected $casts = [
+        'siteId' => 'int',
+        'defaultMeta' => 'json',
+        'enableRobots' => 'bool',
+    ];
 }

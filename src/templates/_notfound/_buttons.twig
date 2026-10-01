@@ -1,28 +1,28 @@
-{% import "_includes/forms" as forms %}
+{% import '_includes/forms' as forms %}
 
+<div class="flex gap-2 items-center">
+    {{ forms.select({
+        id: 'seofields-display',
+        name: 'display',
+        options: viewOptions,
+        value: display,
+    }) }}
 
+    <form method="post" action="{{ cpUrl('seo-fields/not-found/clear-all') }}"
+          onsubmit="return confirm({{ "Are you sure you want to remove all tracked 404's?"|t('seo-fields')|json_encode }})">
+        {{ csrfInput() }}
+        <craft-button type="submit" variant="danger">{{ 'Clear all'|t('seo-fields') }}</craft-button>
+    </form>
+</div>
 
-
-{{ forms.selectField({
-    id: 'display',
-    name: 'display',
-    options: viewOptions,
-    includeEnvVars: false,
-    allowedEnvValues: false,
-    value: craft.app.request.getParam('display', 'all'),
-}) }}
-
-{% tag 'a' with {
-    href: actionUrl('seo-fields/not-found/clear-all'),
-    class: 'btn',
-    onclick: 'return confirm("Are you sure you want to remove all tracked 404")',
-} %}
-    {{ 'Clear all'|t('seo-fields') }}
-{% endtag %}
-<script>
-    document.getElementById('display').addEventListener('change', function() {
-        const url = new URL(window.location);
-        url.searchParams.set('display', this.value);
+{% js %}
+    // Delegated: cp/Screen mounts the toolbar with Vue after this runs
+    document.addEventListener('change', function(event) {
+        if (event.target.id !== 'seofields-display') {
+            return;
+        }
+        var url = new URL(window.location);
+        url.searchParams.set('display', event.target.value);
         window.location.href = url.toString();
     });
-</script>
+{% endjs %}
